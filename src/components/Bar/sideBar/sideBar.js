@@ -33,6 +33,10 @@ function Sidebars() {
     console.log("Chua dang nhap");
   }
   const logout = () => {
+    if (sidebar === true) {
+      setSidebar(false);
+    }
+
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
     localStorage.removeItem("email");
@@ -90,9 +94,12 @@ function Sidebars() {
             <Link to="#" className="menu-bars" onClick={showSidebar}>
               <FaBars className="size" />
             </Link>
-            <div className="navText">{location.pathname.replace("/", "")}</div>
+            <div style={{ width: 100 }}>
+              <div className="navText">
+                {location.pathname.replace("/", "")}
+              </div>
+            </div>
           </div>
-
           <div>{NavBarSet()}</div>
           <div className="d-flex menu-bars-user">
             <NavDropdown title={name} id="basic-nav-dropdown">
@@ -115,7 +122,6 @@ function Sidebars() {
                   <FaTimes />
                 </Link>
               </li>
-
               {SidebarData.map(({ cName, icon, path, title }, index) => {
                 return (
                   <li key={index} className={cName}>
