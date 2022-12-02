@@ -1,4 +1,67 @@
 function District({ route, navigate }) {
-  return <div>District</div>;
+  return (
+    <div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+      <div>District</div>
+    </div>
+  );
 }
 export default District;

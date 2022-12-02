@@ -89,7 +89,7 @@ function Sidebars() {
   return (
     <>
       <IconContext.Provider value={{ color: "red" }}>
-        <div className="navbar">
+        <div className="navbar fixed-top">
           <div className="menu-bars d-flex">
             <Link to="#" className="menu-bars" onClick={showSidebar}>
               <FaBars className="size" />
