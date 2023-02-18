@@ -1,0 +1,7 @@
+  
+  .hoverItem:hover{
+    cursor: pointer;
+    color: aliceblue;
+    background: blue;
+    
+}

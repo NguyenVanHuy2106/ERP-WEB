@@ -16,7 +16,6 @@ function BasicExample() {
   let name = "Administrator";
 
   if (accessToken != null) {
-    console.log(accessToken);
     name = email;
   } else {
     console.log("Chua dang nhap");

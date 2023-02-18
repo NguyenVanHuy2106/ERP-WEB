@@ -8,6 +8,9 @@ import District from "../components/Bar/masterData/district/district";
 import Province from "../components/Bar/masterData/province/province";
 import Product from "../components/products/product";
 import DashBoard from "../components/dashBoard/dashBoard";
+import ProductCat from "../components/products/productCat";
+import ShopList from "../components/shops/shopList";
+import Promotion from "../components/promotion/promotion";
 
 function App() {
   return (
@@ -17,11 +20,13 @@ function App() {
       <Routes>
         <Route path="/" element={<DashBoard />} />
         <Route path="/home" element={<Home />} />
-        {/* <Route path="/home" element={<Home />} /> */}
+        <Route path="/productCat" element={<ProductCat />} />
         <Route path="/signIn" element={<SignIn />} />
         <Route path="/district" element={<District />} />
         <Route path="/province" element={<Province />} />
         <Route path="/product" element={<Product />} />
+        <Route path="/shopList" element={<ShopList />} />
+        <Route path="/promotion" element={<Promotion />} />
       </Routes>
     </BrowserRouter>
   );
