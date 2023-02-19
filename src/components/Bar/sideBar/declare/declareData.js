@@ -5,8 +5,14 @@ export const declareData = [
     path: "/productCat",
   },
   {
-    title: "Model sản phẩm",
+    title: "Khai báo Model sản phẩm",
     path: "/model",
+  },
+];
+export const deliveryData = [
+  {
+    title: "Khai bao hình thức giao hàng",
+    path: "/deliveryType",
   },
 ];
 

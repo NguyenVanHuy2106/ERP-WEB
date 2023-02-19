@@ -6,7 +6,7 @@ import * as FaIcons from "react-icons/fa";
 import * as AiIcons from "react-icons/ai";
 import { SidebarData } from "./sideBarData";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { declareData, locationData } from "./declare/declareData";
+import { declareData, locationData, deliveryData } from "./declare/declareData";
 import SubMenu from "./subMenu";
 import { IconContext } from "react-icons/lib";
 import { useNavigate } from "react-router-dom";
@@ -136,11 +136,26 @@ const Sidebar = () => {
         <div className="d-flex align-items-center">
           <div className="marginNav">
             <NavDropdown
-              title="Khai bao"
+              title="Sản phẩm"
               id="basic-nav-dropdown"
               menuVariant="dark"
             >
               {declareData.map(({ path, title }, index) => {
+                return (
+                  <NavDropdown.Item href={path} key={index}>
+                    {title}
+                  </NavDropdown.Item>
+                );
+              })}
+            </NavDropdown>
+          </div>
+          <div className="marginNav">
+            <NavDropdown
+              title="Giao hàng"
+              id="basic-nav-dropdown"
+              menuVariant="dark"
+            >
+              {deliveryData.map(({ path, title }, index) => {
                 return (
                   <NavDropdown.Item href={path} key={index}>
                     {title}
