@@ -5,8 +5,8 @@ export const declareData = [
     path: "/productCat",
   },
   {
-    title: "San pham",
-    path: "/overview/users",
+    title: "Model sản phẩm",
+    path: "/model",
   },
 ];
 

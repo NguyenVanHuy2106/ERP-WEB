@@ -11,7 +11,7 @@ import DashBoard from "../components/dashBoard/dashBoard";
 import ProductCat from "../components/products/productCat";
 import ShopList from "../components/shops/shopList";
 import Promotion from "../components/promotion/promotion";
-
+import Model from "../components/model/model";
 function App() {
   return (
     <BrowserRouter>
@@ -27,6 +27,7 @@ function App() {
         <Route path="/product" element={<Product />} />
         <Route path="/shopList" element={<ShopList />} />
         <Route path="/promotion" element={<Promotion />} />
+        <Route path="/model" element={<Model />} />
       </Routes>
     </BrowserRouter>
   );
