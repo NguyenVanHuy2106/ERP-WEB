@@ -13,6 +13,8 @@ import ShopList from "../components/shops/shopList";
 import Promotion from "../components/promotion/promotion";
 import Model from "../components/model/model";
 import DeliveryType from "../components/deliveryType/deliveryType";
+import Brand from "../components/brand/brand";
+import MainGroup from "../components/mainGroup/mainGroup";
 function App() {
   return (
     <BrowserRouter>
@@ -30,6 +32,8 @@ function App() {
         <Route path="/promotion" element={<Promotion />} />
         <Route path="/model" element={<Model />} />
         <Route path="/deliveryType" element={<DeliveryType />} />
+        <Route path="/brand" element={<Brand />} />
+        <Route path="/mainGroup" element={<MainGroup />} />
       </Routes>
     </BrowserRouter>
   );
