@@ -15,6 +15,7 @@ import Model from "../components/model/model";
 import DeliveryType from "../components/deliveryType/deliveryType";
 import Brand from "../components/brand/brand";
 import MainGroup from "../components/mainGroup/mainGroup";
+import SubGroup from "../components/subGroup/subGroup";
 function App() {
   return (
     <BrowserRouter>
@@ -34,6 +35,7 @@ function App() {
         <Route path="/deliveryType" element={<DeliveryType />} />
         <Route path="/brand" element={<Brand />} />
         <Route path="/mainGroup" element={<MainGroup />} />
+        <Route path="/subGroup" element={<SubGroup />} />
       </Routes>
     </BrowserRouter>
   );

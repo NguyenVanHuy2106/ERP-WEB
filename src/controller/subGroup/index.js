@@ -1,8 +1,8 @@
 import API from "../../server/APIConfig";
-export const getAllMainGroup = async (keyWord, fromDate, toDate) => {
+export const getAllSubGroup = async (keyWord, fromDate, toDate) => {
   try {
     const response = await API.post(
-      "mainGroup/getAll",
+      "subGroup/getAll",
       { keyWord: keyWord, fromDate: fromDate, toDate: toDate },
       {
         headers: {
@@ -15,28 +15,29 @@ export const getAllMainGroup = async (keyWord, fromDate, toDate) => {
     return err;
   }
 };
-export const getAllMainGroupNoCondition = async () => {
-  try {
-    const response = await API.get("mainGroup/getAllNoCondition", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    return response;
-  } catch (err) {
-    return err;
-  }
-};
-export const addNewMainGroup = async (
-  mainGroupName,
+
+export const addNewSubGroup = async (
+  subGroupName,
+  mainGroupId,
+  isRequestImei,
+  isCheckStockQuantity,
+  isCanReturnOutput,
+  image,
+  isAutoCreateImei,
   description,
   createdUser
 ) => {
   try {
     const response = await API.post(
-      "mainGroup/addNew",
+      "subGroup/addNew",
       {
-        mainGroupName: mainGroupName,
+        subGroupName: subGroupName,
+        mainGroupId: mainGroupId,
+        isRequestImei: isRequestImei,
+        isCheckStockQuantity: isCheckStockQuantity,
+        isCanReturnOutput: isCanReturnOutput,
+        image: image,
+        isAutoCreateImei: isAutoCreateImei,
         description: description,
         createdUser: createdUser,
       },
@@ -51,9 +52,14 @@ export const addNewMainGroup = async (
     return err;
   }
 };
-export const updateMainGroup = async (
+export const updateSubGroup = async (
+  subGroupId,
+  subGroupName,
   mainGroupId,
-  mainGroupName,
+  isRequestImei,
+  isCheckStockQuantity,
+  isCanReturnOutput,
+  isAutoCreateImei,
   description,
   isActived,
   updatedUser,
@@ -61,9 +67,14 @@ export const updateMainGroup = async (
 ) => {
   try {
     const response = await API.put(
-      `mainGroup/update/${mainGroupId}`,
+      `subGroup/update/${subGroupId}`,
       {
-        mainGroupName: mainGroupName,
+        subGroupName: subGroupName,
+        mainGroupId: mainGroupId,
+        isRequestImei: isRequestImei,
+        isCheckStockQuantity: isCheckStockQuantity,
+        isCanReturnOutput: isCanReturnOutput,
+        isAutoCreateImei: isAutoCreateImei,
         description: description,
         isActived: isActived,
         updatedUser: updatedUser,
@@ -80,9 +91,9 @@ export const updateMainGroup = async (
     return err;
   }
 };
-export const deleteMainGroup = async (mainGroupId) => {
+export const deleteSubGroup = async (subGroupId) => {
   try {
-    const response = await API.put(`mainGroup/delete/${mainGroupId}`, {
+    const response = await API.put(`subGroup/delete/${subGroupId}`, {
       headers: {
         "Content-Type": "application/json",
       },
