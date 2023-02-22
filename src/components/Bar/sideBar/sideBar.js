@@ -1,84 +1,29 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useMediaQuery } from "react-responsive";
-import { Link } from "react-router-dom";
-import * as FaIcons from "react-icons/fa";
-import * as AiIcons from "react-icons/ai";
-import { SidebarData } from "./sideBarData";
+
 import NavDropdown from "react-bootstrap/NavDropdown";
 import { declareData, locationData, deliveryData } from "./declare/declareData";
-import SubMenu from "./subMenu";
+
 import { IconContext } from "react-icons/lib";
 import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+
 import "./sideBar.css";
-import { RingLoader, CircleLoader } from "react-spinners";
-import Backdrop from "@mui/material/Backdrop";
-import { makeStyles } from "@material-ui/core/styles";
 
 const Nav = styled.div`
-  background: #363636;
+  background: #efdecd;
   height: 80px;
   display: flex;
   ${"" /* justify-content: flex-start; */}
   align-items: center;
 `;
-const Nav1 = styled.div`
-  background: #15171c;
-  height: 40px;
-  display: flex;
-  ${"" /* justify-content: flex-start; */}
-  align-items: center;
-  margin-top: 1px;
-`;
 
-const NavIcon = styled(Link)`
-  margin-left: 2rem;
-  font-size: 2rem;
-  height: 80px;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-`;
-
-const SidebarNav = styled.nav`
-  background: #363636;
-  width: 250px;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  position: fixed;
-  top: 0;
-  left: ${({ sidebar }) => (sidebar ? "0" : "-100%")};
-  transition: 350ms;
-  z-index: 10;
-`;
-
-const SidebarWrap = styled.div`
-  width: 100%;
-  overflow-y: scroll;
-`;
-const useStyles = makeStyles((theme) => ({
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: "#fff",
-  },
-}));
 const Sidebar = () => {
   const [sidebar, setSidebar] = useState(false);
-  const isBigScreen = useMediaQuery({ query: "(min-width: 1824px)" });
-  //   const showSidebar = () => setSidebar(!sidebar);
-  const navigate = useNavigate();
-  const location = useLocation();
-  let [loading, setLoading] = useState(false);
-  const classes = useStyles();
 
-  const showSidebar = () => {
-    if (accessToken != null) {
-      setSidebar(!sidebar);
-    }
-  };
-  let userId = localStorage.getItem("userId");
+  const navigate = useNavigate();
+
+  let [loading, setLoading] = useState(false);
+
   let accessToken = localStorage.getItem("accessToken");
   let email = localStorage.getItem("email");
   let name = "Administrator";
@@ -133,12 +78,12 @@ const Sidebar = () => {
   const NavBarSet = () => {
     if (accessToken != null) {
       return (
-        <div className="d-flex align-items-center">
+        <div className="d-flex">
           <div className="marginNav">
             <NavDropdown
               title="Sản phẩm"
               id="basic-nav-dropdown"
-              menuVariant="dark"
+              menuVariant="light"
             >
               {declareData.map(({ path, title }, index) => {
                 return (
@@ -153,7 +98,7 @@ const Sidebar = () => {
             <NavDropdown
               title="Giao hàng"
               id="basic-nav-dropdown"
-              menuVariant="dark"
+              menuVariant="light"
             >
               {deliveryData.map(({ path, title }, index) => {
                 return (
@@ -168,7 +113,7 @@ const Sidebar = () => {
             <NavDropdown
               title="Dia chi"
               id="basic-nav-dropdown"
-              menuVariant="dark"
+              menuVariant="light"
             >
               {locationData.map(({ path, title }, index) => {
                 return (
@@ -183,7 +128,7 @@ const Sidebar = () => {
             <NavDropdown
               title="Bao cao"
               id="basic-nav-dropdown"
-              menuVariant="dark"
+              menuVariant="light"
             >
               <NavDropdown.Item href="/province">
                 Khai báo Tỉnh/ Thành phố
@@ -208,23 +153,22 @@ const Sidebar = () => {
       <IconContext.Provider value={{ color: "#fff" }}>
         <Nav className="d-flex justify-content-between  sticky-top">
           <div className="d-flex align-items-center">
-            <NavIcon to="#">
-              <FaIcons.FaBars onClick={showSidebar} />
-            </NavIcon>
-            <div onClick={Dashboard} className="Dashboard">
-              <img
-                src={require("../../../assets/shopee.png")}
-                alt="Error"
-                width={100}
-                height={70}
-                style={{
-                  marginLeft: "20px",
-                  zIndex: 50,
-                }}
-              />
+            <div className="d-flex align-items-center">
+              <div onClick={Dashboard} className="Dashboard">
+                <img
+                  src={require("../../../assets/shopee.png")}
+                  alt="Error"
+                  width={100}
+                  height={70}
+                  style={{
+                    marginLeft: "20px",
+                    zIndex: 50,
+                  }}
+                />
+              </div>
             </div>
+            <div style={{ marginLeft: 50 }}>{NavBarSet()}</div>
           </div>
-          <div>{NavBarSet()}</div>
           <div className="ms-1">
             <NavDropdown
               title={name}
@@ -243,17 +187,6 @@ const Sidebar = () => {
             </NavDropdown>
           </div>
         </Nav>
-
-        <SidebarNav sidebar={sidebar}>
-          <SidebarWrap>
-            <NavIcon to="#">
-              {/* <AiIcons.AiOutlineClose onClick={showSidebar} /> */}
-            </NavIcon>
-            {SidebarData.map((item, index) => {
-              return <SubMenu item={item} key={index} />;
-            })}
-          </SidebarWrap>
-        </SidebarNav>
       </IconContext.Provider>
     </>
   );
