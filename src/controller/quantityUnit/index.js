@@ -1,7 +1,7 @@
 import API from "../../server/APIConfig";
-export const getAllBrand = async (keyWord, fromDate, toDate) => {
+export const getAllQuantityUnit = async () => {
   try {
-    const response = await API.get("brand/get-all", {
+    const response = await API.get("quantity-unit/get-all", {
       headers: {
         "Content-Type": "application/json",
       },
@@ -11,21 +11,21 @@ export const getAllBrand = async (keyWord, fromDate, toDate) => {
     return err;
   }
 };
-export const addNewBrand = async (
+
+export const addNewQuantityUnit = async (
   userLogin,
-  brandName,
-  brandDescription,
-  isActived
+  quantityUnitName,
+  description
 ) => {
   try {
     const response = await API.post(
-      "brand/add-new-brand",
+      "quantity-unit/add-new-quantity-unit",
       {
         userLogin: userLogin,
         data: {
-          brandName: brandName,
-          brandDescription: brandDescription,
-          isActived: isActived,
+          quantityUnitName: quantityUnitName,
+          quantityUnitDescription: description,
+          isActived: 1,
         },
       },
       {
@@ -39,23 +39,23 @@ export const addNewBrand = async (
     return err;
   }
 };
-export const updateBrand = async (
+export const updateQuantityUnit = async (
   userLogin,
-  brandId,
-  brandName,
+  quantityUnitId,
+  quantityUnitName,
   description,
   isActived
 ) => {
   try {
     const response = await API.post(
-      `brand/update-brand`,
+      `quantity-unit/update-quantity-unit`,
       {
         userLogin: userLogin,
         data: {
-          brandId: brandId,
+          quantityUnitId: quantityUnitId,
           updateData: {
-            brandName: brandName,
-            brandDescription: description,
+            quantityUnitName: quantityUnitName,
+            quantityUnitDescription: description,
             isActived: isActived,
             isDeleted: 0,
           },
@@ -72,17 +72,17 @@ export const updateBrand = async (
     return err;
   }
 };
-export const deleteBrand = async (userLogin, brandId) => {
+export const deleteQuantityUnit = async (userLogin, quantityUnitId) => {
   try {
     const response = await API.post(
-      `brand/update-brand`,
+      `quantity-unit/update-quantity-unit`,
       {
         userLogin: userLogin,
         data: {
-          brandId: brandId,
+          quantityUnitId: quantityUnitId,
           updateData: {
-            brandName: null,
-            brandDescription: null,
+            quantityUnitName: null,
+            quantityUnitDescription: null,
             isActived: null,
             isDeleted: 1,
           },

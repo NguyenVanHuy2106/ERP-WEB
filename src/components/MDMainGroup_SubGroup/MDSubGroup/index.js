@@ -3,7 +3,7 @@ import React, { useState, useEffect, useStyle, useMemo } from "react";
 import dayjs from "dayjs";
 import { RingLoader, CircleLoader } from "react-spinners";
 import { TextField } from "@mui/material";
-import "./css/mainGroup.css";
+import "./css/subGroup.css";
 import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -18,21 +18,24 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import Switch from "react-switch";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import NativeSelect from "@mui/material/NativeSelect";
 
 import {
-  addNewMainGroup,
+  getAllSubGroup,
+  addNewSubGroup,
+  updateSubGroup,
+  deleteSubGroup,
+} from "../../../controller/subGroup";
+import {
   getAllMainGroup,
-  updateMainGroup,
-  deleteMainGroup,
-} from "../../controller/mainGroupController";
+  getMainGroupById,
+} from "../../../controller/mainGroupController";
 
-import {
-  getAll,
-  addNew,
-  update,
-  deleteAPI,
-} from "../../controller/modelController";
-import PaginationShop from "../shops/paginationShopList";
+import PaginationShop from "../../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -49,60 +52,125 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-function MainGroup({ route, navigate }) {
+function MDSubGroup({ route, navigate }) {
   const classes = useStyles();
   const [tFValue, setTFValue] = useState("");
-  const [tFMainGroupValue, setTFMainGroupValue] = useState("");
+  const [tFSubGroupValue, setTFSubGroupValue] = useState("");
   const [tFDesValue, setTFDesValue] = useState("");
-  const [tFMainGroupEditValue, setTFMainGroupEditValue] = useState("");
+  //const [tFMainGroupEditValue, setTFSubGroupEditValue] = useState("");
   const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [mainGroupIdEditValue, setMainGroupIdEditValue] = useState("");
+  const [mainGroupEditValue, setMainGroupEditValue] = useState("");
   const [isActived, setIsActived] = useState(false);
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
-  const [mainGroupData, setMainGroupData] = useState([]);
+  const [subGroupData, setSubGroupData] = useState([]);
   //const [valueCatData, setValueCatData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
   const [openModal, setOpenModal] = React.useState(false);
   const [openModalEdit, setOpenModalEdit] = React.useState(false);
-  const handleOpenModalEdit = () => setOpenModalEdit(true);
+  const [mainGroupSelect, setMainGroupSelect] = React.useState("");
+  const [mainGroupSelectEdit, setMainGroupSelectEdit] = React.useState("");
+  const [mainGroupData, setMainGroupData] = useState([]);
+  const [tFSubGroupEditValue, setTFSubGroupEditValue] = React.useState("");
+  const [subGroupIdValueEdit, setSubGroupIdValueEdit] = React.useState("");
+  const [tFDesValueEdit, setTFDesValueEdit] = React.useState("");
+  const handleChangeSelect = (event) => {
+    setMainGroupSelect(event.target.value);
+  };
+  const handleChangeSelectEdit = (event) => {
+    setMainGroupSelectEdit(event.target.value);
+  };
+  const handleOpenModalEdit = () => {
+    setOpenModalEdit(true);
+    HandleGetMainGroup();
+  };
   const handleCloseModalEdit = () => {
     setOpenModalEdit(false);
   };
-  const handleOpenModal = () => setOpenModal(true);
+  const handleOpenModal = () => {
+    setOpenModal(true);
+    HandleGetMainGroup();
+  };
   const handleCloseModal = () => {
     setOpenModal(false);
     setIsError(false);
     setError("");
+    setMainGroupSelect("");
   };
   const [checked, setChecked] = React.useState(true);
-  const [editChecked, setEditChecked] = React.useState(true);
+  const [checkedIMEI, setCheckedIMEI] = React.useState(true);
+  const [checkedStock, setCheckedStock] = React.useState(true);
+  const [isCanReturnOutput, setIsCanReturnOutput] = React.useState(true);
+  const [isAutoCreateIMEI, setIsAutoCreateIMEI] = React.useState(true);
+
   const [error, setError] = React.useState("");
+
+  const [checkedActiveEdit, setCheckedActivedEdit] = React.useState(true);
+  const [checkedIMEIEdit, setCheckedIMEIEdit] = React.useState(true);
+  const [checkedStockEdit, setCheckedStockEdit] = React.useState(true);
+  const [isCanReturnOutputEdit, setIsCanReturnOutputEdit] =
+    React.useState(true);
+  const [isAutoCreateIMEIEdit, setIsAutoCreateIMEIEdit] = React.useState(true);
+
   const [isError, setIsError] = useState(false);
-  // const handleEditcheck = (event) => {
-  //   setEditChecked(event.target.checked);
-  // };
+
+  let userId = localStorage.getItem("userId");
+
   const handleEditcheck = (event) => {
     setIsActived(event.target.checked);
   };
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
+  const handleChangeActiveEdit = (event) => {
+    setCheckedActivedEdit(event.target.checked);
+  };
+
+  const handleChangeIMEI = (event) => {
+    setCheckedIMEI(event.target.checked);
+  };
+  const handleChangeIMEIEdit = (event) => {
+    setCheckedIMEIEdit(event.target.checked);
+  };
+  const handleChangeStock = (event) => {
+    setCheckedStock(event.target.checked);
+  };
+  const handleChangeStockEdit = (event) => {
+    setCheckedStockEdit(event.target.checked);
+  };
+  const handleChangeReturnOutput = (event) => {
+    setIsCanReturnOutput(event.target.checked);
+  };
+  const handleChangeReturnOutputEdit = (event) => {
+    setIsCanReturnOutputEdit(event.target.checked);
+  };
+  const handleChangeAutoCreateIMEI = (event) => {
+    setIsAutoCreateIMEI(event.target.checked);
+  };
+  const handleChangeAutoCreateIMEIEdit = (event) => {
+    setIsAutoCreateIMEIEdit(event.target.checked);
+  };
   const handleAgrre = async () => {
-    if (tFMainGroupValue.length === 0) {
+    if (tFSubGroupValue.length === 0) {
       setError("Vui long nhap ten danh muc");
       setIsError(true);
     } else {
       handleCloseModal();
       setLoading(false);
-      const result = await addNewMainGroup(tFMainGroupValue, tFDesValue, 1);
+      const result = await addNewSubGroup(
+        userId,
+        tFSubGroupValue,
+        mainGroupSelect,
+        tFDesValue
+      );
       if (result.status === 200) {
         setLoading(true);
         HandleClick();
         setError("");
-        setTFMainGroupValue("");
+        setTFSubGroupValue("");
+        setMainGroupSelect("");
       }
     }
   };
@@ -125,11 +193,19 @@ function MainGroup({ route, navigate }) {
     const fromDate = valueFromDate.format("YYYY-MM-DD");
     const toDate = valueToDate.format("YYYY-MM-DD");
     //console.log(tFValue, fromDate, toDate);
-    const result = await getAllMainGroup(tFValue, fromDate, toDate);
+    const result = await getAllSubGroup();
+    if (result.status === 200) {
+      //console.log(result.data);
+      setSubGroupData(result.data.data.subgroups);
+      setLoading(true);
+    }
+  };
+  const HandleGetMainGroup = async () => {
+    const result = await getAllMainGroup();
     if (result.status === 200) {
       //console.log(result.data.ResultObject);
-      setMainGroupData(result.data.ResultObject.mainGroupList);
-      setLoading(true);
+      setMainGroupData(result.data.data.maingroups);
+      //console.log(result.data.ResultObject.mainGroupList);
     }
   };
   const CheckActive = (isActive) => {
@@ -137,10 +213,10 @@ function MainGroup({ route, navigate }) {
       return <AiOutlineCheck />;
     }
   };
-  const handleDeleteMainGroup = async (item) => {
+  const handleDeleteSubGroup = async (item) => {
     //console.log(item.MODELID);
     setLoading(false);
-    const result = await deleteMainGroup(item.MAINGROUPID);
+    const result = await deleteSubGroup(userId, item.subgroupId);
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
@@ -154,17 +230,19 @@ function MainGroup({ route, navigate }) {
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = mainGroupData.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = subGroupData.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleEditClick = (item) => {
-    setTFMainGroupEditValue(item.MAINGROUPNAME);
-    setTFDesEditValue(item.DESCRIPTION);
+    setTFSubGroupEditValue(item.subgroupName);
+    setTFDesEditValue(item.subgroupDescription);
 
-    setMainGroupIdEditValue(item.MAINGROUPID);
-    if (item.ISACTIVED == 1) setIsActived(true);
+    setMainGroupSelectEdit(item.maingroupId);
+
+    setSubGroupIdValueEdit(item.subgroupId);
+    if (item.isActived === 1) setCheckedActivedEdit(true);
     else {
-      setIsActived(false);
+      setCheckedActivedEdit(false);
     }
 
     handleOpenModalEdit();
@@ -174,30 +252,36 @@ function MainGroup({ route, navigate }) {
 
     handleCloseModalEdit();
     setLoading(false);
-    const result = await updateMainGroup(
-      mainGroupIdEditValue,
-      tFMainGroupEditValue,
+    const result = await updateSubGroup(
+      userId,
+      subGroupIdValueEdit,
+      tFSubGroupEditValue,
+      mainGroupSelectEdit,
       tFDesEditValue,
-      isActived,
-      1,
-      toDate
+      checkedActiveEdit
     );
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
     }
   };
+  // const getMainGroupName = async (item) => {
+  //   const result = await getMainGroupById(userId, item);
+  //   if (result.status === 200) {
+  //     return <td>{result.data.data.maingroups.maingroupName}</td>;
+  //   }
+  // };
 
   return (
     <div className="searchMargin-container" style={{ marginTop: "20px" }}>
       <div>
-        <div
+        {/* <div
           className="d-flex border mt-3 containerBtn align-items-center"
           style={{ marginBottom: "10px" }}
         >
-          <div className="titlePage ">KHAI BÁO NGÀNH HÀNG SẢN PHẨM</div>
-        </div>
-        <div className="d-flex justify-content-start  border search align-items-center">
+          <div className="titlePage ">KHAI BÁO NHÓM HÀNG SẢN PHẨM</div>
+        </div> */}
+        {/* <div className="d-flex justify-content-start  border search align-items-center">
           <div className="searchMargin">
             <TextField
               id="outlined-basic"
@@ -247,7 +331,7 @@ function MainGroup({ route, navigate }) {
               Tim kiem
             </Button>
           </div>
-        </div>
+        </div> */}
         <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
           <div className="plus">
             <Button variant="contained" onClick={handleOpenModal}>
@@ -261,9 +345,10 @@ function MainGroup({ route, navigate }) {
             <table className="table mt-2 table-margin border">
               <thead>
                 <tr className="backgroundTable">
-                  <th scope="col">Mã model</th>
-                  <th scope="col">Tên model</th>
-                  <th scope="col">Kich hoat</th>
+                  <th scope="col">Mã nhóm hàng</th>
+                  <th scope="col">Tên nhóm hàng</th>
+                  <th scope="col">Ngành hàng</th>
+                  <th scope="col">Kích hoạt</th>
                   <th scope="col">Ngay tao</th>
                   <th scope="col">Nguoi tao</th>
                   <th scope="col">Tac vu</th>
@@ -272,12 +357,13 @@ function MainGroup({ route, navigate }) {
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
-                    <th scope="item">{item.MAINGROUPID}</th>
-                    <td>{item.MAINGROUPNAME}</td>
-
-                    <td>{CheckActive(item.ISACTIVED)}</td>
-                    <td>{new Date(item.CREATEDDATE).toLocaleDateString()}</td>
-                    <td>{item.CREATEDUSER}</td>
+                    <th scope="item">{item.subgroupId}</th>
+                    <td>{item.subgroupName}</td>
+                    <td>{item.maingroupId}</td>
+                    {/* <td>{item.MAINGROUPID + "-" + item.MAINGROUPNAME}</td> */}
+                    <td>{CheckActive(item.isActived)}</td>
+                    <td>{new Date(item.createdDate).toLocaleDateString()}</td>
+                    <td>{item.createdUser}</td>
                     <td>
                       <FiEdit
                         className="edit"
@@ -287,7 +373,7 @@ function MainGroup({ route, navigate }) {
                       <FiTrash
                         className="delete"
                         size={20}
-                        onClick={() => handleDeleteMainGroup(item)}
+                        onClick={() => handleDeleteSubGroup(item)}
                       />
                     </td>
                   </tr>
@@ -298,7 +384,7 @@ function MainGroup({ route, navigate }) {
           <div className="d-flex justify-content-center">
             <PaginationShop
               postsPerPage={postsPerPage}
-              totalPosts={mainGroupData.length}
+              totalPosts={subGroupData.length}
               paginate={paginate}
             />
           </div>
@@ -315,7 +401,7 @@ function MainGroup({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">Thêm mới ngành hàng</div>
+            <div className="border-bottom fw-bold">Thêm mới nhóm hàng</div>
             <div
               className="d-flex align-items-center flex-column"
               style={{ marginTop: 20 }}
@@ -323,35 +409,107 @@ function MainGroup({ route, navigate }) {
               <TextField
                 required
                 id="outlined-basic"
-                label="Tên ngành hàng"
+                label="Tên nhóm hàng"
                 variant="outlined"
                 size="small"
                 style={{ width: "90%" }}
                 onChange={(newValue) =>
-                  setTFMainGroupValue(newValue.target.value)
+                  setTFSubGroupValue(newValue.target.value)
                 }
                 helperText={error}
                 error={isError}
               />
-
+              <FormControl
+                sx={{ m: 1, width: "90%", marginTop: 1 }}
+                size="small"
+              >
+                <InputLabel id="demo-select-small">Ngành hàng</InputLabel>
+                <Select
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  value={mainGroupSelect}
+                  label="Ngành hàng"
+                  onChange={handleChangeSelect}
+                >
+                  <MenuItem value="">
+                    <em>---Chọn ngành hàng---</em>
+                  </MenuItem>
+                  {mainGroupData.map((item, index) => (
+                    <MenuItem key={item.maingroupId} value={item.maingroupId}>
+                      {item.maingroupId + " - " + item.maingroupName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <TextField
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
                 maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                style={{ width: "90%", marginTop: 5 }}
                 onChange={(newValue) => setTFDesValue(newValue.target.value)}
               />
             </div>
             <div style={{ marginTop: 10, marginLeft: 37 }}>
-              Kích hoạt{" "}
-              <Checkbox
-                disabled
-                checked={checked}
-                onChange={handleChange}
-                inputProps={{ "aria-label": "controlled" }}
-              />
+              <div className="row">
+                <div className="col-3 d-flex align-items-center">
+                  Kích hoạt{" "}
+                </div>
+                <Checkbox
+                  className="col-1"
+                  disabled
+                  checked={checked}
+                  onChange={handleChange}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div>
+              {/* <div className="row">
+                <div className="col-3 d-flex align-items-center">
+                  Có yêu cầu IMEI{" "}
+                </div>
+                <Checkbox
+                  className="col-1"
+                  checked={checkedIMEI}
+                  onChange={handleChangeIMEI}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div> */}
             </div>
+            {/* <div style={{ marginLeft: 37 }}>
+              <div className="row">
+                <div className="col-3 d-flex align-items-center">
+                  Có kiểm tra tồn{" "}
+                </div>
+                <Checkbox
+                  className="col-1"
+                  checked={checkedStock}
+                  onChange={handleChangeStock}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div>
+              <div className="row">
+                <div className="col-3 d-flex align-items-center">
+                  Cho phép nhập trả{" "}
+                </div>
+                <Checkbox
+                  className="col-1"
+                  checked={isCanReturnOutput}
+                  onChange={handleChangeReturnOutput}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div>
+              <div className="row">
+                <div className="col-3 d-flex align-items-center">
+                  Tự động sinh IMEI{" "}
+                </div>
+                <Checkbox
+                  className="col-1"
+                  checked={isAutoCreateIMEI}
+                  onChange={handleChangeAutoCreateIMEI}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div>
+            </div> */}
             <div
               className="d-flex justify-content-center"
               style={{ marginTop: 20 }}
@@ -376,7 +534,7 @@ function MainGroup({ route, navigate }) {
         >
           <Box sx={style}>
             <div className="border-bottom fw-bold">
-              Chỉnh sửa Model sản phẩm
+              Chỉnh sửa nhóm hàng sản phẩm
             </div>
             <div
               className="d-flex align-items-center flex-column"
@@ -385,34 +543,64 @@ function MainGroup({ route, navigate }) {
               <TextField
                 required
                 id="outlined-basic"
-                label="Tên ngành hàng"
+                label="Tên nhóm hàng"
                 variant="outlined"
                 size="small"
                 style={{ width: "90%" }}
-                value={tFMainGroupEditValue}
-                onChange={(value) =>
-                  setTFMainGroupEditValue(value.target.value)
+                value={tFSubGroupEditValue}
+                onChange={(newValue) =>
+                  setTFSubGroupEditValue(newValue.target.value)
                 }
+                helperText={error}
+                error={isError}
               />
-
+              <FormControl
+                sx={{ m: 1, width: "90%", marginTop: 1 }}
+                size="small"
+              >
+                {/* <InputLabel id="demo-select-small">Ngành hàng</InputLabel> */}
+                <NativeSelect
+                  value={mainGroupSelectEdit}
+                  className="border-top border-start border-end rounded "
+                  style={{ height: 40, paddingLeft: 10 }}
+                  inputProps={{
+                    name: "age",
+                  }}
+                  onChange={handleChangeSelectEdit}
+                >
+                  {mainGroupData.map((item) => (
+                    <option key={item.maingroupId} value={item.maingroupId}>
+                      {item.maingroupId + " - " + item.maingroupName}
+                    </option>
+                  ))}
+                </NativeSelect>
+              </FormControl>
               <TextField
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
                 maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                style={{ width: "90%", marginTop: 5 }}
                 value={tFDesEditValue}
-                onChange={(value) => setTFDesEditValue(value.target.value)}
+                onChange={(newValue) =>
+                  setTFDesEditValue(newValue.target.value)
+                }
               />
             </div>
             <div style={{ marginTop: 10, marginLeft: 37 }}>
-              Kích hoạt{" "}
-              <Checkbox
-                checked={isActived}
-                onChange={handleEditcheck}
-                inputProps={{ "aria-label": "controlled" }}
-              />
+              <div className="row">
+                <div className="col-3 d-flex align-items-center">
+                  Kích hoạt{" "}
+                </div>
+                <Checkbox
+                  className="col-1"
+                  checked={checkedActiveEdit}
+                  onChange={handleChangeActiveEdit}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div>
             </div>
+
             <div
               className="d-flex justify-content-center"
               style={{ marginTop: 20 }}
@@ -443,4 +631,4 @@ function MainGroup({ route, navigate }) {
     </div>
   );
 }
-export default MainGroup;
+export default MDSubGroup;

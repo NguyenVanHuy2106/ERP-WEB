@@ -4,32 +4,27 @@ import dayjs from "dayjs";
 import { RingLoader, CircleLoader } from "react-spinners";
 import { TextField } from "@mui/material";
 import "./css/deliveryType.css";
-import Stack from "@mui/material/Stack";
+// import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+// import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
 import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
+// import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
-import Switch from "react-switch";
+// import Switch from "react-switch";
 import {
   getAllDeliveryType,
   addNewDeliveryType,
   updateDeliveryType,
   deleteDeliveryType,
 } from "../../controller/deliveryTypeController";
-import {
-  getAllCategoryAPI,
-  addNewCategoryAPI,
-  updateDetailCategoryAPI,
-  deleteCategoryAPI,
-} from "../../controller/Category/CategoryController";
+
 import PaginationShop from "../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -47,9 +42,9 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-function DeliveryType({ route, navigate }) {
+function MDDeliveryType({ route, navigate }) {
   const classes = useStyles();
-  const [tFValue, setTFValue] = useState("");
+  // const [tFValue, setTFValue] = useState("");
   const [tFDeliveryTypeValue, setTFDeliveryTypeValue] = useState("");
   const [tFDesValue, setTFDesValue] = useState("");
   const [tFDeliveryTypeEditValue, setTFDeliveryTypeEditValue] = useState("");
@@ -75,12 +70,11 @@ function DeliveryType({ route, navigate }) {
     setError("");
   };
   const [checked, setChecked] = React.useState(true);
-  const [editChecked, setEditChecked] = React.useState(true);
+  // const [editChecked, setEditChecked] = React.useState(true);
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
-  // const handleEditcheck = (event) => {
-  //   setEditChecked(event.target.checked);
-  // };
+  let userId = localStorage.getItem("userId");
+
   const handleEditcheck = (event) => {
     setIsActived(event.target.checked);
   };
@@ -95,6 +89,7 @@ function DeliveryType({ route, navigate }) {
       handleCloseModal();
       setLoading(false);
       const result = await addNewDeliveryType(
+        userId,
         tFDeliveryTypeValue,
         tFDesValue,
         1
@@ -119,17 +114,17 @@ function DeliveryType({ route, navigate }) {
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
-    }, 1000);
+    }, 2000);
   };
   const HandleClick = async () => {
     setLoading(false);
     const fromDate = valueFromDate.format("YYYY-MM-DD");
     const toDate = valueToDate.format("YYYY-MM-DD");
     //console.log(tFValue, fromDate, toDate);
-    const result = await getAllDeliveryType(tFValue, fromDate, toDate);
+    const result = await getAllDeliveryType();
     if (result.status === 200) {
       //console.log(result.data.ResultObject.CategoryList);
-      setDeliveryTypeData(result.data.ResultObject.deliveryTypeList);
+      setDeliveryTypeData(result.data.data.deliveryTypes);
       setLoading(true);
     }
   };
@@ -140,7 +135,7 @@ function DeliveryType({ route, navigate }) {
   };
   const handleDeleteDeliveryType = async (item) => {
     setLoading(false);
-    const result = await deleteDeliveryType(item.DELIVERYTYPEID);
+    const result = await deleteDeliveryType(userId, item.deliveryTypeId);
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
@@ -161,10 +156,10 @@ function DeliveryType({ route, navigate }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleEditClick = (item) => {
-    setTFDeliveryTypeEditValue(item.DELIVERYTYPENAME);
-    setTFDesEditValue(item.DESCRIPTION);
-    setDeliveryTypeIdEditValue(item.DELIVERYTYPEID);
-    if (item.ISACTIVED == 1) setIsActived(true);
+    setTFDeliveryTypeEditValue(item.deliveryTypeName);
+    setTFDesEditValue(item.deliveryTypeDescription);
+    setDeliveryTypeIdEditValue(item.deliveryTypeId);
+    if (item.isActived == 1) setIsActived(true);
     else {
       setIsActived(false);
     }
@@ -180,9 +175,7 @@ function DeliveryType({ route, navigate }) {
       deliveryTypeIdEditValue,
       tFDeliveryTypeEditValue,
       tFDesEditValue,
-      isActived,
-      1,
-      toDate
+      isActived
     );
     if (result.status === 200) {
       setLoading(true);
@@ -199,57 +192,7 @@ function DeliveryType({ route, navigate }) {
         >
           <div className="titlePage ">KHAI BÁO HÌNH THỨC GIAO HÀNG</div>
         </div>
-        <div className="d-flex justify-content-start  border search align-items-center">
-          <div className="searchMargin">
-            <TextField
-              id="outlined-basic"
-              label="Tu khoa"
-              variant="outlined"
-              size="small"
-              onChange={(newValue) => setTFValue(newValue.target.value)}
-            />
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Từ ngày"
-                  value={valueFromDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueFromDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Đến ngày"
-                  value={valueToDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueToDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <Button variant="contained" onClick={HandleClick}>
-              <AiOutlineSearch size={20} />
-              Tim kiem
-            </Button>
-          </div>
-        </div>
+
         <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
           <div className="plus">
             <Button variant="contained" onClick={handleOpenModal}>
@@ -266,20 +209,20 @@ function DeliveryType({ route, navigate }) {
                   <th scope="col">Mã hình thức</th>
                   <th scope="col">Tên hình thức</th>
                   <th scope="col">Kích hoạt</th>
-                  <th scope="col">Ngay tao</th>
-                  <th scope="col">Nguoi tao</th>
+                  <th scope="col">Ngày tao</th>
+                  <th scope="col">Người tao</th>
                   <th scope="col">Tác vụ</th>
                 </tr>
               </thead>
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
-                    <th scope="item">{item.DELIVERYTYPEID}</th>
-                    <td>{item.DELIVERYTYPENAME}</td>
+                    <th scope="item">{item.deliveryTypeId}</th>
+                    <td>{item.deliveryTypeName}</td>
 
-                    <td>{CheckActive(item.ISACTIVED)}</td>
-                    <td>{new Date(item.CREATEDDATE).toLocaleDateString()}</td>
-                    <td>{item.CREATEDUSER}</td>
+                    <td>{CheckActive(item.isActived)}</td>
+                    <td>{new Date(item.createdDate).toLocaleDateString()}</td>
+                    <td>{item.createdUser}</td>
                     <td>
                       <FiEdit
                         className="edit"
@@ -445,4 +388,4 @@ function DeliveryType({ route, navigate }) {
     </div>
   );
 }
-export default DeliveryType;
+export default MDDeliveryType;

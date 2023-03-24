@@ -12,17 +12,21 @@ import ProductCat from "../components/products/productCat";
 import ShopList from "../components/shops/shopList";
 import Promotion from "../components/promotion/promotion";
 import Model from "../components/model/model";
-import DeliveryType from "../components/deliveryType/deliveryType";
-import Brand from "../components/brand/brand";
-import MainGroup from "../components/mainGroup/mainGroup";
-import SubGroup from "../components/subGroup/subGroup";
+import MDDeliveryType from "../components/MDDeliveryType";
+import MDBrand from "../components/MDBrand";
+// import MainGroup from "../components/MDMainGroup_SubGroup/MDMainGroup";
+// import SubGroup from "../components/subGroup/subGroup";
+import MDQuantityUnit from "../components/MDQuantityUnit";
+import MDStore from "../components/MDStore";
+import MDOutputProduct from "../components/MDOutputProduct";
+import MDMainGroupSubGroup from "../components/MDMainGroup_SubGroup";
 function App() {
   return (
     <BrowserRouter>
       {/* <NavBar /> */}
       <Sidebars />
       <Routes>
-        <Route path="/" element={<DashBoard />} />
+        <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/productCat" element={<ProductCat />} />
         <Route path="/signIn" element={<SignIn />} />
@@ -32,10 +36,14 @@ function App() {
         <Route path="/shopList" element={<ShopList />} />
         <Route path="/promotion" element={<Promotion />} />
         <Route path="/model" element={<Model />} />
-        <Route path="/deliveryType" element={<DeliveryType />} />
-        <Route path="/brand" element={<Brand />} />
-        <Route path="/mainGroup" element={<MainGroup />} />
-        <Route path="/subGroup" element={<SubGroup />} />
+        <Route path="/deliveryType" element={<MDDeliveryType />} />
+        <Route path="/brand" element={<MDBrand />} />
+        {/* <Route path="/mainGroup" element={<MainGroup />} />
+        <Route path="/subGroup" element={<SubGroup />} /> */}
+        <Route path="/quantityUnit" element={<MDQuantityUnit />} />
+        <Route path="/store" element={<MDStore />} />
+        <Route path="/outputProduct" element={<MDOutputProduct />} />
+        <Route path="/mainGroup_subGroup" element={<MDMainGroupSubGroup />} />
       </Routes>
     </BrowserRouter>
   );

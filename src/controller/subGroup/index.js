@@ -1,15 +1,11 @@
 import API from "../../server/APIConfig";
-export const getAllSubGroup = async (keyWord, fromDate, toDate) => {
+export const getAllSubGroup = async () => {
   try {
-    const response = await API.post(
-      "subGroup/getAll",
-      { keyWord: keyWord, fromDate: fromDate, toDate: toDate },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+    const response = await API.get("subgroup/get-all", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
     return response;
   } catch (err) {
     return err;
@@ -17,29 +13,22 @@ export const getAllSubGroup = async (keyWord, fromDate, toDate) => {
 };
 
 export const addNewSubGroup = async (
+  userLogin,
   subGroupName,
   mainGroupId,
-  isRequestImei,
-  isCheckStockQuantity,
-  isCanReturnOutput,
-  image,
-  isAutoCreateImei,
-  description,
-  createdUser
+  description
 ) => {
   try {
     const response = await API.post(
-      "subGroup/addNew",
+      "subgroup/add-new-subgroup",
       {
-        subGroupName: subGroupName,
-        mainGroupId: mainGroupId,
-        isRequestImei: isRequestImei,
-        isCheckStockQuantity: isCheckStockQuantity,
-        isCanReturnOutput: isCanReturnOutput,
-        image: image,
-        isAutoCreateImei: isAutoCreateImei,
-        description: description,
-        createdUser: createdUser,
+        userLogin: userLogin,
+        data: {
+          subgroupName: subGroupName,
+          subgroupDescription: description,
+          maingroupId: mainGroupId,
+          isActived: 1,
+        },
       },
       {
         headers: {
@@ -53,32 +42,28 @@ export const addNewSubGroup = async (
   }
 };
 export const updateSubGroup = async (
+  userLogin,
   subGroupId,
   subGroupName,
   mainGroupId,
-  isRequestImei,
-  isCheckStockQuantity,
-  isCanReturnOutput,
-  isAutoCreateImei,
   description,
-  isActived,
-  updatedUser,
-  updatedDate
+  isActived
 ) => {
   try {
-    const response = await API.put(
-      `subGroup/update/${subGroupId}`,
+    const response = await API.post(
+      `subgroup/update-subgroup`,
       {
-        subGroupName: subGroupName,
-        mainGroupId: mainGroupId,
-        isRequestImei: isRequestImei,
-        isCheckStockQuantity: isCheckStockQuantity,
-        isCanReturnOutput: isCanReturnOutput,
-        isAutoCreateImei: isAutoCreateImei,
-        description: description,
-        isActived: isActived,
-        updatedUser: updatedUser,
-        updatedDate: updatedDate,
+        userLogin: userLogin,
+        data: {
+          subgroupId: subGroupId,
+          updateData: {
+            subgroupName: subGroupName,
+            subgroupDescription: description,
+            maingroupId: mainGroupId,
+            isActived: isActived,
+            isDeleted: 0,
+          },
+        },
       },
       {
         headers: {
@@ -91,13 +76,29 @@ export const updateSubGroup = async (
     return err;
   }
 };
-export const deleteSubGroup = async (subGroupId) => {
+export const deleteSubGroup = async (userLogin, subGroupId) => {
   try {
-    const response = await API.put(`subGroup/delete/${subGroupId}`, {
-      headers: {
-        "Content-Type": "application/json",
+    const response = await API.post(
+      `subgroup/update-subgroup`,
+      {
+        userLogin: userLogin,
+        data: {
+          subgroupId: subGroupId,
+          updateData: {
+            subgroupName: null,
+            subgroupDescription: null,
+            maingroupId: null,
+            isActived: null,
+            isDeleted: 1,
+          },
+        },
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response;
   } catch (err) {
     return err;

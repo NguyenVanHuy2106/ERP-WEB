@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { declareData, locationData, deliveryData } from "./declare/declareData";
+import {
+  declareData,
+  locationData,
+  shipmentOrderData,
+  voucherConcernData,
+} from "./declare/declareData";
 
 import { IconContext } from "react-icons/lib";
 import { useNavigate } from "react-router-dom";
@@ -25,12 +30,12 @@ const Sidebar = () => {
   let [loading, setLoading] = useState(false);
 
   let accessToken = localStorage.getItem("accessToken");
-  let email = localStorage.getItem("email");
+  let username = localStorage.getItem("username");
   let name = "Administrator";
 
   if (accessToken != null) {
     //console.log(accessToken);
-    name = email;
+    name = username;
   } else {
     console.log("Chua dang nhap");
   }
@@ -40,7 +45,7 @@ const Sidebar = () => {
     }
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
-    localStorage.removeItem("email");
+    localStorage.removeItem("username");
     return navigate("/");
     //console.log("dfs");
   };
@@ -57,6 +62,9 @@ const Sidebar = () => {
     if (accessToken != null) {
       return (
         <div>
+          <NavDropdown.Item href="#action/3.2">
+            Cập nhật thông tin cá nhân
+          </NavDropdown.Item>
           <NavDropdown.Divider />
           <div className="d-flex justify-content-center">
             <button
@@ -65,7 +73,7 @@ const Sidebar = () => {
               onClick={logout}
               style={{ background: "#ffffff" }}
             >
-              Logout
+              Đăng xuất
             </button>
           </div>
         </div>
@@ -81,11 +89,11 @@ const Sidebar = () => {
         <div className="d-flex">
           <div className="marginNav">
             <NavDropdown
-              title="Sản phẩm"
+              title="Khai báo"
               id="basic-nav-dropdown"
               menuVariant="light"
             >
-              {declareData.map(({ path, title }, index) => {
+              {declareData.map(({ path, title, data }, index) => {
                 return (
                   <NavDropdown.Item href={path} key={index}>
                     {title}
@@ -96,11 +104,11 @@ const Sidebar = () => {
           </div>
           <div className="marginNav">
             <NavDropdown
-              title="Giao hàng"
+              title="Vận đơn"
               id="basic-nav-dropdown"
               menuVariant="light"
             >
-              {deliveryData.map(({ path, title }, index) => {
+              {shipmentOrderData.map(({ path, title }, index) => {
                 return (
                   <NavDropdown.Item href={path} key={index}>
                     {title}
@@ -126,17 +134,17 @@ const Sidebar = () => {
           </div>
           <div className="marginNav">
             <NavDropdown
-              title="Bao cao"
+              title="Tra cứu"
               id="basic-nav-dropdown"
               menuVariant="light"
             >
-              <NavDropdown.Item href="/province">
-                Khai báo Tỉnh/ Thành phố
-              </NavDropdown.Item>
-              <NavDropdown.Item href="/district">
-                Khai báo Quận/ Huyện
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#">Khai báo Phường/ Xã</NavDropdown.Item>
+              {voucherConcernData.map(({ path, title }, index) => {
+                return (
+                  <NavDropdown.Item href={path} key={index}>
+                    {title}
+                  </NavDropdown.Item>
+                );
+              })}
             </NavDropdown>
           </div>
         </div>
@@ -156,13 +164,12 @@ const Sidebar = () => {
             <div className="d-flex align-items-center">
               <div onClick={Dashboard} className="Dashboard">
                 <img
-                  src={require("../../../assets/shopee.png")}
+                  src={require("../../../assets/erp-logo.png")}
                   alt="Error"
-                  width={100}
-                  height={70}
+                  width={90}
+                  height={60}
                   style={{
-                    marginLeft: "20px",
-                    zIndex: 50,
+                    zIndex: 2,
                   }}
                 />
               </div>
@@ -177,10 +184,7 @@ const Sidebar = () => {
             >
               {BtnLogin()}
               {/* <NavDropdown.Item onClick={login}>Dang nhap</NavDropdown.Item> */}
-              <NavDropdown.Item href="#action/3.2">
-                Another action
-              </NavDropdown.Item>
-              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+
               {BtnLogOut()}
               {/* <NavDropdown.Divider />
               <div className="d-flex justify-content-center">{BtnLogOut()}</div> */}

@@ -1,9 +1,9 @@
 import API from "../../server/APIConfig";
-export const getAllMainGroup = async (keyWord, fromDate, toDate) => {
+export const getAllMainGroup = async () => {
   try {
-    const response = await API.post(
-      "mainGroup/getAll",
-      { keyWord: keyWord, fromDate: fromDate, toDate: toDate },
+    const response = await API.get(
+      "maingroup/get-all",
+
       {
         headers: {
           "Content-Type": "application/json",
@@ -15,30 +15,42 @@ export const getAllMainGroup = async (keyWord, fromDate, toDate) => {
     return err;
   }
 };
-export const getAllMainGroupNoCondition = async () => {
+export const getMainGroupById = async (userLogin, mainGroupId) => {
   try {
-    const response = await API.get("mainGroup/getAllNoCondition", {
-      headers: {
-        "Content-Type": "application/json",
+    const response = await API.get(
+      "maingroup/get-by-id",
+      {
+        userLogin: userLogin,
+        data: {
+          maingroupList: [mainGroupId],
+        },
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response;
   } catch (err) {
     return err;
   }
 };
 export const addNewMainGroup = async (
+  userLogin,
   mainGroupName,
-  description,
-  createdUser
+  description
 ) => {
   try {
     const response = await API.post(
-      "mainGroup/addNew",
+      "maingroup/add-new-maingroup",
       {
-        mainGroupName: mainGroupName,
-        description: description,
-        createdUser: createdUser,
+        userLogin: userLogin,
+        data: {
+          maingroupName: mainGroupName,
+          maingroupDescription: description,
+          isActived: 1,
+        },
       },
       {
         headers: {
@@ -52,22 +64,26 @@ export const addNewMainGroup = async (
   }
 };
 export const updateMainGroup = async (
+  userLogin,
   mainGroupId,
   mainGroupName,
   description,
-  isActived,
-  updatedUser,
-  updatedDate
+  isActived
 ) => {
   try {
-    const response = await API.put(
-      `mainGroup/update/${mainGroupId}`,
+    const response = await API.post(
+      `maingroup/update-maingroup`,
       {
-        mainGroupName: mainGroupName,
-        description: description,
-        isActived: isActived,
-        updatedUser: updatedUser,
-        updatedDate: updatedDate,
+        userLogin: userLogin,
+        data: {
+          maingroupId: mainGroupId,
+          updateData: {
+            maingroupName: mainGroupName,
+            maingroupDescription: description,
+            isActived: isActived,
+            isDeleted: 0,
+          },
+        },
       },
       {
         headers: {
@@ -80,13 +96,28 @@ export const updateMainGroup = async (
     return err;
   }
 };
-export const deleteMainGroup = async (mainGroupId) => {
+export const deleteMainGroup = async (userLogin, mainGroupId) => {
   try {
-    const response = await API.put(`mainGroup/delete/${mainGroupId}`, {
-      headers: {
-        "Content-Type": "application/json",
+    const response = await API.post(
+      `maingroup/update-maingroup`,
+      {
+        userLogin: userLogin,
+        data: {
+          maingroupId: mainGroupId,
+          updateData: {
+            maingroupName: null,
+            maingroupDescription: null,
+            isActived: null,
+            isDeleted: 1,
+          },
+        },
       },
-    });
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response;
   } catch (err) {
     return err;

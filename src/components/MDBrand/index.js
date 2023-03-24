@@ -41,7 +41,7 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-function Model({ route, navigate }) {
+function MDBrand({ route, navigate }) {
   const classes = useStyles();
   const [tFValue, setTFValue] = useState("");
   const [tFBrandValue, setTFBrandValue] = useState("");
@@ -74,9 +74,7 @@ function Model({ route, navigate }) {
   const [editChecked, setEditChecked] = React.useState(true);
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
-  // const handleEditcheck = (event) => {
-  //   setEditChecked(event.target.checked);
-  // };
+  let userId = localStorage.getItem("userId");
   const handleEditcheck = (event) => {
     setIsActived(event.target.checked);
   };
@@ -90,7 +88,7 @@ function Model({ route, navigate }) {
     } else {
       handleCloseModal();
       setLoading(false);
-      const result = await addNewBrand(tFBrandValue, tFDesValue, 1);
+      const result = await addNewBrand(userId, tFBrandValue, tFDesValue, 1);
       if (result.status === 200) {
         setLoading(true);
         HandleClick();
@@ -118,10 +116,9 @@ function Model({ route, navigate }) {
     const fromDate = valueFromDate.format("YYYY-MM-DD");
     const toDate = valueToDate.format("YYYY-MM-DD");
     //console.log(tFValue, fromDate, toDate);
-    const result = await getAllBrand(tFValue, fromDate, toDate);
+    const result = await getAllBrand();
     if (result.status === 200) {
-      //console.log(result.data.ResultObject);
-      setBrandData(result.data.ResultObject.brandList);
+      setBrandData(result.data.data.brands);
       setLoading(true);
     }
   };
@@ -133,7 +130,7 @@ function Model({ route, navigate }) {
   const handleDeleteBrand = async (item) => {
     //console.log(item.MODELID);
     setLoading(false);
-    const result = await deleteBrand(item.BRANDID);
+    const result = await deleteBrand(userId, item.brandId);
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
@@ -151,11 +148,11 @@ function Model({ route, navigate }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleEditClick = (item) => {
-    setTFBrandEditValue(item.BRANDNAME);
-    setTFDesEditValue(item.DESCRIPTION);
-    setBrandIdEditValue(item.BRANDID);
+    setTFBrandEditValue(item.brandName);
+    setTFDesEditValue(item.brandDescription);
+    setBrandIdEditValue(item.brandId);
 
-    if (item.ISACTIVED == 1) setIsActived(true);
+    if (item.isActived === 1) setIsActived(true);
     else {
       setIsActived(false);
     }
@@ -168,12 +165,11 @@ function Model({ route, navigate }) {
     handleCloseModalEdit();
     setLoading(false);
     const result = await updateBrand(
+      userId,
       brandIdEditValue,
       tFBrandEditValue,
       tFDesEditValue,
-      isActived,
-      1,
-      toDate
+      isActived
     );
     if (result.status === 200) {
       setLoading(true);
@@ -190,57 +186,7 @@ function Model({ route, navigate }) {
         >
           <div className="titlePage ">KHAI BÁO THƯƠNG HIỆU SẢN PHẨM</div>
         </div>
-        <div className="d-flex justify-content-start  border search align-items-center">
-          <div className="searchMargin">
-            <TextField
-              id="outlined-basic"
-              label="Tu khoa"
-              variant="outlined"
-              size="small"
-              onChange={(newValue) => setTFValue(newValue.target.value)}
-            />
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Từ ngày"
-                  value={valueFromDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueFromDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Đến ngày"
-                  value={valueToDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueToDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <Button variant="contained" onClick={HandleClick}>
-              <AiOutlineSearch size={20} />
-              Tim kiem
-            </Button>
-          </div>
-        </div>
+
         <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
           <div className="plus">
             <Button variant="contained" onClick={handleOpenModal}>
@@ -266,12 +212,12 @@ function Model({ route, navigate }) {
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
-                    <th scope="item">{item.BRANDID}</th>
-                    <td>{item.BRANDNAME}</td>
+                    <th scope="item">{item.brandId}</th>
+                    <td>{item.brandName}</td>
 
-                    <td>{CheckActive(item.ISACTIVED)}</td>
-                    <td>{new Date(item.CREATEDDATE).toLocaleDateString()}</td>
-                    <td>{item.CREATEDUSER}</td>
+                    <td>{CheckActive(item.isActived)}</td>
+                    <td>{new Date(item.createdDate).toLocaleDateString()}</td>
+                    <td>{item.createdUser}</td>
                     <td>
                       <FiEdit
                         className="edit"
@@ -435,4 +381,4 @@ function Model({ route, navigate }) {
     </div>
   );
 }
-export default Model;
+export default MDBrand;
