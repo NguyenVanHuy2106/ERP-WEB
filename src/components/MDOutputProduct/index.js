@@ -8,7 +8,7 @@ import MDPaymentOrderType from "./MDPaymentOrderType";
 import { RingLoader, CircleLoader } from "react-spinners";
 import Backdrop from "@mui/material/Backdrop";
 import { makeStyles } from "@material-ui/core/styles";
-
+import "./css/index.css";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -28,41 +28,63 @@ function MDOutputProduct() {
     loadingPage();
   }, []);
   return (
-    <div style={{ marginLeft: 10, marginRight: 10 }}>
+    <div style={{ background: "#F5F5F5" }}>
       <div
-        className="d-flex border mt-3 containerBtn align-items-center"
-        style={{ marginBottom: "10px" }}
+        style={{
+          marginLeft: "20px",
+          marginRight: "20px",
+          paddingTop: "20px",
+        }}
       >
-        <div style={{ marginLeft: 20, fontWeight: "bold" }}>
-          KHAI BÁO XUẤT HÀNG
-        </div>
+        <div className="webContainer1 border">Khai báo xuất hàng</div>
+        <Tabs
+          defaultActiveKey="storeType"
+          transition={true}
+          id="noanim-tab-example"
+          className="nav-tabs"
+          style={{ marginTop: "10px" }}
+        >
+          <Tab
+            eventKey="storeType"
+            title="Loại yêu cầu xuất"
+            className="nav-link"
+            style={{ background: "#ffffff", height: "700px" }}
+          >
+            <MDSaleOrderType />
+          </Tab>
+          <Tab
+            eventKey="storeList"
+            title="Hình thức xuất"
+            className="nav-link"
+            style={{ background: "#ffffff", height: "700px" }}
+          >
+            <MDOutputType />
+          </Tab>
+          <Tab
+            eventKey="voucherType"
+            title="Hình thức thu/chi"
+            className="nav-link"
+            style={{ background: "#ffffff", height: "700px" }}
+          >
+            <MDVoucherType />
+          </Tab>
+          <Tab
+            eventKey="paymentOrderType"
+            title="Hình thức thanh toán"
+            className="nav-link"
+            style={{ background: "#ffffff", height: "700px" }}
+          >
+            <MDPaymentOrderType />
+          </Tab>
+        </Tabs>
+        {loading ? (
+          loading
+        ) : (
+          <Backdrop className={classes.backdrop} open>
+            <RingLoader color="#36d7b7" />
+          </Backdrop>
+        )}
       </div>
-      <Tabs
-        defaultActiveKey="storeType"
-        transition={true}
-        id="noanim-tab-example"
-        className="mb-3"
-      >
-        <Tab eventKey="storeType" title="Loại yêu cầu xuất">
-          <MDSaleOrderType />
-        </Tab>
-        <Tab eventKey="storeList" title="Hình thức xuất">
-          <MDOutputType />
-        </Tab>
-        <Tab eventKey="voucherType" title="Hình thức thu/chi">
-          <MDVoucherType />
-        </Tab>
-        <Tab eventKey="paymentOrderType" title="Hình thức thanh toán">
-          <MDPaymentOrderType />
-        </Tab>
-      </Tabs>
-      {loading ? (
-        loading
-      ) : (
-        <Backdrop className={classes.backdrop} open>
-          <RingLoader color="#36d7b7" />
-        </Backdrop>
-      )}
     </div>
   );
 }

@@ -193,14 +193,16 @@ function MDQuantityUnit({ route, navigate }) {
   };
 
   return (
-    <div className="searchMargin-container" style={{ marginTop: "20px" }}>
-      <div>
-        <div
-          className="d-flex border mt-3 containerBtn align-items-center"
-          style={{ marginBottom: "10px" }}
-        >
-          <div className="titlePage ">KHAI BAO DANH SÁCH ĐƠN VỊ SẢN PHẨM</div>
-        </div>
+    <div
+      style={{
+        background: "#F5F5F5",
+        height: "900px",
+      }}
+    >
+      <div
+        style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
+      >
+        <div className="webContainer1 border">Khai báo đơn vị sản phẩm</div>
 
         <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
           <div className="plus">
@@ -210,11 +212,11 @@ function MDQuantityUnit({ route, navigate }) {
           </div>
         </div>
 
-        <div className="border border-top-0">
+        <div className="border border-top-0" style={{ background: "#FFFFFF" }}>
           <div className="d-flex">
             <table className="table mt-2 table-margin border">
               <thead>
-                <tr className="backgroundTable">
+                <tr style={{ background: "#e5e4e2" }}>
                   <th scope="col">Mã đơn vị</th>
                   <th scope="col">Tên đơn vị</th>
 
@@ -259,9 +261,9 @@ function MDQuantityUnit({ route, navigate }) {
           </div>
         </div>
 
-        <div className="d-flex  align-items-center justify-content-end">
+        {/* <div className="d-flex  align-items-center justify-content-end">
           <div className="plus">CopyRight</div>
-        </div>
+        </div> */}
       </div>
       <div>
         <Modal

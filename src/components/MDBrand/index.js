@@ -178,14 +178,16 @@ function MDBrand({ route, navigate }) {
   };
 
   return (
-    <div className="searchMargin-container" style={{ marginTop: "20px" }}>
-      <div>
-        <div
-          className="d-flex border mt-3 containerBtn align-items-center"
-          style={{ marginBottom: "10px" }}
-        >
-          <div className="titlePage ">KHAI BÁO THƯƠNG HIỆU SẢN PHẨM</div>
-        </div>
+    <div
+      style={{
+        background: "#F5F5F5",
+        height: "900px",
+      }}
+    >
+      <div
+        style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
+      >
+        <div className="webContainer1 border">Khai báo thương hiệu</div>
 
         <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
           <div className="plus">
@@ -195,11 +197,11 @@ function MDBrand({ route, navigate }) {
           </div>
         </div>
 
-        <div className="border border-top-0">
+        <div className="border border-top-0" style={{ background: "#ffffff" }}>
           <div className="d-flex">
             <table className="table mt-2 table-margin border">
               <thead>
-                <tr className="backgroundTable">
+                <tr style={{ background: "#e5e4e2" }}>
                   <th scope="col">Mã thương hiệu</th>
                   <th scope="col">Tên thương hiệu</th>
 
@@ -242,10 +244,6 @@ function MDBrand({ route, navigate }) {
               paginate={paginate}
             />
           </div>
-        </div>
-
-        <div className="d-flex  align-items-center justify-content-end">
-          <div className="plus">CopyRight</div>
         </div>
       </div>
       <div>
@@ -316,7 +314,7 @@ function MDBrand({ route, navigate }) {
         >
           <Box sx={style}>
             <div className="border-bottom fw-bold">
-              Chỉnh sửa Model sản phẩm
+              Chỉnh sửa thương hiệu sản phẩm
             </div>
             <div
               className="d-flex align-items-center flex-column"

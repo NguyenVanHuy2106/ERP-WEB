@@ -1,7 +1,7 @@
 
 .searchMargin-container{
-    margin-left: 50px;
-    margin-right: 50px;
+    margin-left: 10px;
+    margin-right: 10px;
     
 }
 .search{
@@ -15,9 +15,10 @@
 }
 .containerBtn{
     height: 50px;
+    background-color: #ffffff;
 }
 .backgroundTable{
-    background-color: bisque;
+    background: #e5e4e2;
 }
 .table-margin{
     margin-left: 25px;
@@ -38,3 +39,33 @@
     margin-left: 30px;
     font-weight: bold;
 }
+.webContainer1{
+    background-color: #ffffff;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+ }
+ .storeType:hover{
+    background-color: #ffffff;
+ }
+
+
+ /* //////// */
+ .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
+    background-color: #fff; /* Màu nền cho tab được chọn */
+    border: none !important;
+    color: #000000;
+}
+
+.nav-tabs .nav-link:hover {
+    background-color: #ffffff; /* Màu nền khi hover trên tab */
+}
+.nav-tabs .nav-link:hover {
+    background-color: #e5e4e2;
+  }

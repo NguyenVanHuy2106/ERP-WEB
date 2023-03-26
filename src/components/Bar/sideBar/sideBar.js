@@ -15,11 +15,14 @@ import { useNavigate } from "react-router-dom";
 import "./sideBar.css";
 
 const Nav = styled.div`
-  background: #efdecd;
+  background: #e5e4e2;
   height: 80px;
   display: flex;
   ${"" /* justify-content: flex-start; */}
   align-items: center;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.5);
 `;
 
 const Sidebar = () => {

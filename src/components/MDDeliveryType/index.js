@@ -17,6 +17,7 @@ import Box from "@mui/material/Box";
 // import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
+import { useLocation } from "react-router-dom";
 // import Switch from "react-switch";
 import {
   getAllDeliveryType,
@@ -26,6 +27,7 @@ import {
 } from "../../controller/deliveryTypeController";
 
 import PaginationShop from "../shops/paginationShopList";
+
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -44,6 +46,9 @@ const style = {
 };
 function MDDeliveryType({ route, navigate }) {
   const classes = useStyles();
+  const location = useLocation();
+  const [routeNamea, setRouteNamea] = useState("");
+
   // const [tFValue, setTFValue] = useState("");
   const [tFDeliveryTypeValue, setTFDeliveryTypeValue] = useState("");
   const [tFDesValue, setTFDesValue] = useState("");
@@ -184,14 +189,16 @@ function MDDeliveryType({ route, navigate }) {
   };
 
   return (
-    <div className="searchMargin-container" style={{ marginTop: "20px" }}>
-      <div>
-        <div
-          className="d-flex border mt-3 containerBtn align-items-center"
-          style={{ marginBottom: "10px" }}
-        >
-          <div className="titlePage ">KHAI BÁO HÌNH THỨC GIAO HÀNG</div>
-        </div>
+    <div
+      style={{
+        background: "#F5F5F5",
+        height: "900px",
+      }}
+    >
+      <div
+        style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
+      >
+        <div className="webContainer1 border">Khai báo hình thức giao hàng</div>
 
         <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
           <div className="plus">
@@ -201,11 +208,11 @@ function MDDeliveryType({ route, navigate }) {
           </div>
         </div>
 
-        <div className="border border-top-0">
+        <div className="border border-top-0" style={{ background: "#FFFFFF" }}>
           <div className="d-flex">
             <table className="table mt-2 table-margin border">
               <thead>
-                <tr className="backgroundTable">
+                <tr style={{ background: "#e5e4e2" }}>
                   <th scope="col">Mã hình thức</th>
                   <th scope="col">Tên hình thức</th>
                   <th scope="col">Kích hoạt</th>

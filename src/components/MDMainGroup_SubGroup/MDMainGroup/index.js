@@ -193,66 +193,9 @@ function MDMainGroup({ route, navigate }) {
   };
 
   return (
-    <div className="searchMargin-container" style={{ marginTop: "20px" }}>
-      <div>
-        {/* <div
-          className="d-flex border mt-3 containerBtn align-items-center"
-          style={{ marginBottom: "10px" }}
-        >
-          <div className="titlePage ">KHAI BÁO NGÀNH HÀNG SẢN PHẨM</div>
-        </div> */}
-        {/* <div className="d-flex justify-content-start  border search align-items-center">
-          <div className="searchMargin">
-            <TextField
-              id="outlined-basic"
-              label="Tu khoa"
-              variant="outlined"
-              size="small"
-              onChange={(newValue) => setTFValue(newValue.target.value)}
-            />
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Từ ngày"
-                  value={valueFromDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueFromDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Đến ngày"
-                  value={valueToDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueToDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <Button variant="contained" onClick={HandleClick}>
-              <AiOutlineSearch size={20} />
-              Tim kiem
-            </Button>
-          </div>
-        </div> */}
-        <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
+    <div>
+      <div className="mt-2">
+        <div className="d-flex border containerBtn align-items-center justify-content-end">
           <div className="plus">
             <Button variant="contained" onClick={handleOpenModal}>
               <AiOutlinePlus size={20} />
@@ -260,11 +203,11 @@ function MDMainGroup({ route, navigate }) {
           </div>
         </div>
 
-        <div className="border border-top-0">
+        <div className="border border-top-0" style={{ background: "#ffffff" }}>
           <div className="d-flex">
-            <table className="table mt-2 table-margin border">
+            <table className="table mt-3 table-margin border">
               <thead>
-                <tr className="backgroundTable">
+                <tr style={{ background: "#e5e4e2" }}>
                   <th scope="col">Mã model</th>
                   <th scope="col">Tên model</th>
                   <th scope="col">Kich hoat</th>
@@ -306,10 +249,6 @@ function MDMainGroup({ route, navigate }) {
               paginate={paginate}
             />
           </div>
-        </div>
-
-        <div className="d-flex  align-items-center justify-content-end">
-          <div className="plus">CopyRight</div>
         </div>
       </div>
       <div>

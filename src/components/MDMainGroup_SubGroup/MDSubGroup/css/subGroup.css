@@ -20,8 +20,9 @@
     background-color: bisque;
 }
 .table-margin{
-    margin-left: 25px;
-    margin-right: 25px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 20px;
 }
 .edit{
     margin-right: 15px;

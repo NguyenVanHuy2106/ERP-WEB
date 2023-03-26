@@ -3,7 +3,7 @@ import React, { useState, useEffect, useStyle, useMemo } from "react";
 import dayjs from "dayjs";
 import { RingLoader, CircleLoader } from "react-spinners";
 import { TextField } from "@mui/material";
-import "./css/productCat.css";
+import "./css/model.css";
 import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -25,6 +25,12 @@ import {
   updateDetailCategoryAPI,
   deleteCategoryAPI,
 } from "../../controller/Category/CategoryController";
+import {
+  getAll,
+  addNew,
+  update,
+  deleteAPI,
+} from "../../controller/modelController";
 import PaginationShop from "../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -42,19 +48,22 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-function ProductCat({ route, navigate }) {
+function MDModel({ route, navigate }) {
   const classes = useStyles();
   const [tFValue, setTFValue] = useState("");
-  const [tFCatValue, setTFCatValue] = useState("");
+  const [tFModelValue, setTFModelValue] = useState("");
+  const [tFBaseProductValue, setTFBaseProductValue] = useState("");
+  const [tFBaseProductEditValue, setTFBaseProductEditValue] = useState("");
   const [tFDesValue, setTFDesValue] = useState("");
-  const [tFCatEditValue, setTFCatEditValue] = useState("");
+  const [tFModelEditValue, setTFModelEditValue] = useState("");
   const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [catIdEditValue, setCatIdEditValue] = useState("");
+  const [modelIdEditValue, setModelIdEditValue] = useState("");
   const [isActived, setIsActived] = useState(false);
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
-  const [valueCatData, setValueCatData] = useState([]);
+  const [modelData, setModelData] = useState([]);
+  //const [valueCatData, setValueCatData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
   const [openModal, setOpenModal] = React.useState(false);
@@ -83,18 +92,23 @@ function ProductCat({ route, navigate }) {
     setChecked(event.target.checked);
   };
   const handleAgrre = async () => {
-    if (tFCatValue.length === 0) {
+    if (tFModelValue.length === 0) {
       setError("Vui long nhap ten danh muc");
       setIsError(true);
     } else {
       handleCloseModal();
       setLoading(false);
-      const result = await addNewCategoryAPI(tFCatValue, tFDesValue, -1, 0);
+      const result = await addNew(
+        tFModelValue,
+        tFDesValue,
+        1,
+        tFBaseProductValue
+      );
       if (result.status === 200) {
         setLoading(true);
         HandleClick();
         setError("");
-        setTFCatValue("");
+        setTFModelValue("");
       }
     }
   };
@@ -117,10 +131,10 @@ function ProductCat({ route, navigate }) {
     const fromDate = valueFromDate.format("YYYY-MM-DD");
     const toDate = valueToDate.format("YYYY-MM-DD");
     //console.log(tFValue, fromDate, toDate);
-    const result = await getAllCategoryAPI(tFValue, fromDate, toDate);
+    const result = await getAll(tFValue, fromDate, toDate);
     if (result.status === 200) {
-      //console.log(result.data.ResultObject.CategoryList);
-      setValueCatData(result.data.ResultObject.CategoryList);
+      //console.log(result.data.ResultObject);
+      setModelData(result.data.ResultObject.modelList);
       setLoading(true);
     }
   };
@@ -129,9 +143,10 @@ function ProductCat({ route, navigate }) {
       return <AiOutlineCheck />;
     }
   };
-  const handleDeleteCat = async (item) => {
+  const handleDeleteModel = async (item) => {
+    //console.log(item.MODELID);
     setLoading(false);
-    const result = await deleteCategoryAPI(item.category_id);
+    const result = await deleteAPI(item.MODELID);
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
@@ -145,14 +160,15 @@ function ProductCat({ route, navigate }) {
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = valueCatData.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = modelData.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleEditClick = (item) => {
-    setTFCatEditValue(item.category_name);
-    setTFDesEditValue(item.category_description);
-    setCatIdEditValue(item.category_id);
-    if (item.is_actived == 1) setIsActived(true);
+    setTFModelEditValue(item.MODELNAME);
+    setTFDesEditValue(item.DESCRIPTION);
+    setTFBaseProductEditValue(item.BASEPRODUCT);
+    setModelIdEditValue(item.MODELID);
+    if (item.ISACTIVED == 1) setIsActived(true);
     else {
       setIsActived(false);
     }
@@ -164,15 +180,13 @@ function ProductCat({ route, navigate }) {
 
     handleCloseModalEdit();
     setLoading(false);
-    const result = await updateDetailCategoryAPI(
-      catIdEditValue,
-      tFCatEditValue,
+    const result = await update(
+      modelIdEditValue,
+      tFModelEditValue,
       tFDesEditValue,
+      isActived,
       1,
-      0,
-      1,
-      toDate,
-      isActived
+      toDate
     );
     if (result.status === 200) {
       setLoading(true);
@@ -181,65 +195,17 @@ function ProductCat({ route, navigate }) {
   };
 
   return (
-    <div className="searchMargin-container" style={{ marginTop: "20px" }}>
-      <div>
-        <div
-          className="d-flex border mt-3 containerBtn align-items-center"
-          style={{ marginBottom: "10px" }}
-        >
-          <div className="titlePage ">KHAI BAO DANH MUC SAN PHAM</div>
-        </div>
-        <div className="d-flex justify-content-start  border search align-items-center">
-          <div className="searchMargin">
-            <TextField
-              id="outlined-basic"
-              label="Tu khoa"
-              variant="outlined"
-              size="small"
-              onChange={(newValue) => setTFValue(newValue.target.value)}
-            />
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Từ ngày"
-                  value={valueFromDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueFromDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Đến ngày"
-                  value={valueToDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueToDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <Button variant="contained" onClick={HandleClick}>
-              <AiOutlineSearch size={20} />
-              Tim kiem
-            </Button>
-          </div>
-        </div>
+    <div
+      style={{
+        background: "#F5F5F5",
+        height: "900px",
+      }}
+    >
+      <div
+        style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
+      >
+        <div className="webContainer1 border">Khai báo model sản phẩm</div>
+
         <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
           <div className="plus">
             <Button variant="contained" onClick={handleOpenModal}>
@@ -248,13 +214,14 @@ function ProductCat({ route, navigate }) {
           </div>
         </div>
 
-        <div className="border border-top-0">
+        <div className="border border-top-0" style={{ background: "#FFFFFF" }}>
           <div className="d-flex">
             <table className="table mt-2 table-margin border">
               <thead>
-                <tr className="backgroundTable">
-                  <th scope="col">Ma danh muc</th>
-                  <th scope="col">Ten danh muc</th>
+                <tr style={{ background: "#e5e4e2" }}>
+                  <th scope="col">Mã model</th>
+                  <th scope="col">Tên model</th>
+                  <th scope="col">Sản phẩm cơ sở</th>
                   <th scope="col">Kich hoat</th>
                   <th scope="col">Ngay tao</th>
                   <th scope="col">Nguoi tao</th>
@@ -264,12 +231,12 @@ function ProductCat({ route, navigate }) {
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
-                    <th scope="item">{item.category_id}</th>
-                    <td>{item.category_name}</td>
-
-                    <td>{CheckActive(item.is_actived)}</td>
-                    <td>{new Date(item.created_date).toLocaleDateString()}</td>
-                    <td>{item.created_user}</td>
+                    <th scope="item">{item.MODELID}</th>
+                    <td>{item.MODELNAME}</td>
+                    <td>{item.BASEPRODUCT}</td>
+                    <td>{CheckActive(item.ISACTIVED)}</td>
+                    <td>{new Date(item.CREATEDDATE).toLocaleDateString()}</td>
+                    <td>{item.CREATEDUSER}</td>
                     <td>
                       <FiEdit
                         className="edit"
@@ -279,7 +246,7 @@ function ProductCat({ route, navigate }) {
                       <FiTrash
                         className="delete"
                         size={20}
-                        onClick={() => handleDeleteCat(item)}
+                        onClick={() => handleDeleteModel(item)}
                       />
                     </td>
                   </tr>
@@ -290,14 +257,10 @@ function ProductCat({ route, navigate }) {
           <div className="d-flex justify-content-center">
             <PaginationShop
               postsPerPage={postsPerPage}
-              totalPosts={valueCatData.length}
+              totalPosts={modelData.length}
               paginate={paginate}
             />
           </div>
-        </div>
-
-        <div className="d-flex  align-items-center justify-content-end">
-          <div className="plus">CopyRight</div>
         </div>
       </div>
       <div>
@@ -307,7 +270,7 @@ function ProductCat({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">Thêm mới danh mục</div>
+            <div className="border-bottom fw-bold">Thêm mới Model sản phẩm</div>
             <div
               className="d-flex align-items-center flex-column"
               style={{ marginTop: 20 }}
@@ -315,11 +278,24 @@ function ProductCat({ route, navigate }) {
               <TextField
                 required
                 id="outlined-basic"
-                label="Tên danh mục"
+                label="Tên Model"
                 variant="outlined"
                 size="small"
                 style={{ width: "90%" }}
-                onChange={(newValue) => setTFCatValue(newValue.target.value)}
+                onChange={(newValue) => setTFModelValue(newValue.target.value)}
+                helperText={error}
+                error={isError}
+              />
+              <TextField
+                required
+                id="outlined-basic"
+                label="Sản phẩm cơ sở"
+                variant="outlined"
+                size="small"
+                style={{ width: "90%", marginTop: 10 }}
+                onChange={(newValue) =>
+                  setTFBaseProductValue(newValue.target.value)
+                }
                 helperText={error}
                 error={isError}
               />
@@ -364,7 +340,9 @@ function ProductCat({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">Chỉnh sửa danh mục</div>
+            <div className="border-bottom fw-bold">
+              Chỉnh sửa Model sản phẩm
+            </div>
             <div
               className="d-flex align-items-center flex-column"
               style={{ marginTop: 20 }}
@@ -372,12 +350,24 @@ function ProductCat({ route, navigate }) {
               <TextField
                 required
                 id="outlined-basic"
-                label="Tên danh mục"
+                label="Tên Model"
                 variant="outlined"
                 size="small"
                 style={{ width: "90%" }}
-                value={tFCatEditValue}
-                onChange={(value) => setTFCatEditValue(value.target.value)}
+                value={tFModelEditValue}
+                onChange={(value) => setTFModelEditValue(value.target.value)}
+              />
+              <TextField
+                required
+                id="outlined-basic"
+                label="Sản phẩm cơ sở"
+                variant="outlined"
+                size="small"
+                style={{ width: "90%", marginTop: 10 }}
+                value={tFBaseProductEditValue}
+                onChange={(value) =>
+                  setTFBaseProductEditValue(value.target.value)
+                }
               />
               <TextField
                 id="outlined-multiline-flexible"
@@ -427,4 +417,4 @@ function ProductCat({ route, navigate }) {
     </div>
   );
 }
-export default ProductCat;
+export default MDModel;

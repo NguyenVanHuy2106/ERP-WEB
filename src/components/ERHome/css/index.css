@@ -1,0 +1,117 @@
+.webContainer{
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-top: 20px;
+}
+.webContainer1{
+   background-color: #ffffff;
+   padding-left: 20px;
+   padding-right: 20px;
+   padding-top: 8px;
+   padding-bottom: 8px;
+   border-radius: 5px;
+   -webkit-border-radius: 5px;
+   -moz-border-radius: 5px;
+   -ms-border-radius: 5px;
+   -o-border-radius: 5px;
+}
+.chartContainer{
+   display: flex;
+   flex-direction: row;
+   justify-content: space-around;
+   margin-top: 20px;
+}
+.textColor{
+    color: #ffffff;
+}
+
+.boxDetailWait{
+    background: #fff;
+    background-size: 200% auto;
+}
+.boxDetailWait:hover{
+    background-image: linear-gradient(90deg, #ffffff, #888888);
+    transition: background-position 1s ease-out;
+  background-position: -100% center;
+  cursor: pointer;
+}
+.boxDetailWait:hover .textDetailWait{
+    color: #ffffff;
+   
+}
+.textDetailWait{
+    color: #888888;
+}
+
+.boxDetailDelivery{
+    background: #fff;
+    background-size: 200% auto;
+}
+.boxDetailDelivery:hover{
+    background-image: linear-gradient(90deg, #ffffff, #337ab7);
+    transition: background-position 1s ease-out;
+  background-position: -100% center;
+  cursor: pointer;
+}
+.boxDetailDelivery:hover .textDetailDelivery{
+    color: #ffffff;
+}
+.textDetailDelivery{
+    color: #337ab7;
+}
+
+.boxDetailComplete{
+    background: #fff;
+    background-size: 200% auto;
+}
+.boxDetailComplete:hover{
+    background-image: linear-gradient(90deg, #ffffff, #00CC00);
+    transition: background-position 1s ease-out;
+  background-position: -100% center;
+  cursor: pointer;
+}
+.boxDetailComplete:hover .textDetailComplete{
+    color: #ffffff;
+}
+.textDetailComplete{
+    color: #00CC00;
+}
+
+.boxDetailCancel{
+    background: #fff;
+    background-size: 200% auto;
+}
+.boxDetailCancel:hover{
+    background-image: linear-gradient(90deg, #ffffff, #FF0044);
+    transition: background-position 1s ease-out;
+  background-position: -100% center;
+  cursor: pointer;
+}
+.boxDetailCancel:hover .textDetailCancel{
+    color: #ffffff;
+}
+.textDetailCancel{
+    color: #FF0044;
+}
+/* //////// */
+.chartStyleTitle{
+    border-bottom: 1px solid #F5F5F5;
+    padding-left: 15px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    background-color: #ffffff;
+}
+.chartStyleBody{
+    width: 650px;
+    height: 400px;
+    padding-left: 15px;
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background-color: #ffffff;
+}

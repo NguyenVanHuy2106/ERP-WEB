@@ -184,16 +184,9 @@ function MDStoreList({ route, navigate }) {
   };
 
   return (
-    <div className="searchMargin-container" style={{ marginTop: "20px" }}>
-      <div>
-        <div
-          className="d-flex border mt-3 containerBtn align-items-center"
-          style={{ marginBottom: "10px" }}
-        >
-          <div className="titlePage ">KHAI BÁO HÌNH THỨC GIAO HÀNG</div>
-        </div>
-
-        <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
+    <div>
+      <div className="mt-2">
+        <div className="d-flex border containerBtn align-items-center justify-content-end">
           <div className="plus">
             <Button variant="contained" onClick={handleOpenModal}>
               <AiOutlinePlus size={20} />
@@ -201,11 +194,11 @@ function MDStoreList({ route, navigate }) {
           </div>
         </div>
 
-        <div className="border border-top-0">
+        <div className="border border-top-0" style={{ background: "#ffffff" }}>
           <div className="d-flex">
-            <table className="table mt-2 table-margin border">
+            <table className="table mt-3 table-margin border">
               <thead>
-                <tr className="backgroundTable">
+                <tr style={{ background: "#e5e4e2" }}>
                   <th scope="col">Mã hình thức</th>
                   <th scope="col">Tên hình thức</th>
                   <th scope="col">Kích hoạt</th>
@@ -249,9 +242,9 @@ function MDStoreList({ route, navigate }) {
           </div>
         </div>
 
-        <div className="d-flex  align-items-center justify-content-end">
+        {/* <div className="d-flex  align-items-center justify-content-end">
           <div className="plus">CopyRight</div>
-        </div>
+        </div> */}
       </div>
       <div>
         <Modal

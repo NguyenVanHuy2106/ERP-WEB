@@ -1,10 +1,6 @@
 import React from "react";
 export const declareData = [
   {
-    title: "Khai bao danh muc san pham",
-    path: "/productCat",
-  },
-  {
     title: "Khai báo Model sản phẩm",
     path: "/model",
   },
@@ -28,6 +24,7 @@ export const declareData = [
   {
     title: "Khai báo kho",
     path: "/store",
+    links: "Khai báo",
   },
   {
     title: "Khai báo xuất hàng",

@@ -273,8 +273,8 @@ function MDSubGroup({ route, navigate }) {
   // };
 
   return (
-    <div className="searchMargin-container" style={{ marginTop: "20px" }}>
-      <div>
+    <div>
+      <div className="mt-2">
         {/* <div
           className="d-flex border mt-3 containerBtn align-items-center"
           style={{ marginBottom: "10px" }}
@@ -332,7 +332,7 @@ function MDSubGroup({ route, navigate }) {
             </Button>
           </div>
         </div> */}
-        <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
+        <div className="d-flex border containerBtn align-items-center justify-content-end">
           <div className="plus">
             <Button variant="contained" onClick={handleOpenModal}>
               <AiOutlinePlus size={20} />
@@ -340,11 +340,11 @@ function MDSubGroup({ route, navigate }) {
           </div>
         </div>
 
-        <div className="border border-top-0">
+        <div className="border border-top-0" style={{ background: "#ffffff" }}>
           <div className="d-flex">
-            <table className="table mt-2 table-margin border">
+            <table className="table mt-3 table-margin border">
               <thead>
-                <tr className="backgroundTable">
+                <tr style={{ background: "#e5e4e2" }}>
                   <th scope="col">Mã nhóm hàng</th>
                   <th scope="col">Tên nhóm hàng</th>
                   <th scope="col">Ngành hàng</th>
@@ -388,10 +388,6 @@ function MDSubGroup({ route, navigate }) {
               paginate={paginate}
             />
           </div>
-        </div>
-
-        <div className="d-flex  align-items-center justify-content-end">
-          <div className="plus">CopyRight</div>
         </div>
       </div>
       <div>
@@ -463,53 +459,8 @@ function MDSubGroup({ route, navigate }) {
                   inputProps={{ "aria-label": "controlled" }}
                 />
               </div>
-              {/* <div className="row">
-                <div className="col-3 d-flex align-items-center">
-                  Có yêu cầu IMEI{" "}
-                </div>
-                <Checkbox
-                  className="col-1"
-                  checked={checkedIMEI}
-                  onChange={handleChangeIMEI}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              </div> */}
             </div>
-            {/* <div style={{ marginLeft: 37 }}>
-              <div className="row">
-                <div className="col-3 d-flex align-items-center">
-                  Có kiểm tra tồn{" "}
-                </div>
-                <Checkbox
-                  className="col-1"
-                  checked={checkedStock}
-                  onChange={handleChangeStock}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              </div>
-              <div className="row">
-                <div className="col-3 d-flex align-items-center">
-                  Cho phép nhập trả{" "}
-                </div>
-                <Checkbox
-                  className="col-1"
-                  checked={isCanReturnOutput}
-                  onChange={handleChangeReturnOutput}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              </div>
-              <div className="row">
-                <div className="col-3 d-flex align-items-center">
-                  Tự động sinh IMEI{" "}
-                </div>
-                <Checkbox
-                  className="col-1"
-                  checked={isAutoCreateIMEI}
-                  onChange={handleChangeAutoCreateIMEI}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              </div>
-            </div> */}
+
             <div
               className="d-flex justify-content-center"
               style={{ marginTop: 20 }}
