@@ -18,7 +18,7 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import Switch from "react-switch";
-
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import {
   getAll,
   addNew,
@@ -84,9 +84,17 @@ function MDQuantityUnit({ route, navigate }) {
   const [editChecked, setEditChecked] = React.useState(true);
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
-  // const handleEditcheck = (event) => {
-  //   setEditChecked(event.target.checked);
-  // };
+  const [selectedItems, setSelectedItems] = useState([]);
+  const handleCheckboxChange = (event, item) => {
+    if (event.target.checked) {
+      setSelectedItems([...selectedItems, item]);
+    } else {
+      setSelectedItems(
+        selectedItems.filter((selectedItem) => selectedItem !== item)
+      );
+    }
+  };
+
   const handleEditcheck = (event) => {
     setIsActived(event.target.checked);
   };
@@ -195,7 +203,7 @@ function MDQuantityUnit({ route, navigate }) {
   return (
     <div
       style={{
-        background: "#F5F5F5",
+        background: "#E5E4E2",
         height: "900px",
       }}
     >
@@ -204,49 +212,144 @@ function MDQuantityUnit({ route, navigate }) {
       >
         <div className="webContainer1 border">Khai báo đơn vị sản phẩm</div>
 
-        <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
-          <div className="plus">
-            <Button variant="contained" onClick={handleOpenModal}>
-              <AiOutlinePlus size={20} />
-            </Button>
+        <div
+          className="d-flex mt-3 align-items-center justify-content-end"
+          style={{ height: "80px", background: "#ffffff" }}
+        >
+          <div className="d-flex containerBtn align-items-center justify-content-end">
+            <div className="plus" style={{ marginRight: "10px" }}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  console.log("Huy");
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
+                    paddingLeft: 15,
+                    paddingRight: 15,
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FaRegTrashAlt size={18} />
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      paddingLeft: "8px",
+                    }}
+                  >
+                    Xoá
+                  </div>
+                </div>
+              </Button>
+            </div>
+            <div className="plus" style={{ marginRight: "50px" }}>
+              <Button variant="contained" onClick={handleOpenModal}>
+                <div
+                  style={{
+                    display: "flex",
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FaPlus size={18} />
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      paddingLeft: "8px",
+                    }}
+                  >
+                    Thêm mới
+                  </div>
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="border border-top-0" style={{ background: "#FFFFFF" }}>
-          <div className="d-flex">
-            <table className="table mt-2 table-margin border">
+        <div
+          style={{
+            background: "#FFFFFF",
+          }}
+        >
+          <div
+            className="d-flex"
+            style={{ marginLeft: "50px", marginRight: "50px" }}
+          >
+            <table className="table mt-2">
               <thead>
-                <tr style={{ background: "#e5e4e2" }}>
-                  <th scope="col">Mã đơn vị</th>
-                  <th scope="col">Tên đơn vị</th>
+                <tr style={{ background: "#848482" }}>
+                  <th>
+                    <label>
+                      <input type="checkbox" />
+                    </label>
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-1"
+                  >
+                    Mã
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-4"
+                  >
+                    Tên đơn vị
+                  </th>
 
-                  <th scope="col">Kich hoat</th>
-                  <th scope="col">Ngay tao</th>
-                  <th scope="col">Nguoi tao</th>
-                  <th scope="col">Tac vu</th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Kich hoat
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Ngay tao
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Nguoi tao
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
+                    <td>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.quantityUnitId)}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, item.quantityUnitId)
+                          }
+                        />
+                      </label>
+                    </td>
                     <th scope="item">{item.quantityUnitId}</th>
-                    <td>{item.quantityUnitName}</td>
+                    <td
+                      className="quantityUnitText"
+                      onClick={() => handleEditClick(item)}
+                    >
+                      {item.quantityUnitName}
+                    </td>
 
                     <td>{CheckActive(item.isActived)}</td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
                     <td>{item.createdUser}</td>
-                    <td>
-                      <FiEdit
-                        className="edit"
-                        size={20}
-                        onClick={() => handleEditClick(item)}
-                      />
-                      <FiTrash
-                        className="delete"
-                        size={20}
-                        onClick={() => handleDeleteModel(item)}
-                      />
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -272,17 +375,21 @@ function MDQuantityUnit({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">Thêm mới Model sản phẩm</div>
+            <div
+              className="border-bottom fw-bold"
+              style={{ paddingBottom: "20px" }}
+            >
+              Thêm mới đơn vị sản phẩm
+            </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: "20px" }}
             >
               <TextField
                 required
                 id="outlined-basic"
                 label="Tên đơn vị"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
                 onChange={(newValue) => setTFModelValue(newValue.target.value)}
                 helperText={error}
@@ -293,12 +400,12 @@ function MDQuantityUnit({ route, navigate }) {
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                rows={6}
+                style={{ width: "90%", marginTop: "20px" }}
                 onChange={(newValue) => setTFDesValue(newValue.target.value)}
               />
             </div>
-            <div style={{ marginTop: 10, marginLeft: 37 }}>
+            <div style={{ marginTop: "20px", marginLeft: 37 }}>
               Kích hoạt{" "}
               <Checkbox
                 disabled
@@ -309,7 +416,7 @@ function MDQuantityUnit({ route, navigate }) {
             </div>
             <div
               className="d-flex justify-content-center"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: "20px" }}
             >
               <div style={{ marginRight: 20 }}>
                 <Button variant="outlined" onClick={handleCloseModal}>
@@ -330,19 +437,21 @@ function MDQuantityUnit({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">
+            <div
+              className="border-bottom fw-bold"
+              style={{ paddingBottom: "20px" }}
+            >
               Chỉnh sửa đơn vị sản phẩm
             </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: "20px" }}
             >
               <TextField
                 required
                 id="outlined-basic"
                 label="Tên đơn vị"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
                 value={tFQuantityEditValue}
                 onChange={(value) => setTFQuantityEditValue(value.target.value)}
@@ -352,13 +461,13 @@ function MDQuantityUnit({ route, navigate }) {
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                rows={6}
+                style={{ width: "90%", marginTop: "20px" }}
                 value={tFDesEditValue}
                 onChange={(value) => setTFDesEditValue(value.target.value)}
               />
             </div>
-            <div style={{ marginTop: 10, marginLeft: 37 }}>
+            <div style={{ marginTop: "20px", marginLeft: 37 }}>
               Kích hoạt{" "}
               <Checkbox
                 checked={isActived}

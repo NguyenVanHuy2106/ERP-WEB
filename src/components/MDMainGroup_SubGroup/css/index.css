@@ -11,9 +11,9 @@
     -o-border-radius: 5px;
  }
  .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active {
-    background-color: #fff; /* Màu nền cho tab được chọn */
+    background-color: #fff;
     border: none !important;
-}
+ }
 
 .nav-tabs .nav-link:hover {
     background-color: #ffffff; /* Màu nền khi hover trên tab */

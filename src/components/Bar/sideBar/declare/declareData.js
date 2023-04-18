@@ -30,26 +30,26 @@ export const declareData = [
     title: "Khai báo xuất hàng",
     path: "/outputProduct",
   },
+  {
+    title: "Khai báo sản phẩm",
+    path: "/products",
+  },
 ];
 export const shipmentOrderData = [
   {
     title: "Quản lý vận đơn",
     path: "#",
   },
+  {
+    title: "Quản lý sản phẩm",
+    path: "productManage",
+  },
 ];
 
-export const locationData = [
+export const customerData = [
   {
-    title: "Khai bao Tinh/Thanh pho",
-    path: "/productCat",
-  },
-  {
-    title: "Khai bao Quan/Huyen",
-    path: "/overview/users",
-  },
-  {
-    title: "Khai bao Phuong/Xa",
-    path: "/overview/users",
+    title: "Danh sách khách hàng",
+    path: "/customers",
   },
 ];
 export const voucherConcernData = [

@@ -1,0 +1,12 @@
+@media (min-width: 50px) {
+    select {
+      font-size: 14px;
+    }
+  }
+
+  .DeleDeleteItems{
+    cursor: pointer;
+  }
+  .DeleDeleteItems:hover{
+    color: blueviolet;
+  }

@@ -1,7 +1,7 @@
 import API from "../../server/APIConfig";
-export const getAllBrand = async (keyWord, fromDate, toDate) => {
+export const getAllSubGroup = async () => {
   try {
-    const response = await API.get("brand/get-all", {
+    const response = await API.get("subgroup/get-all", {
       headers: {
         "Content-Type": "application/json",
       },
@@ -11,21 +11,41 @@ export const getAllBrand = async (keyWord, fromDate, toDate) => {
     return err;
   }
 };
-export const addNewBrand = async (
+export const getAllSubGroupByMainGroup = async (mainGroupId) => {
+  try {
+    const response = await API.post(
+      "app/subgroup/getByMainGroup",
+      { mainGroupId: mainGroupId },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const addNewSubGroup = async (
   userLogin,
-  brandName,
-  brandDescription,
-  isActived
+  subGroupName,
+  mainGroupId,
+  description,
+  imagePath
 ) => {
   try {
     const response = await API.post(
-      "brand/add-new-brand",
+      "subgroup/add-new-subgroup",
       {
         userLogin: userLogin,
         data: {
-          brandName: brandName,
-          brandDescription: brandDescription,
-          isActived: isActived,
+          subgroupName: subGroupName,
+          subgroupDescription: description,
+          maingroupId: mainGroupId,
+          isActived: 1,
+          imagePath: imagePath,
         },
       },
       {
@@ -39,23 +59,25 @@ export const addNewBrand = async (
     return err;
   }
 };
-export const updateBrand = async (
+export const updateSubGroup = async (
   userLogin,
-  brandId,
-  brandName,
+  subGroupId,
+  subGroupName,
+  mainGroupId,
   description,
   isActived
 ) => {
   try {
     const response = await API.post(
-      `brand/update-brand`,
+      `subgroup/update-subgroup`,
       {
         userLogin: userLogin,
         data: {
-          brandId: brandId,
+          subgroupId: subGroupId,
           updateData: {
-            brandName: brandName,
-            brandDescription: description,
+            subgroupName: subGroupName,
+            subgroupDescription: description,
+            maingroupId: mainGroupId,
             isActived: isActived,
             isDeleted: 0,
           },
@@ -72,20 +94,14 @@ export const updateBrand = async (
     return err;
   }
 };
-export const deleteBrand = async (userLogin, brandId) => {
+export const deleteSubGroup = async (userLogin, subGroupIdList) => {
   try {
     const response = await API.post(
-      `brand/update-brand`,
+      `subgroup/delete`,
       {
         userLogin: userLogin,
         data: {
-          brandId: brandId,
-          updateData: {
-            brandName: null,
-            brandDescription: null,
-            isActived: null,
-            isDeleted: 1,
-          },
+          subgroupIdList: subGroupIdList,
         },
       },
       {

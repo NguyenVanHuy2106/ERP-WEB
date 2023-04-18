@@ -88,22 +88,14 @@ export const updateAPI = async (
     return err;
   }
 };
-export const deleteAPI = async (userLogin, storeTypeId) => {
+export const deleteAPI = async (userLogin, storeTypeIdList) => {
   try {
     const response = await API.post(
-      "storeType/update",
+      "storeType/delete",
       {
         userLogin: userLogin,
         data: {
-          storeTypeId: storeTypeId,
-          updateData: {
-            storeTypeName: null,
-            storeTypeDescription: null,
-            isHasLimitStock: null,
-            maxProductQuantity: null,
-            isActived: null,
-            isDeleted: 1,
-          },
+          storeTypeIdList: storeTypeIdList,
         },
       },
       {

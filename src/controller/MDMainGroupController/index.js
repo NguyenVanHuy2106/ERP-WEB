@@ -15,6 +15,22 @@ export const getAllMainGroup = async () => {
     return err;
   }
 };
+export const appGetAllMainGroup = async () => {
+  try {
+    const response = await API.get(
+      "app/maingroup/getAll",
+
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
 export const getMainGroupById = async (userLogin, mainGroupId) => {
   try {
     const response = await API.get(
@@ -39,7 +55,8 @@ export const getMainGroupById = async (userLogin, mainGroupId) => {
 export const addNewMainGroup = async (
   userLogin,
   mainGroupName,
-  description
+  description,
+  imagePath
 ) => {
   try {
     const response = await API.post(
@@ -50,6 +67,7 @@ export const addNewMainGroup = async (
           maingroupName: mainGroupName,
           maingroupDescription: description,
           isActived: 1,
+          imagePath: imagePath,
         },
       },
       {
@@ -96,20 +114,14 @@ export const updateMainGroup = async (
     return err;
   }
 };
-export const deleteMainGroup = async (userLogin, mainGroupId) => {
+export const deleteMainGroup = async (userLogin, mainGroupIdList) => {
   try {
     const response = await API.post(
-      `maingroup/update-maingroup`,
+      `mainGroup/delete`,
       {
         userLogin: userLogin,
         data: {
-          maingroupId: mainGroupId,
-          updateData: {
-            maingroupName: null,
-            maingroupDescription: null,
-            isActived: null,
-            isDeleted: 1,
-          },
+          maingroupIdList: mainGroupIdList,
         },
       },
       {

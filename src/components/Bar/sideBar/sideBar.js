@@ -4,7 +4,7 @@ import styled from "styled-components";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import {
   declareData,
-  locationData,
+  customerData,
   shipmentOrderData,
   voucherConcernData,
 } from "./declare/declareData";
@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import "./sideBar.css";
 
 const Nav = styled.div`
-  background: #e5e4e2;
+  background: #555555;
   height: 80px;
   display: flex;
   ${"" /* justify-content: flex-start; */}
@@ -107,7 +107,7 @@ const Sidebar = () => {
           </div>
           <div className="marginNav">
             <NavDropdown
-              title="Vận đơn"
+              title="Quản lý"
               id="basic-nav-dropdown"
               menuVariant="light"
             >
@@ -122,11 +122,11 @@ const Sidebar = () => {
           </div>
           <div className="marginNav">
             <NavDropdown
-              title="Dia chi"
+              title="Khách hàng"
               id="basic-nav-dropdown"
               menuVariant="light"
             >
-              {locationData.map(({ path, title }, index) => {
+              {customerData.map(({ path, title }, index) => {
                 return (
                   <NavDropdown.Item href={path} key={index}>
                     {title}

@@ -3,7 +3,6 @@ import React, { useState, useEffect, useStyle, useMemo } from "react";
 import dayjs from "dayjs";
 import { RingLoader, CircleLoader } from "react-spinners";
 import { TextField } from "@mui/material";
-import "./css/brand.css";
 import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -18,12 +17,15 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import Switch from "react-switch";
+import "./css/brand.css";
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { storage } from "../../server/FirebaseConfig";
 import {
   getAllBrand,
   addNewBrand,
   updateBrand,
   deleteBrand,
-} from "../../controller/brandController";
+} from "../../controller/MDBrandController";
 import PaginationShop from "../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -69,12 +71,23 @@ function MDBrand({ route, navigate }) {
     setOpenModal(false);
     setIsError(false);
     setError("");
+    setUrl("");
   };
   const [checked, setChecked] = React.useState(true);
   const [editChecked, setEditChecked] = React.useState(true);
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
   let userId = localStorage.getItem("userId");
+  const [selectedItems, setSelectedItems] = useState([]);
+  const handleCheckboxChange = (event, item) => {
+    if (event.target.checked) {
+      setSelectedItems([...selectedItems, item]);
+    } else {
+      setSelectedItems(
+        selectedItems.filter((selectedItem) => selectedItem !== item)
+      );
+    }
+  };
   const handleEditcheck = (event) => {
     setIsActived(event.target.checked);
   };
@@ -88,7 +101,13 @@ function MDBrand({ route, navigate }) {
     } else {
       handleCloseModal();
       setLoading(false);
-      const result = await addNewBrand(userId, tFBrandValue, tFDesValue, 1);
+      const result = await addNewBrand(
+        userId,
+        tFBrandValue,
+        tFDesValue,
+        1,
+        url
+      );
       if (result.status === 200) {
         setLoading(true);
         HandleClick();
@@ -127,10 +146,10 @@ function MDBrand({ route, navigate }) {
       return <AiOutlineCheck />;
     }
   };
-  const handleDeleteBrand = async (item) => {
+  const handleDeleteBrand = async () => {
     //console.log(item.MODELID);
     setLoading(false);
-    const result = await deleteBrand(userId, item.brandId);
+    const result = await deleteBrand(userId, selectedItems);
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
@@ -146,6 +165,21 @@ function MDBrand({ route, navigate }) {
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = brandData.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  const [url, setUrl] = useState("");
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      const uploadTask = storage
+        .ref(`images/${e.target.files[0].name}`)
+        .put(e.target.files[0]);
+      uploadTask.on("state_changed", null, null, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
+          setUrl(downloadUrl);
+        });
+      });
+    }
+  };
 
   const handleEditClick = (item) => {
     setTFBrandEditValue(item.brandName);
@@ -180,7 +214,7 @@ function MDBrand({ route, navigate }) {
   return (
     <div
       style={{
-        background: "#F5F5F5",
+        background: "#E5E4E2",
         height: "900px",
       }}
     >
@@ -188,50 +222,136 @@ function MDBrand({ route, navigate }) {
         style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
       >
         <div className="webContainer1 border">Khai báo thương hiệu</div>
-
-        <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
-          <div className="plus">
-            <Button variant="contained" onClick={handleOpenModal}>
-              <AiOutlinePlus size={20} />
-            </Button>
+        <div
+          className="d-flex mt-3 align-items-center justify-content-end"
+          style={{ background: "#ffffff", height: "80px" }}
+        >
+          <div className="d-flex containerBtn align-items-center justify-content-end">
+            <div className="plus" style={{ marginRight: "10px" }}>
+              <Button variant="contained" onClick={handleDeleteBrand}>
+                <div
+                  style={{
+                    display: "flex",
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
+                    paddingLeft: 15,
+                    paddingRight: 15,
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FaRegTrashAlt size={18} />
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      paddingLeft: "8px",
+                    }}
+                  >
+                    Xoá
+                  </div>
+                </div>
+              </Button>
+            </div>
+            <div className="plus" style={{ marginRight: "50px" }}>
+              <Button variant="contained" onClick={handleOpenModal}>
+                <div
+                  style={{
+                    display: "flex",
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FaPlus size={18} />
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      paddingLeft: "8px",
+                    }}
+                  >
+                    Thêm mới
+                  </div>
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="border border-top-0" style={{ background: "#ffffff" }}>
-          <div className="d-flex">
-            <table className="table mt-2 table-margin border">
+        <div style={{ background: "#ffffff" }}>
+          <div
+            className="d-flex"
+            style={{ marginLeft: "50px", marginRight: "50px" }}
+          >
+            <table className="table mt-2 ">
               <thead>
-                <tr style={{ background: "#e5e4e2" }}>
-                  <th scope="col">Mã thương hiệu</th>
-                  <th scope="col">Tên thương hiệu</th>
+                <tr style={{ background: "#848482" }}>
+                  <th>
+                    <label>
+                      <input type="checkbox" />
+                    </label>
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-1"
+                  >
+                    Mã
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-4"
+                  >
+                    Tên thương hiệu
+                  </th>
 
-                  <th scope="col">Kich hoat</th>
-                  <th scope="col">Ngay tao</th>
-                  <th scope="col">Nguoi tao</th>
-                  <th scope="col">Tac vu</th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Kích hoạt
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Ngày tạo
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Người tạo
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
+                    <td>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.brandId)}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, item.brandId)
+                          }
+                        />
+                        {item.name}
+                      </label>
+                    </td>
                     <th scope="item">{item.brandId}</th>
-                    <td>{item.brandName}</td>
+                    <td
+                      className="brandEdit"
+                      onClick={() => handleEditClick(item)}
+                    >
+                      {item.brandName}
+                    </td>
 
                     <td>{CheckActive(item.isActived)}</td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
                     <td>{item.createdUser}</td>
-                    <td>
-                      <FiEdit
-                        className="edit"
-                        size={20}
-                        onClick={() => handleEditClick(item)}
-                      />
-                      <FiTrash
-                        className="delete"
-                        size={20}
-                        onClick={() => handleDeleteBrand(item)}
-                      />
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -253,19 +373,45 @@ function MDBrand({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">
+            <div
+              className="border-bottom fw-bold"
+              style={{ paddingBottom: "16px" }}
+            >
               Thêm mới thương hiệu sản phẩm
+            </div>
+            <div style={{ marginLeft: 37, marginTop: 12 }}>
+              <label htmlFor="image-uploader">
+                {url ? (
+                  <img src={url} alt="Selected file" width={150} height={150} />
+                ) : (
+                  <div
+                    className="d-flex border border-dashed justify-content-center align-items-center"
+                    style={{ width: 150, height: 150 }}
+                  >
+                    Chọn ảnh
+                  </div>
+                )}
+              </label>
+              <input
+                className="border"
+                id="image-uploader"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+              />
+              {/* <input type="file" onChange={handleImageChange} />
+              {url && <img src={url} alt="Uploaded" width="150" height="100" />} */}
             </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: 24 }}
             >
               <TextField
                 required
                 id="outlined-basic"
                 label="Tên thương hiệu"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
                 onChange={(newValue) => setTFBrandValue(newValue.target.value)}
                 helperText={error}
@@ -276,8 +422,8 @@ function MDBrand({ route, navigate }) {
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                rows={6}
+                style={{ width: "90%", marginTop: 20 }}
                 onChange={(newValue) => setTFDesValue(newValue.target.value)}
               />
             </div>
@@ -325,7 +471,6 @@ function MDBrand({ route, navigate }) {
                 id="outlined-basic"
                 label="Tên thương hiệu"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
                 value={tFBrandEditValue}
                 onChange={(value) => setTFBrandEditValue(value.target.value)}
@@ -335,7 +480,7 @@ function MDBrand({ route, navigate }) {
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
+                rows={6}
                 style={{ width: "90%", marginTop: 10 }}
                 value={tFDesEditValue}
                 onChange={(value) => setTFDesEditValue(value.target.value)}

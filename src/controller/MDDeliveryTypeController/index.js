@@ -70,20 +70,14 @@ export const updateDeliveryType = async (
     return err;
   }
 };
-export const deleteDeliveryType = async (userLogin, deliveryTypeId) => {
+export const deleteDeliveryType = async (userLogin, deliveryTypeIdList) => {
   try {
     const response = await API.post(
-      "delivery-type/update-delivery-type",
+      "delivery-type/delete",
       {
         userLogin: userLogin,
         data: {
-          deliveryTypeId: deliveryTypeId,
-          updateData: {
-            deliveryTypeName: null,
-            deliveryTypeDescription: null,
-            isActived: null,
-            isDeleted: 1,
-          },
+          deliveryTypeIdList: deliveryTypeIdList,
         },
       },
       {

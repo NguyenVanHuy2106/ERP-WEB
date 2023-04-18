@@ -51,3 +51,7 @@
     -o-border-radius: 5px;
    
 }
+.deliveryTypeText:hover{
+    cursor: pointer;
+    color: blue;
+}

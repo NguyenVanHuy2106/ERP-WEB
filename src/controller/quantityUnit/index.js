@@ -12,6 +12,19 @@ export const getAllQuantityUnit = async () => {
   }
 };
 
+export const AppGetAllQuantityUnit = async () => {
+  try {
+    const response = await API.get("app/quantity-unit/getAll", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
 export const addNewQuantityUnit = async (
   userLogin,
   quantityUnitName,

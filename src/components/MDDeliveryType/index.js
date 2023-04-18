@@ -18,13 +18,14 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import { useLocation } from "react-router-dom";
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 // import Switch from "react-switch";
 import {
   getAllDeliveryType,
   addNewDeliveryType,
   updateDeliveryType,
   deleteDeliveryType,
-} from "../../controller/deliveryTypeController";
+} from "../../controller/MDDeliveryTypeController";
 
 import PaginationShop from "../shops/paginationShopList";
 
@@ -79,6 +80,16 @@ function MDDeliveryType({ route, navigate }) {
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
   let userId = localStorage.getItem("userId");
+  const [selectedItems, setSelectedItems] = useState([]);
+  const handleCheckboxChange = (event, item) => {
+    if (event.target.checked) {
+      setSelectedItems([...selectedItems, item]);
+    } else {
+      setSelectedItems(
+        selectedItems.filter((selectedItem) => selectedItem !== item)
+      );
+    }
+  };
 
   const handleEditcheck = (event) => {
     setIsActived(event.target.checked);
@@ -140,7 +151,7 @@ function MDDeliveryType({ route, navigate }) {
   };
   const handleDeleteDeliveryType = async (item) => {
     setLoading(false);
-    const result = await deleteDeliveryType(userId, item.deliveryTypeId);
+    const result = await deleteDeliveryType(userId, selectedItems);
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
@@ -191,57 +202,147 @@ function MDDeliveryType({ route, navigate }) {
   return (
     <div
       style={{
-        background: "#F5F5F5",
+        background: "#E5E4E2",
         height: "900px",
       }}
     >
       <div
         style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
       >
-        <div className="webContainer1 border">Khai báo hình thức giao hàng</div>
+        <div className="webContainer1">Khai báo hình thức giao hàng</div>
 
-        <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
-          <div className="plus">
-            <Button variant="contained" onClick={handleOpenModal}>
-              <AiOutlinePlus size={20} />
-            </Button>
+        <div
+          className="d-flex mt-3 align-items-center justify-content-end"
+          style={{ height: "80px", background: "#ffffff" }}
+        >
+          <div className="d-flex containerBtn align-items-center justify-content-end">
+            <div className="plus" style={{ marginRight: "10px" }}>
+              <Button variant="contained" onClick={handleDeleteDeliveryType}>
+                <div
+                  style={{
+                    display: "flex",
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
+                    paddingLeft: 15,
+                    paddingRight: 15,
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FaRegTrashAlt size={18} />
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      paddingLeft: "8px",
+                    }}
+                  >
+                    Xoá
+                  </div>
+                </div>
+              </Button>
+            </div>
+            <div className="plus" style={{ marginRight: "50px" }}>
+              <Button variant="contained" onClick={handleOpenModal}>
+                <div
+                  style={{
+                    display: "flex",
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FaPlus size={18} />
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      paddingLeft: "8px",
+                    }}
+                  >
+                    Thêm mới
+                  </div>
+                </div>
+              </Button>
+            </div>
           </div>
         </div>
 
-        <div className="border border-top-0" style={{ background: "#FFFFFF" }}>
-          <div className="d-flex">
-            <table className="table mt-2 table-margin border">
+        <div
+          style={{
+            background: "#FFFFFF",
+          }}
+        >
+          <div
+            className="d-flex"
+            style={{ marginLeft: "50px", marginRight: "50px" }}
+          >
+            <table className="table mt-2">
               <thead>
-                <tr style={{ background: "#e5e4e2" }}>
-                  <th scope="col">Mã hình thức</th>
-                  <th scope="col">Tên hình thức</th>
-                  <th scope="col">Kích hoạt</th>
-                  <th scope="col">Ngày tao</th>
-                  <th scope="col">Người tao</th>
-                  <th scope="col">Tác vụ</th>
+                <tr style={{ background: "#848482" }}>
+                  <th>
+                    <label>
+                      <input type="checkbox" />
+                    </label>
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-1"
+                  >
+                    Mã
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-4"
+                  >
+                    Tên hình thức giao hàng
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Kích hoạt
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Ngày tạo
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Người tạo
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
+                    <td>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.deliveryTypeId)}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, item.deliveryTypeId)
+                          }
+                        />
+                      </label>
+                    </td>
                     <th scope="item">{item.deliveryTypeId}</th>
-                    <td>{item.deliveryTypeName}</td>
+                    <td
+                      className="deliveryTypeText"
+                      onClick={() => handleEditClick(item)}
+                    >
+                      {item.deliveryTypeName}
+                    </td>
 
                     <td>{CheckActive(item.isActived)}</td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
                     <td>{item.createdUser}</td>
-                    <td>
-                      <FiEdit
-                        className="edit"
-                        size={20}
-                        onClick={() => handleEditClick(item)}
-                      />
-                      <FiTrash
-                        className="delete"
-                        size={20}
-                        onClick={() => handleDeleteDeliveryType(item)}
-                      />
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -255,10 +356,6 @@ function MDDeliveryType({ route, navigate }) {
             />
           </div>
         </div>
-
-        <div className="d-flex  align-items-center justify-content-end">
-          <div className="plus">CopyRight</div>
-        </div>
       </div>
       <div>
         <Modal
@@ -267,19 +364,21 @@ function MDDeliveryType({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">
+            <div
+              className="border-bottom fw-bold"
+              style={{ paddingBottom: "20px" }}
+            >
               Thêm mới hình thức giao hàng
             </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: "20px" }}
             >
               <TextField
                 required
                 id="outlined-basic"
-                label="Tên danh mục"
+                label="Tên hình thức giao hàng"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
                 onChange={(newValue) =>
                   setTFDeliveryTypeValue(newValue.target.value)
@@ -291,12 +390,12 @@ function MDDeliveryType({ route, navigate }) {
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                rows={6}
+                style={{ width: "90%", marginTop: "20px" }}
                 onChange={(newValue) => setTFDesValue(newValue.target.value)}
               />
             </div>
-            <div style={{ marginTop: 10, marginLeft: 37 }}>
+            <div style={{ marginTop: "16px", marginLeft: 37 }}>
               Kích hoạt{" "}
               <Checkbox
                 disabled
@@ -328,19 +427,21 @@ function MDDeliveryType({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">
+            <div
+              className="border-bottom fw-bold"
+              style={{ paddingBottom: "20px" }}
+            >
               Chỉnh sửa hình thức giao hàng
             </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: "20px" }}
             >
               <TextField
                 required
                 id="outlined-basic"
                 label="Tên hình thức"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
                 value={tFDeliveryTypeEditValue}
                 onChange={(value) =>
@@ -351,8 +452,8 @@ function MDDeliveryType({ route, navigate }) {
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                rows={6}
+                style={{ width: "90%", marginTop: "20px" }}
                 value={tFDesEditValue}
                 onChange={(value) => setTFDesEditValue(value.target.value)}
               />

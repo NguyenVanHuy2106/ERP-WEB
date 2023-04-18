@@ -26,7 +26,7 @@ function Store() {
     loadingPage();
   }, []);
   return (
-    <div style={{ background: "#F5F5F5" }}>
+    <div style={{ background: "#E5E4E2" }}>
       <div
         style={{
           marginLeft: "20px",

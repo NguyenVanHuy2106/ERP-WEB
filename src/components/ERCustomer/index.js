@@ -3,7 +3,6 @@ import React, { useState, useEffect, useStyle, useMemo } from "react";
 import dayjs from "dayjs";
 import { RingLoader, CircleLoader } from "react-spinners";
 import { TextField } from "@mui/material";
-import "./css/model.css";
 import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -18,19 +17,15 @@ import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import Switch from "react-switch";
-
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { storage } from "../../server/FirebaseConfig";
 import {
-  getAllCategoryAPI,
-  addNewCategoryAPI,
-  updateDetailCategoryAPI,
-  deleteCategoryAPI,
-} from "../../controller/Category/CategoryController";
-import {
-  getAll,
-  addNew,
-  update,
-  deleteAPI,
-} from "../../controller/modelController";
+  getAllBrand,
+  addNewBrand,
+  updateBrand,
+  deleteBrand,
+} from "../../controller/MDBrandController";
+import { getAllCustomer } from "../../controller/ERCustomerController";
 import PaginationShop from "../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -48,21 +43,20 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-function MDModel({ route, navigate }) {
+function ERCustomer({ route, navigate }) {
   const classes = useStyles();
   const [tFValue, setTFValue] = useState("");
-  const [tFModelValue, setTFModelValue] = useState("");
-  const [tFBaseProductValue, setTFBaseProductValue] = useState("");
-  const [tFBaseProductEditValue, setTFBaseProductEditValue] = useState("");
+  const [tFBrandValue, setTFBrandValue] = useState("");
+
   const [tFDesValue, setTFDesValue] = useState("");
-  const [tFModelEditValue, setTFModelEditValue] = useState("");
+  const [tFBrandEditValue, setTFBrandEditValue] = useState("");
   const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [modelIdEditValue, setModelIdEditValue] = useState("");
+  const [brandIdEditValue, setBrandIdEditValue] = useState("");
   const [isActived, setIsActived] = useState(false);
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
-  const [modelData, setModelData] = useState([]);
+  const [customerData, setCustomerData] = useState([]);
   //const [valueCatData, setValueCatData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
@@ -77,14 +71,23 @@ function MDModel({ route, navigate }) {
     setOpenModal(false);
     setIsError(false);
     setError("");
+    setUrl("");
   };
   const [checked, setChecked] = React.useState(true);
   const [editChecked, setEditChecked] = React.useState(true);
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
-  // const handleEditcheck = (event) => {
-  //   setEditChecked(event.target.checked);
-  // };
+  let userId = localStorage.getItem("userId");
+  const [selectedItems, setSelectedItems] = useState([]);
+  const handleCheckboxChange = (event, item) => {
+    if (event.target.checked) {
+      setSelectedItems([...selectedItems, item]);
+    } else {
+      setSelectedItems(
+        selectedItems.filter((selectedItem) => selectedItem !== item)
+      );
+    }
+  };
   const handleEditcheck = (event) => {
     setIsActived(event.target.checked);
   };
@@ -92,23 +95,24 @@ function MDModel({ route, navigate }) {
     setChecked(event.target.checked);
   };
   const handleAgrre = async () => {
-    if (tFModelValue.length === 0) {
+    if (tFBrandValue.length === 0) {
       setError("Vui long nhap ten danh muc");
       setIsError(true);
     } else {
       handleCloseModal();
       setLoading(false);
-      const result = await addNew(
-        tFModelValue,
+      const result = await addNewBrand(
+        userId,
+        tFBrandValue,
         tFDesValue,
         1,
-        tFBaseProductValue
+        url
       );
       if (result.status === 200) {
         setLoading(true);
         HandleClick();
         setError("");
-        setTFModelValue("");
+        setTFBrandValue("");
       }
     }
   };
@@ -131,10 +135,9 @@ function MDModel({ route, navigate }) {
     const fromDate = valueFromDate.format("YYYY-MM-DD");
     const toDate = valueToDate.format("YYYY-MM-DD");
     //console.log(tFValue, fromDate, toDate);
-    const result = await getAll(tFValue, fromDate, toDate);
+    const result = await getAllCustomer();
     if (result.status === 200) {
-      //console.log(result.data.ResultObject);
-      setModelData(result.data.ResultObject.modelList);
+      setCustomerData(result.data.data.customers);
       setLoading(true);
     }
   };
@@ -143,10 +146,10 @@ function MDModel({ route, navigate }) {
       return <AiOutlineCheck />;
     }
   };
-  const handleDeleteModel = async (item) => {
+  const handleDeleteBrand = async () => {
     //console.log(item.MODELID);
     setLoading(false);
-    const result = await deleteAPI(item.MODELID);
+    const result = await deleteBrand(userId, selectedItems);
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
@@ -160,15 +163,30 @@ function MDModel({ route, navigate }) {
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = modelData.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = customerData.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const [url, setUrl] = useState("");
+
+  const handleImageChange = (e) => {
+    if (e.target.files[0]) {
+      const uploadTask = storage
+        .ref(`images/${e.target.files[0].name}`)
+        .put(e.target.files[0]);
+      uploadTask.on("state_changed", null, null, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
+          setUrl(downloadUrl);
+        });
+      });
+    }
+  };
+
   const handleEditClick = (item) => {
-    setTFModelEditValue(item.MODELNAME);
-    setTFDesEditValue(item.DESCRIPTION);
-    setTFBaseProductEditValue(item.BASEPRODUCT);
-    setModelIdEditValue(item.MODELID);
-    if (item.ISACTIVED == 1) setIsActived(true);
+    setTFBrandEditValue(item.brandName);
+    setTFDesEditValue(item.brandDescription);
+    setBrandIdEditValue(item.brandId);
+
+    if (item.isActived === 1) setIsActived(true);
     else {
       setIsActived(false);
     }
@@ -180,13 +198,12 @@ function MDModel({ route, navigate }) {
 
     handleCloseModalEdit();
     setLoading(false);
-    const result = await update(
-      modelIdEditValue,
-      tFModelEditValue,
+    const result = await updateBrand(
+      userId,
+      brandIdEditValue,
+      tFBrandEditValue,
       tFDesEditValue,
-      isActived,
-      1,
-      toDate
+      isActived
     );
     if (result.status === 200) {
       setLoading(true);
@@ -197,57 +214,134 @@ function MDModel({ route, navigate }) {
   return (
     <div
       style={{
-        background: "#F5F5F5",
+        background: "#E5E4E2",
         height: "900px",
       }}
     >
       <div
         style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
       >
-        <div className="webContainer1 border">Khai báo model sản phẩm</div>
-
-        <div className="d-flex border mt-3 containerBtn align-items-center justify-content-end">
-          <div className="plus">
-            <Button variant="contained" onClick={handleOpenModal}>
-              <AiOutlinePlus size={20} />
-            </Button>
-          </div>
+        <div className="webContainer1 border">Danh sách khách hàng</div>
+        <div
+          className="d-flex mt-3 align-items-center justify-content-end"
+          style={{ background: "#ffffff", height: "20px" }}
+        >
+          <div className="d-flex containerBtn align-items-center justify-content-end"></div>
         </div>
 
-        <div className="border border-top-0" style={{ background: "#FFFFFF" }}>
-          <div className="d-flex">
-            <table className="table mt-2 table-margin border">
+        <div style={{ background: "#ffffff" }}>
+          <div
+            className="d-flex"
+            style={{ marginLeft: "50px", marginRight: "50px" }}
+          >
+            <table className="table mt-2 ">
               <thead>
-                <tr style={{ background: "#e5e4e2" }}>
-                  <th scope="col">Mã model</th>
-                  <th scope="col">Tên model</th>
-                  <th scope="col">Sản phẩm cơ sở</th>
-                  <th scope="col">Kich hoat</th>
-                  <th scope="col">Ngay tao</th>
-                  <th scope="col">Nguoi tao</th>
-                  <th scope="col">Tac vu</th>
+                <tr style={{ background: "#848482" }}>
+                  <th>
+                    <label>
+                      <input type="checkbox" />
+                    </label>
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-1"
+                  >
+                    Mã
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-3"
+                  >
+                    Tên khách hàng
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-2"
+                  >
+                    Tài khoản
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-2"
+                  >
+                    Giới tính
+                  </th>
+
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-2"
+                  >
+                    Số điện thoại
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-2"
+                  >
+                    Email
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-2"
+                  >
+                    Ngày sinh
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
-                    <th scope="item">{item.MODELID}</th>
-                    <td>{item.MODELNAME}</td>
-                    <td>{item.BASEPRODUCT}</td>
-                    <td>{CheckActive(item.ISACTIVED)}</td>
-                    <td>{new Date(item.CREATEDDATE).toLocaleDateString()}</td>
-                    <td>{item.CREATEDUSER}</td>
                     <td>
-                      <FiEdit
-                        className="edit"
-                        size={20}
-                        onClick={() => handleEditClick(item)}
-                      />
-                      <FiTrash
-                        className="delete"
-                        size={20}
-                        onClick={() => handleDeleteModel(item)}
-                      />
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.customerId)}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, item.customerId)
+                          }
+                        />
+                        {item.name}
+                      </label>
+                    </td>
+                    <th scope="item">{item.customerId}</th>
+                    <td
+                      className="brandEdit d-flex align-items-center"
+                      onClick={() => handleEditClick(item)}
+                    >
+                      <div>
+                        <img
+                          src={
+                            item.md_customer_info.avatar
+                              ? item.md_customer_info.avatar
+                              : "https://icon-library.com/images/image-icon-png/image-icon-png-6.jpg"
+                          }
+                          alt="Selected file"
+                          width={40}
+                          height={40}
+                          style={{ borderRadius: 100 }}
+                        />
+                      </div>
+                      <div style={{ marginLeft: 8 }}>
+                        {item.md_customer_info.firstname +
+                          " " +
+                          item.md_customer_info.lastname}
+                      </div>
+                    </td>
+                    <td>{item.username}</td>
+
+                    <td>{item.md_customer_info.gender === 1 ? "Nam" : "Nữ"}</td>
+                    <td>{item.md_customer_info.phoneNumber}</td>
+                    <td>{item.md_customer_info.email}</td>
+                    <td>
+                      {new Date(
+                        item.md_customer_info.birthday
+                      ).toLocaleDateString()}
                     </td>
                   </tr>
                 ))}
@@ -257,7 +351,7 @@ function MDModel({ route, navigate }) {
           <div className="d-flex justify-content-center">
             <PaginationShop
               postsPerPage={postsPerPage}
-              totalPosts={modelData.length}
+              totalPosts={customerData.length}
               paginate={paginate}
             />
           </div>
@@ -270,41 +364,57 @@ function MDModel({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">Thêm mới Model sản phẩm</div>
+            <div
+              className="border-bottom fw-bold"
+              style={{ paddingBottom: "16px" }}
+            >
+              Thêm mới thương hiệu sản phẩm
+            </div>
+            <div style={{ marginLeft: 37, marginTop: 12 }}>
+              <label htmlFor="image-uploader">
+                {url ? (
+                  <img src={url} alt="Selected file" width={150} height={150} />
+                ) : (
+                  <div
+                    className="d-flex border border-dashed justify-content-center align-items-center"
+                    style={{ width: 150, height: 150 }}
+                  >
+                    Chọn ảnh
+                  </div>
+                )}
+              </label>
+              <input
+                className="border"
+                id="image-uploader"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                style={{ display: "none" }}
+              />
+              {/* <input type="file" onChange={handleImageChange} />
+              {url && <img src={url} alt="Uploaded" width="150" height="100" />} */}
+            </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: 24 }}
             >
               <TextField
                 required
                 id="outlined-basic"
-                label="Tên Model"
+                label="Tên thương hiệu"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
-                onChange={(newValue) => setTFModelValue(newValue.target.value)}
+                onChange={(newValue) => setTFBrandValue(newValue.target.value)}
                 helperText={error}
                 error={isError}
               />
-              <TextField
-                required
-                id="outlined-basic"
-                label="Sản phẩm cơ sở"
-                variant="outlined"
-                size="small"
-                style={{ width: "90%", marginTop: 10 }}
-                onChange={(newValue) =>
-                  setTFBaseProductValue(newValue.target.value)
-                }
-                helperText={error}
-                error={isError}
-              />
+
               <TextField
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                rows={6}
+                style={{ width: "90%", marginTop: 20 }}
                 onChange={(newValue) => setTFDesValue(newValue.target.value)}
               />
             </div>
@@ -341,7 +451,7 @@ function MDModel({ route, navigate }) {
         >
           <Box sx={style}>
             <div className="border-bottom fw-bold">
-              Chỉnh sửa Model sản phẩm
+              Chỉnh sửa thương hiệu sản phẩm
             </div>
             <div
               className="d-flex align-items-center flex-column"
@@ -350,30 +460,18 @@ function MDModel({ route, navigate }) {
               <TextField
                 required
                 id="outlined-basic"
-                label="Tên Model"
+                label="Tên thương hiệu"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
-                value={tFModelEditValue}
-                onChange={(value) => setTFModelEditValue(value.target.value)}
+                value={tFBrandEditValue}
+                onChange={(value) => setTFBrandEditValue(value.target.value)}
               />
-              <TextField
-                required
-                id="outlined-basic"
-                label="Sản phẩm cơ sở"
-                variant="outlined"
-                size="small"
-                style={{ width: "90%", marginTop: 10 }}
-                value={tFBaseProductEditValue}
-                onChange={(value) =>
-                  setTFBaseProductEditValue(value.target.value)
-                }
-              />
+
               <TextField
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
+                rows={6}
                 style={{ width: "90%", marginTop: 10 }}
                 value={tFDesEditValue}
                 onChange={(value) => setTFDesEditValue(value.target.value)}
@@ -417,4 +515,4 @@ function MDModel({ route, navigate }) {
     </div>
   );
 }
-export default MDModel;
+export default ERCustomer;

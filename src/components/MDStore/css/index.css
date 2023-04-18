@@ -9,6 +9,12 @@
 }
 .plus{
     margin-right: 25px;
+    background: #007fff;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    -ms-border-radius: 12px;
+    -o-border-radius: 12px;
 }
 .searchMargin{
     margin-left: 20px;
@@ -16,6 +22,11 @@
 .containerBtn{
     height: 50px;
     background-color: #ffffff;
+    border-radius: 12px;
+    -webkit-border-radius: 12px;
+    -moz-border-radius: 12px;
+    -ms-border-radius: 12px;
+    -o-border-radius: 12px;
 }
 .backgroundTable{
     background: #e5e4e2;
@@ -68,4 +79,14 @@
 }
 .nav-tabs .nav-link:hover {
     background-color: #e5e4e2;
+  }
+
+
+  tr:nth-child(even) {
+    background-color: #E5E4E2;
+  }
+
+  .titleText:hover{
+    cursor: pointer;
+    color: #007fff;
   }

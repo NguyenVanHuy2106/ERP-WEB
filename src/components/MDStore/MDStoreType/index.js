@@ -22,13 +22,14 @@ import Box from "@mui/material/Box";
 // import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
+import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 // import Switch from "react-switch";
 import {
   getAllDeliveryType,
   addNewDeliveryType,
   updateDeliveryType,
   deleteDeliveryType,
-} from "../../../controller/deliveryTypeController";
+} from "../../../controller/MDDeliveryTypeController";
 
 import {
   getAllAPI,
@@ -78,6 +79,16 @@ function MDStoreType({ route, navigate }) {
   const [postsPerPage] = useState(10);
   const [openModal, setOpenModal] = React.useState(false);
   const [openModalEdit, setOpenModalEdit] = React.useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
+  const handleCheckboxChange = (event, item) => {
+    if (event.target.checked) {
+      setSelectedItems([...selectedItems, item]);
+    } else {
+      setSelectedItems(
+        selectedItems.filter((selectedItem) => selectedItem !== item)
+      );
+    }
+  };
   const handleOpenModalEdit = () => setOpenModalEdit(true);
   const handleCloseModalEdit = () => {
     setOpenModalEdit(false);
@@ -161,9 +172,9 @@ function MDStoreType({ route, navigate }) {
       return <AiOutlineCheck />;
     }
   };
-  const handleDeleteDeliveryType = async (item) => {
+  const handleDeleteStoreType = async (item) => {
     setLoading(false);
-    const result = await deleteAPI(userId, item.storeTypeId);
+    const result = await deleteAPI(userId, selectedItems);
     if (result.status === 200) {
       setLoading(true);
       HandleClick();
@@ -217,48 +228,133 @@ function MDStoreType({ route, navigate }) {
   return (
     <div>
       <div className="mt-2">
-        <div className="d-flex border containerBtn align-items-center justify-content-end">
-          <div className="plus">
+        <div className="d-flex containerBtn align-items-center justify-content-end">
+          <div className="plus" style={{ marginRight: "10px" }}>
+            <Button variant="contained" onClick={handleDeleteStoreType}>
+              <div
+                style={{
+                  display: "flex",
+                  paddingBottom: "3px",
+                  paddingTop: "3px",
+                  paddingLeft: 15,
+                  paddingRight: 15,
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FaRegTrashAlt size={18} />
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    paddingLeft: "8px",
+                  }}
+                >
+                  Xoá
+                </div>
+              </div>
+            </Button>
+          </div>
+          <div className="plus" style={{ marginRight: "50px" }}>
             <Button variant="contained" onClick={handleOpenModal}>
-              <AiOutlinePlus size={20} />
+              <div
+                style={{
+                  display: "flex",
+                  paddingBottom: "3px",
+                  paddingTop: "3px",
+                  justifyItems: "center",
+                  alignItems: "center",
+                }}
+              >
+                <FaPlus size={18} />
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    paddingLeft: "8px",
+                  }}
+                >
+                  Thêm mới
+                </div>
+              </div>
             </Button>
           </div>
         </div>
 
-        <div className="border border-top-0" style={{ background: "#ffffff" }}>
+        <div
+          style={{
+            background: "#ffffff",
+            marginLeft: "50px",
+            marginRight: "50px",
+          }}
+        >
           <div className="d-flex">
-            <table className="table mt-3 table-margin border">
+            <table className="table mt-3">
               <thead>
-                <tr style={{ background: "#e5e4e2" }}>
-                  <th scope="col">Mã loại kho</th>
-                  <th scope="col">Tên loại kho</th>
-                  <th scope="col">Kích hoạt</th>
-                  <th scope="col">Ngày tao</th>
-                  <th scope="col">Người tao</th>
-                  <th scope="col">Tác vụ</th>
+                <tr style={{ background: "#848482" }}>
+                  <th className="col-0">
+                    <label>
+                      <input type="checkbox" />
+                    </label>
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-1"
+                  >
+                    Mã loại
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-4"
+                  >
+                    Tên loại kho
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Kích hoạt
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Ngày tạo
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Người tạo
+                  </th>
                 </tr>
               </thead>
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
+                    <th>
+                      <label>
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.storeTypeId)}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, item.storeTypeId)
+                          }
+                        />
+                        {item.name}
+                      </label>
+                    </th>
                     <th scope="item">{item.storeTypeId}</th>
-                    <td>{item.storeTypeName}</td>
+                    <td
+                      onClick={() => handleEditClick(item)}
+                      className="titleText"
+                    >
+                      {item.storeTypeName}
+                    </td>
 
                     <td>{CheckActive(item.isActived)}</td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
                     <td>{item.createdUser}</td>
-                    <td>
-                      <FiEdit
-                        className="edit"
-                        size={20}
-                        onClick={() => handleEditClick(item)}
-                      />
-                      <FiTrash
-                        className="delete"
-                        size={20}
-                        onClick={() => handleDeleteDeliveryType(item)}
-                      />
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -284,17 +380,21 @@ function MDStoreType({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">Thêm mới loại kho</div>
+            <div
+              className="border-bottom fw-bold"
+              style={{ paddingBottom: "20px" }}
+            >
+              Thêm mới loại kho
+            </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: "20px" }}
             >
               <TextField
                 required
                 id="outlined-basic"
                 label="Tên loại kho"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
                 onChange={(newValue) =>
                   setTFStoreTypeValue(newValue.target.value)
@@ -306,8 +406,8 @@ function MDStoreType({ route, navigate }) {
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                rows={6}
+                style={{ width: "90%", marginTop: "20px" }}
                 onChange={(newValue) => setTFDesValue(newValue.target.value)}
               />
             </div>
@@ -320,7 +420,7 @@ function MDStoreType({ route, navigate }) {
                 inputProps={{ "aria-label": "controlled" }}
               />
             </div> */}
-            <div style={{ marginTop: 10, marginLeft: 37 }}>
+            <div style={{ marginTop: "20px", marginLeft: 38 }}>
               <div className="row">
                 <div className="col-3 d-flex align-items-center">
                   Kích hoạt{" "}
@@ -360,8 +460,7 @@ function MDStoreType({ route, navigate }) {
                 label="Số lượng tồn tối đa"
                 type="number"
                 inputProps={{ max: 99999999 }}
-                maxRows={6}
-                style={{ width: "90%", marginTop: 5 }}
+                style={{ width: "90%", marginTop: "20px" }}
                 value={tFEMaxProductQuantity}
                 onChange={(value) => {
                   setErrorMax("");
@@ -396,17 +495,21 @@ function MDStoreType({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">Chỉnh sửa loại kho</div>
+            <div
+              className="border-bottom fw-bold"
+              style={{ paddingBottom: "20px" }}
+            >
+              Chỉnh sửa loại kho
+            </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
+              style={{ marginTop: "20px" }}
             >
               <TextField
                 required
                 id="outlined-basic"
                 label="Tên loại kho"
                 variant="outlined"
-                size="small"
                 style={{ width: "90%" }}
                 value={tFStoreTypeEditValue}
                 onChange={(value) =>
@@ -417,14 +520,14 @@ function MDStoreType({ route, navigate }) {
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
-                maxRows={6}
-                style={{ width: "90%", marginTop: 10 }}
+                rows={6}
+                style={{ width: "90%", marginTop: "20px" }}
                 value={tFDesEditValue}
                 onChange={(value) => setTFDesEditValue(value.target.value)}
               />
             </div>
 
-            <div style={{ marginTop: 10, marginLeft: 37 }}>
+            <div style={{ marginTop: "20px", marginLeft: 37 }}>
               <div className="row">
                 <div className="col-3 d-flex align-items-center">
                   Kích hoạt{" "}
@@ -464,7 +567,7 @@ function MDStoreType({ route, navigate }) {
                 type="number"
                 inputProps={{ max: 99999999 }}
                 maxRows={6}
-                style={{ width: "90%", marginTop: 5 }}
+                style={{ width: "90%", marginTop: "20px" }}
                 value={tFEditMaxProductQuantity}
                 onChange={(value) => {
                   setErrorMaxEdit("");

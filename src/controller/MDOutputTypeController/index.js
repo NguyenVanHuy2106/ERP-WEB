@@ -1,7 +1,7 @@
 import API from "../../server/APIConfig";
-export const getAllSubGroup = async () => {
+export const getAllAPI = async () => {
   try {
-    const response = await API.get("subgroup/get-all", {
+    const response = await API.get("outputType/get-all", {
       headers: {
         "Content-Type": "application/json",
       },
@@ -11,22 +11,29 @@ export const getAllSubGroup = async () => {
     return err;
   }
 };
-
-export const addNewSubGroup = async (
+export const addNewAPI = async (
   userLogin,
-  subGroupName,
-  mainGroupId,
+  outputTypeName,
+  getPriceType,
+  isCanReturn,
+  isSale,
+  isPromotion,
+  voucherTypeId,
   description
 ) => {
   try {
     const response = await API.post(
-      "subgroup/add-new-subgroup",
+      "outputType/addNew",
       {
         userLogin: userLogin,
         data: {
-          subgroupName: subGroupName,
-          subgroupDescription: description,
-          maingroupId: mainGroupId,
+          outputTypeName: outputTypeName,
+          getPriceType: getPriceType,
+          isCanReturn: isCanReturn,
+          isSale: isSale,
+          isPromotion: isPromotion,
+          voucherTypeId: voucherTypeId,
+          description: description,
           isActived: 1,
         },
       },
@@ -41,25 +48,33 @@ export const addNewSubGroup = async (
     return err;
   }
 };
-export const updateSubGroup = async (
+export const updateAPI = async (
   userLogin,
-  subGroupId,
-  subGroupName,
-  mainGroupId,
+  outputTypeId,
+  outputTypeName,
+  getPriceType,
+  isCanReturn,
+  isSale,
+  isPromotion,
+  voucherTypeId,
   description,
   isActived
 ) => {
   try {
     const response = await API.post(
-      `subgroup/update-subgroup`,
+      "outputType/update",
       {
         userLogin: userLogin,
         data: {
-          subgroupId: subGroupId,
+          outputTypeId: outputTypeId,
           updateData: {
-            subgroupName: subGroupName,
-            subgroupDescription: description,
-            maingroupId: mainGroupId,
+            outputTypeName: outputTypeName,
+            getPriceType: getPriceType,
+            isCanReturn: isCanReturn,
+            isSale: isSale,
+            isPromotion: isPromotion,
+            voucherTypeId: voucherTypeId,
+            description: description,
             isActived: isActived,
             isDeleted: 0,
           },
@@ -76,21 +91,14 @@ export const updateSubGroup = async (
     return err;
   }
 };
-export const deleteSubGroup = async (userLogin, subGroupId) => {
+export const deleteAPI = async (userLogin, outputTypeIdList) => {
   try {
     const response = await API.post(
-      `subgroup/update-subgroup`,
+      "outputType/delete",
       {
         userLogin: userLogin,
         data: {
-          subgroupId: subGroupId,
-          updateData: {
-            subgroupName: null,
-            subgroupDescription: null,
-            maingroupId: null,
-            isActived: null,
-            isDeleted: 1,
-          },
+          outputTypeIdList: outputTypeIdList,
         },
       },
       {
