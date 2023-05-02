@@ -24,7 +24,7 @@ export const addNewProductAPI = async (
 ) => {
   try {
     const response = await API.post(
-      "model/create-new-model",
+      "model/web/create-new-model",
       {
         userLogin: userLogin,
         data: {

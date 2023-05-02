@@ -42,7 +42,11 @@ export const shipmentOrderData = [
   },
   {
     title: "Quản lý sản phẩm",
-    path: "productManage",
+    path: "/productManage",
+  },
+  {
+    title: "Quản lý giá sản phẩm",
+    path: "/productPrice",
   },
 ];
 

@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useStyle, useMemo } from "react";
 import { Link } from "react-router-dom";
+
 import dayjs from "dayjs";
 import { RingLoader, CircleLoader } from "react-spinners";
-import { TextField } from "@mui/material";
+import { Alert, TextField } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
 import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
@@ -32,6 +34,7 @@ import { appGetAllMainGroup } from "../../controller/MDMainGroupController";
 import { getAllSubGroupByMainGroup } from "../../controller/MDSubGroupController";
 import { AppGetAllBrand } from "../../controller/MDBrandController";
 import { getAllModelProduct, getModelDetail } from "../../controller/ERProduct";
+import { getAllPriceOfModel } from "../../controller/ERProductPrice";
 import {
   getAllBrand,
   addNewBrand,
@@ -55,11 +58,11 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-function ERProduct({ route, navigate }) {
-  // const history = useHistory();
+function ERProductPrice({ route, navigate }) {
   const classes = useStyles();
   const [tFValue, setTFValue] = useState("");
   const [tFBrandValue, setTFBrandValue] = useState("");
+  const [priceList, setPriceList] = useState([]);
   const [mainGroup, setMainGroup] = useState([]);
   const [mainGroupIdSelect, setMainGroupIdSelect] = useState("");
   const [subGroup, setSubGroup] = useState([]);
@@ -72,6 +75,7 @@ function ERProduct({ route, navigate }) {
   const [tFDesEditValue, setTFDesEditValue] = useState("");
   const [brandIdEditValue, setBrandIdEditValue] = useState("");
   const [isActived, setIsActived] = useState(false);
+  const [keyWordType, setKeyWordType] = useState(0);
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
@@ -146,13 +150,24 @@ function ERProduct({ route, navigate }) {
     }
   };
 
-  var firstDateInMonth =
-    1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
+  const firstDateInMonth = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    1
+  ).toLocaleDateString();
+
+  //   var firstDateInMonth =
+  //     1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
 
   const [valueFromDate, setValueFromDate] = React.useState(
     dayjs(firstDateInMonth)
   );
+  //console.log(valueFromDate.format("DD-MM-YYYY"));
   const [valueToDate, setValueToDate] = React.useState(toDateDayjs);
+  //console.log(valueToDate.format("DD-MM-YYYY"));
+  const formatDate = (date) => {
+    return date.format("DD/MM/YYYY"); // định dạng ngày-tháng-năm
+  };
 
   const setTime = () => {
     setTimeout(() => {
@@ -178,10 +193,47 @@ function ERProduct({ route, navigate }) {
       setBrand(result.data.data.brands);
     }
   };
-  const HandleClick = async () => {
-    if (mainGroupIdSelect === "") {
-      console.log("Huy");
+  const HandleClick = async (keyWordType) => {
+    //console.log(keyWordType);
+    setLoading(false);
+
+    const fromDate = valueFromDate.format("YYYY-MM-DD");
+    const toDate = valueToDate.format("YYYY-MM-DD");
+
+    if (keyWordType === 0) {
+      // console.log("0");
+      //console.log(keyWordType);
+      const result = await getAllPriceOfModel(tFValue, null, fromDate, toDate);
+      //console.log(result);
+      if (result.status === 200) {
+        setLoading(true);
+        setPriceList(result.data.data.priceOfModels);
+      }
+    } else if (keyWordType === 1) {
+      //console.log(keyWordType);
+      //console.log(tFValue, null, fromDate, toDate);
+      const result = await getAllPriceOfModel(tFValue, null, fromDate, toDate);
+      //console.log(result);
+      if (result.status === 200) {
+        setLoading(true);
+        setPriceList(result.data.data.priceOfModels);
+      }
+    } else if (keyWordType === 2) {
+      //console.log(keyWordType);
+      const result1 = await getAllPriceOfModel(null, tFValue, fromDate, toDate);
+      //console.log(result1);
+      if (result1.status === 200) {
+        setLoading(true);
+        setPriceList(result1.data.data.priceOfModels);
+      }
     }
+
+    //console.log(result);
+    // if (result.status === 200) {
+    //   setLoading(true);
+    //   setPriceList(result.data.data.priceOfModels);
+    // }
+    //console.log(num, fromDate, toDate);
   };
   const CheckActive = (isActive) => {
     if (isActive === 1) {
@@ -207,17 +259,17 @@ function ERProduct({ route, navigate }) {
 
   useEffect(() => {
     setTime();
-    getAllModel(null, null, null);
-    HandleClick();
-    HandleGetAllMainGroup();
-    HandleGetAllBrand();
+    //getAllModel(null, null, null);
+    HandleClick("0");
+    //HandleGetAllMainGroup();
+    //HandleGetAllBrand();
   }, []);
   const [url, setUrl] = useState("");
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
 
-  const currentPosts = modelList.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = priceList.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleImageChange = (e) => {
@@ -233,18 +285,7 @@ function ERProduct({ route, navigate }) {
     }
   };
 
-  const handleEditClick = (item) => {
-    setTFBrandEditValue(item.brandName);
-    setTFDesEditValue(item.brandDescription);
-    setBrandIdEditValue(item.brandId);
-
-    if (item.isActived === 1) setIsActived(true);
-    else {
-      setIsActived(false);
-    }
-
-    handleOpenModalEdit();
-  };
+  const handleEditClick = (item) => {};
 
   const handleAgrreEdit = async () => {
     const toDate = valueToDate.format("YYYY-MM-DD");
@@ -274,97 +315,66 @@ function ERProduct({ route, navigate }) {
       <div
         style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
       >
-        <div className="webContainer1 border">Quản lý sản phẩm</div>
+        <div className="webContainer1 border">Quản lý giá sản phẩm</div>
         <div
           className="d-flex mt-3 align-items-center justify-content-start"
           style={{ background: "#ffffff", height: "80px", paddingLeft: "30px" }}
         >
           <div className="d-flex mt-3 justify-content-start  search align-items-center">
-            <div className="searchMargin">
+            <div className="searchMargin" style={{ paddingRight: 16 }}>
               <TextField
                 id="outlined-basic"
                 label="Tu khoa"
                 variant="outlined"
-                size="small"
                 onChange={(newValue) => setTFValue(newValue.target.value)}
               />
             </div>
-            <FormControl sx={{ m: 1, width: 250 }} size="small">
-              <InputLabel
-                id="demo-select-small"
-                className="d-flex justify-content-center"
-              >
-                Chọn ngành hàng
-              </InputLabel>
+            <FormControl style={{ width: 200 }}>
               <Select
-                labelId="demo-select-small"
-                id="demo-select-small"
-                value={mainGroupIdSelect}
-                label="Chọn ngành hàng"
-                onChange={handleChangeMainGroupIdSelect}
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={keyWordType}
+                onChange={(newValue) => {
+                  setKeyWordType(newValue.target.value);
+                }}
               >
-                <MenuItem value="">
-                  <em>---Chọn ngành hàng---</em>
+                <MenuItem value={0}>
+                  <em>---Loại từ khoá---</em>
                 </MenuItem>
-                {mainGroup.map((item, index) => (
-                  <MenuItem key={index} value={item.maingroupId}>
-                    {item.maingroupName}
-                  </MenuItem>
-                ))}
+                <MenuItem value={1}>Tên model</MenuItem>
+                <MenuItem value={2}>Mã model</MenuItem>
               </Select>
             </FormControl>
-
-            <FormControl sx={{ m: 1, width: 250 }} size="small">
-              <InputLabel
-                id="demo-select-small"
-                className="d-flex justify-content-center"
-              >
-                Chọn ngành hàng
-              </InputLabel>
-              <Select
-                labelId="demo-select-small"
-                id="demo-select-small"
-                value={subGroupIdSelect}
-                label="Chọn nhóm hàng"
-                onChange={handleChangeSubGroupIdSelect}
-              >
-                <MenuItem value="">
-                  <em>---Chọn nhóm hàng---</em>
-                </MenuItem>
-                {subGroup.map((item, index) => (
-                  <MenuItem key={index} value={item.subgroupId}>
-                    {item.subgroupName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ m: 1, width: 250 }} size="small">
-              <InputLabel
-                id="demo-select-small"
-                className="d-flex justify-content-center"
-              >
-                Chọn thương hiệu
-              </InputLabel>
-              <Select
-                labelId="demo-select-small"
-                id="demo-select-small"
-                value={brandIdSelect}
-                label="Chọn thương hiệu"
-                onChange={handleChangeBrandIdSelect}
-              >
-                <MenuItem value="">
-                  <em>---Chọn thương hiệu---</em>
-                </MenuItem>
-                {brand.map((item, index) => (
-                  <MenuItem key={index} value={item.brandId}>
-                    {item.brandName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <div className="m-3">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Từ ngày"
+                  value={valueFromDate}
+                  onChange={(newValue) => {
+                    setValueFromDate(newValue);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+            <div>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Đến ngày"
+                  value={valueToDate}
+                  onChange={(newValue) => {
+                    setValueToDate(newValue);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
 
             <div className="searchMargin">
-              <Button variant="contained" onClick={HandleClick}>
+              <Button
+                variant="contained"
+                onClick={() => HandleClick(keyWordType)}
+              >
                 <AiOutlineSearch size={20} />
                 Tim kiem
               </Button>
@@ -375,7 +385,7 @@ function ERProduct({ route, navigate }) {
         <div style={{ background: "#ffffff" }}>
           <div
             className="d-flex"
-            style={{ marginLeft: "50px", marginRight: "50px", paddingTop: 10 }}
+            style={{ marginLeft: "50px", marginRight: "50px" }}
           >
             <table className="table mt-2 ">
               <thead>
@@ -388,14 +398,14 @@ function ERProduct({ route, navigate }) {
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
-                    className="col-2"
+                    className="col-1"
                   >
-                    Mã model
+                    Mã
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
-                    className="col-6"
+                    className="col-4"
                   >
                     Tên model
                   </th>
@@ -404,7 +414,19 @@ function ERProduct({ route, navigate }) {
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col-4"
                   >
-                    Kích hoạt
+                    Giá
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col-2"
+                  >
+                    Ngày bắt đầu
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col-2"
+                  >
+                    Ngày kết thúc
                   </th>
                 </tr>
               </thead>
@@ -422,14 +444,11 @@ function ERProduct({ route, navigate }) {
                         />
                       </label>
                     </td>
-                    <th scope="item">
-                      <div className="d-flex align-items-center">
-                        {item.modelId}
-                      </div>
-                    </th>
+                    <th scope="item">{item.modelId}</th>
                     <td className="brandEdit ">
                       <Link
-                        to={`/productManage/${item.modelId}`}
+                        to={`/productPriceDetail/${item.modelId}`}
+                        state={{ price: item.modelPrice.price }}
                         className="d-flex align-items-center"
                       >
                         <div>
@@ -445,61 +464,35 @@ function ERProduct({ route, navigate }) {
                         {item.modelName}
                       </Link>
                     </td>
-                    <td>{item.isActived ? <AiOutlineCheck /> : ""}</td>
+
+                    <td>
+                      {item.modelPrice.price
+                        ? item.modelPrice.price
+                        : "Chưa làm giá"}
+                    </td>
+                    <td>
+                      {item.modelPrice.fromDate
+                        ? new Date(
+                            item.modelPrice.fromDate
+                          ).toLocaleDateString()
+                        : ""}
+                    </td>
+                    <td>
+                      {item.modelPrice.fromDate
+                        ? new Date(
+                            item.modelPrice.fromDate
+                          ).toLocaleDateString()
+                        : ""}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            {/* <div
-              className="d-flex justify-content-center"
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap",
-                overflowY: "scroll",
-              }}
-            >
-              {currentPosts.map((item, index) => (
-                <div key={index}>
-                  <Link to={`/productManage/${item.modelId}`}>
-                    <Card
-                      className="d-flex justify-content-center align-items-center"
-                      sx={{
-                        maxWidth: 200,
-                        height: 320,
-                        boxShadow: "none",
-
-                        borderRadius: 1,
-                        marginLeft: "0.5px",
-                        marginRight: "0.5px",
-                        backgroundColor: "#FFFFFF",
-                      }}
-                      style={{
-                        marginTop: "10px",
-                      }}
-                    >
-                      <CardActionArea>
-                        <CardMedia
-                          component="img"
-                          height="200"
-                          src={item.modelImagePath}
-                          alt="green iguana"
-                        />
-                        <CardContent className="d-flex justify-content-center">
-                          <Typography gutterBottom variant="h7" component="div">
-                            {item.modelName}
-                          </Typography>
-                        </CardContent>
-                      </CardActionArea>
-                    </Card>
-                  </Link>
-                </div>
-              ))}
-            </div> */}
           </div>
           <div className="d-flex justify-content-center">
             <PaginationShop
               postsPerPage={postsPerPage}
-              totalPosts={modelList.length}
+              totalPosts={priceList.length}
               paginate={paginate}
             />
           </div>
@@ -518,4 +511,4 @@ function ERProduct({ route, navigate }) {
     </div>
   );
 }
-export default ERProduct;
+export default ERProductPrice;

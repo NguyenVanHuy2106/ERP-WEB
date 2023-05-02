@@ -23,6 +23,8 @@ import MDProduct from "../components/MDProduct";
 import ERCustomer from "../components/ERCustomer";
 import ERProduct from "../components/ERProduct";
 import ERProductDetail from "../components/ERProductDetail";
+import ERProductPrice from "../components/ERProductPrice";
+import ERProductPriceDetail from "../components/ERProductPriceDetail";
 function App() {
   return (
     <BrowserRouter>
@@ -45,6 +47,11 @@ function App() {
         <Route path="/outputProduct" element={<MDOutputProduct />} />
         <Route path="/mainGroup_subGroup" element={<MDMainGroupSubGroup />} />
         <Route path="/products" element={<MDProduct />} />
+        <Route path="/productPrice" element={<ERProductPrice />} />
+        <Route
+          path="/productPriceDetail/:modelId"
+          element={<ERProductPriceDetail />}
+        />
         <Route path="/productManage" element={<ERProduct />} />
         <Route path="/productManage/:modelId" element={<ERProductDetail />} />
         <Route path="/customers" element={<ERCustomer />} />

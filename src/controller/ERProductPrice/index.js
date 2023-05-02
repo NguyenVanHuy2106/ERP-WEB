@@ -1,70 +1,28 @@
 import API from "../../server/APIConfig";
 import { storeId } from "../../server/storeConfig";
-export const getAllModelProduct = async (maingroupId, subgroupId, brandId) => {
-  try {
-    const response = await API.post(
-      "model/web/get-model-by-attribute",
-      {
-        userLogin: null,
-        data: {
-          maingroupId: maingroupId,
-          subgroupId: subgroupId,
-          brandId: brandId,
-          isActive: 1,
-          limit: 100,
-          offset: 0,
-        },
-      },
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response;
-  } catch (err) {
-    return err;
-  }
-};
-export const getModelDetail = async (modelId) => {
-  try {
-    const response = await API.post(
-      "model/general/get-model-detail",
-      {
-        userLogin: null,
-        data: {
-          modelId: modelId,
-        },
-      },
+export const getAllPriceOfModel = async (
+  keyword,
+  modelId,
+  fromDate,
+  toDate
+) => {
+  //console.log(modelId, fromDate, toDate);
 
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response;
-  } catch (err) {
-    return err;
-  }
-};
-
-export const addNewPriceOfModel = async (modelId, price, fromDate, toDate) => {
   try {
-    //console.log(modelId, price, fromDate);
     const response = await API.post(
-      "price-of-model/create-price",
+      "price-of-model/get-all",
       {
         userLogin: null,
         data: {
+          keyword: keyword,
           modelId: modelId,
           storeId: storeId,
-          price: price,
           fromDate: fromDate,
           toDate: toDate,
+          offset: 0,
+          limit: 400,
         },
       },
-
       {
         headers: {
           "Content-Type": "application/json",
@@ -76,9 +34,8 @@ export const addNewPriceOfModel = async (modelId, price, fromDate, toDate) => {
     return err;
   }
 };
-export const getPriceByModelAPI = async (modelId) => {
+export const getModelPriceDetail = async (modelId) => {
   try {
-    //console.log(modelId, price, fromDate);
     const response = await API.post(
       "price-of-model/get-price-detail",
       {
@@ -88,7 +45,6 @@ export const getPriceByModelAPI = async (modelId) => {
           storeId: storeId,
         },
       },
-
       {
         headers: {
           "Content-Type": "application/json",
@@ -100,20 +56,118 @@ export const getPriceByModelAPI = async (modelId) => {
     return err;
   }
 };
-export const getProductIdByVarrant = async (
-  modelId,
-  varantProductAttributeList
-) => {
+export const getVarrantPriceDetail = async (modelId, productId) => {
   try {
-    //console.log(modelId, varantProductAttributeList);
     const response = await API.post(
-      "model/general/get-productid-by-varant",
+      "price-of-product/get-price-detail",
       {
         userLogin: null,
         data: {
           modelId: modelId,
+          productId: productId,
           storeId: storeId,
-          VarantProductAttributeList: varantProductAttributeList,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+////////////
+export const updatePriceOfModel = async (
+  priceOfModelId,
+  modelId,
+  price,
+  fromDate,
+  toDate
+) => {
+  try {
+    const response = await API.post(
+      "price-of-model/update-price-of-model",
+      {
+        userLogin: null,
+        data: {
+          priceOfModelId: priceOfModelId,
+          modelId: modelId,
+          storeId: storeId,
+          price: price,
+          fromDate: fromDate,
+          toDate: toDate,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+export const updatePriceOfVarrant = async (
+  priceOfProductId,
+  modelId,
+  productId,
+  price,
+  fromDate,
+  toDate
+) => {
+  try {
+    const response = await API.post(
+      "price-of-product/update-price-of-product",
+      {
+        userLogin: null,
+        data: {
+          priceOfProductId: priceOfProductId,
+          modelId: modelId,
+          productId: productId,
+          storeId: storeId,
+          price: price,
+          fromDate: fromDate,
+          toDate: toDate,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const addNewPriceOfVarrant = async (
+  modelId,
+  productId,
+  price,
+  fromDate,
+  toDate
+) => {
+  try {
+    //console.log(modelId, price, fromDate);
+    const response = await API.post(
+      "price-of-product/create-price",
+      {
+        userLogin: null,
+        data: {
+          modelId: modelId,
+          productId: productId,
+          storeId: storeId,
+          price: price,
+          fromDate: fromDate,
+          toDate: toDate,
         },
       },
 

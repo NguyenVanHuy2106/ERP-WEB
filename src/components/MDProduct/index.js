@@ -229,6 +229,7 @@ export default function MDProduct() {
         setShowAlert(true);
         setLoading(true);
       }
+      // console.log(items);
       // console.log(
       //   userId,
       //   modelName,
@@ -298,6 +299,24 @@ export default function MDProduct() {
     const result = await AppGetAllQuantityUnit();
     if (result.status === 200) {
       setQuantity(result.data.data.quantityUnits);
+    }
+  };
+  const handleImageChangeVarrant = (e, index, indexVariant) => {
+    //console.log(index, indexVariant);
+    if (e.target.files[0]) {
+      const uploadTask = storage
+        .ref(`images/${e.target.files[0].name}`)
+        .put(e.target.files[0]);
+      uploadTask.on("state_changed", null, null, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
+          setItems((prevItems) => {
+            const newItems = [...prevItems];
+            newItems[index].VarrantAttributeValueList[indexVariant].imagePath =
+              downloadUrl;
+            return newItems;
+          });
+        });
+      });
     }
   };
 
@@ -598,7 +617,7 @@ export default function MDProduct() {
                           {item.VarrantAttributeValueList.map(
                             (varrant, indexVariant) => (
                               <div
-                                className="d-flex align-items-center"
+                                //className="d-flex align-items-center"
                                 key={indexVariant}
                                 style={{ marginTop: 12 }}
                               >
@@ -619,6 +638,7 @@ export default function MDProduct() {
                                         const newValue = event.target.value;
                                         setItems((prevItems) => {
                                           const newItems = [...prevItems];
+
                                           newItems[
                                             index
                                           ].VarrantAttributeValueList[
@@ -629,16 +649,26 @@ export default function MDProduct() {
                                         });
                                       }}
                                     />
+                                    <button
+                                      className="d-flex justify-content-center align-items-center"
+                                      style={{
+                                        marginLeft: 10,
+                                        width: 30,
+                                        height: 30,
+                                      }}
+                                      onClick={() =>
+                                        handleRemoveVariant(index, indexVariant)
+                                      }
+                                    >
+                                      <FiTrash2 />
+                                    </button>
                                   </div>
                                 </div>
-                                <div
-                                  style={{ height: 100 }}
-                                  className="d-flex align-items-center"
-                                >
+                                <div>
                                   <div
                                     style={{ marginLeft: 37, marginTop: 12 }}
                                   >
-                                    <label htmlFor="image-uploader">
+                                    <label htmlFor="image-uploader1">
                                       {varrant.imagePath ? (
                                         <img
                                           src={varrant.imagePath}
@@ -656,58 +686,19 @@ export default function MDProduct() {
                                       )}
                                     </label>
                                     <input
-                                      className="border"
-                                      id="image-uploader"
+                                      id="image-uploader1"
                                       type="file"
                                       accept="image/*"
-                                      onChange={(e) => {
-                                        if (e.target.files[0]) {
-                                          const uploadTask = storage
-                                            .ref(
-                                              `images/${e.target.files[0].name}`
-                                            )
-                                            .put(e.target.files[0]);
-                                          uploadTask.on(
-                                            "state_changed",
-                                            null,
-                                            null,
-                                            () => {
-                                              uploadTask.snapshot.ref
-                                                .getDownloadURL()
-                                                .then((downloadUrl) => {
-                                                  setItems((prevItems) => {
-                                                    const newItems = [
-                                                      ...prevItems,
-                                                    ];
-                                                    newItems[
-                                                      index
-                                                    ].VarrantAttributeValueList[
-                                                      indexVariant
-                                                    ].imagePath = downloadUrl;
-                                                    return newItems;
-                                                  });
-                                                });
-                                            }
-                                          );
-                                        }
-                                      }}
-                                      style={{ display: "none" }}
+                                      onChange={(e) =>
+                                        handleImageChangeVarrant(
+                                          e,
+                                          index,
+                                          indexVariant
+                                        )
+                                      }
                                     />
                                   </div>
                                 </div>
-                                <button
-                                  className="d-flex justify-content-center align-items-center"
-                                  style={{
-                                    marginLeft: 10,
-                                    width: 30,
-                                    height: 30,
-                                  }}
-                                  onClick={() =>
-                                    handleRemoveVariant(index, indexVariant)
-                                  }
-                                >
-                                  <FiTrash2 />
-                                </button>
                               </div>
                             )
                           )}

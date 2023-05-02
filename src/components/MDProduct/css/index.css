@@ -10,3 +10,19 @@
   .DeleDeleteItems:hover{
     color: blueviolet;
   }
+
+  /* .noFile{
+    opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  }
+  .noFile::-webkit-file-upload-button {
+    visibility: hidden;
+  } */
+  .hide-file-name {
+    opacity: 0;
+  }
+  
