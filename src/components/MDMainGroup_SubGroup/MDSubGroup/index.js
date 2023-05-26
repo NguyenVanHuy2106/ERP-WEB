@@ -178,9 +178,11 @@ function MDSubGroup({ route, navigate }) {
       const result = await addNewSubGroup(
         userId,
         tFSubGroupValue,
+
         mainGroupSelect,
         tFDesValue,
-        url
+        url,
+        checkedIMEI
       );
       if (result.status === 200) {
         setLoading(true);
@@ -254,13 +256,17 @@ function MDSubGroup({ route, navigate }) {
   const handleEditClick = (item) => {
     setTFSubGroupEditValue(item.subgroupName);
     setTFDesEditValue(item.subgroupDescription);
-
+    setUrlEdit(item.subgroupImagePath);
     setMainGroupSelectEdit(item.maingroupId);
 
     setSubGroupIdValueEdit(item.subgroupId);
     if (item.isActived === 1) setCheckedActivedEdit(true);
     else {
       setCheckedActivedEdit(false);
+    }
+    if (item.isRequestImei === 1) setCheckedIMEIEdit(true);
+    else {
+      setCheckedIMEIEdit(false);
     }
 
     handleOpenModalEdit();
@@ -276,7 +282,8 @@ function MDSubGroup({ route, navigate }) {
       tFSubGroupEditValue,
       mainGroupSelectEdit,
       tFDesEditValue,
-      checkedActiveEdit
+      checkedActiveEdit,
+      urlEdit
     );
     if (result.status === 200) {
       setLoading(true);
@@ -292,6 +299,7 @@ function MDSubGroup({ route, navigate }) {
 
   //////////firebase
   const [url, setUrl] = useState("");
+  const [urlEdit, setUrlEdit] = useState("");
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -301,6 +309,18 @@ function MDSubGroup({ route, navigate }) {
       uploadTask.on("state_changed", null, null, () => {
         uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
           setUrl(downloadUrl);
+        });
+      });
+    }
+  };
+  const handleImageChangeEdit = (e) => {
+    if (e.target.files[0]) {
+      const uploadTask = storage
+        .ref(`images/${e.target.files[0].name}`)
+        .put(e.target.files[0]);
+      uploadTask.on("state_changed", null, null, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
+          setUrlEdit(downloadUrl);
         });
       });
     }
@@ -602,6 +622,19 @@ function MDSubGroup({ route, navigate }) {
             <div style={{ marginTop: 10, marginLeft: 37 }}>
               <div className="row">
                 <div className="col-3 d-flex align-items-center">
+                  Yêu cầu IMEI
+                </div>
+                <Checkbox
+                  className="col-1"
+                  checked={checkedIMEI}
+                  onChange={handleChangeIMEI}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div>
+            </div>
+            <div style={{ marginTop: 10, marginLeft: 37 }}>
+              <div className="row">
+                <div className="col-3 d-flex align-items-center">
                   Kích hoạt{" "}
                 </div>
                 <Checkbox
@@ -643,14 +676,37 @@ function MDSubGroup({ route, navigate }) {
             >
               Chỉnh sửa nhóm hàng sản phẩm
             </div>
+            <div style={{ marginLeft: 37, marginTop: 12 }}>
+              <label htmlFor="image-uploader">
+                {urlEdit ? (
+                  <img
+                    src={urlEdit}
+                    alt="Selected file"
+                    width={150}
+                    height={150}
+                  />
+                ) : (
+                  <div
+                    className="d-flex border border-dashed justify-content-center align-items-center"
+                    style={{ width: 150, height: 150 }}
+                  >
+                    Chọn ảnh
+                  </div>
+                )}
+              </label>
+              <input
+                className="border"
+                id="image-uploader"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChangeEdit}
+                style={{ display: "none" }}
+              />
+            </div>
             <div
               className="d-flex align-items-center flex-column"
               style={{ marginTop: 20 }}
             >
-              <div>
-                <input type="file" onChange={handleImageChange} />
-                {url && <img src={url} alt="Uploaded" />}
-              </div>
               <TextField
                 required
                 id="outlined-basic"
@@ -693,6 +749,19 @@ function MDSubGroup({ route, navigate }) {
                   setTFDesEditValue(newValue.target.value)
                 }
               />
+            </div>
+            <div style={{ marginTop: 10, marginLeft: 37 }}>
+              <div className="row">
+                <div className="col-3 d-flex align-items-center">
+                  Yêu cầu IMEI
+                </div>
+                <Checkbox
+                  className="col-1"
+                  checked={checkedIMEIEdit}
+                  onChange={handleChangeIMEIEdit}
+                  inputProps={{ "aria-label": "controlled" }}
+                />
+              </div>
             </div>
             <div style={{ marginTop: 10, marginLeft: 37 }}>
               <div className="row">

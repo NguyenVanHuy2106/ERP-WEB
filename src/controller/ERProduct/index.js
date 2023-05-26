@@ -26,10 +26,40 @@ export const getAllModelProduct = async (maingroupId, subgroupId, brandId) => {
     return err;
   }
 };
+export const getAllModelAPI = async () => {
+  try {
+    const response = await API.get("model/general/get-all", {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+export const getAllModelBySubGroupAPI = async (subgroupId) => {
+  try {
+    const response = await API.get(
+      "model/general/get-all-by-subgroup",
+      {
+        params: { subgroupId: subgroupId },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
 export const getModelDetail = async (modelId) => {
   try {
     const response = await API.post(
-      "model/general/get-model-detail",
+      "model/web/get-model-detail",
       {
         userLogin: null,
         data: {
@@ -107,7 +137,7 @@ export const getProductIdByVarrant = async (
   try {
     //console.log(modelId, varantProductAttributeList);
     const response = await API.post(
-      "model/general/get-productid-by-varant",
+      "model/web/get-productid-by-varant",
       {
         userLogin: null,
         data: {
@@ -117,6 +147,49 @@ export const getProductIdByVarrant = async (
         },
       },
 
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const getProductIdListByModel = async (modelId) => {
+  try {
+    //console.log(modelId, varantProductAttributeList);
+    const response = await API.post(
+      "model/general/get-all-productid-by-model",
+      {
+        modelId: modelId,
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const updateModelList = async (userLogin, updateModelList) => {
+  try {
+    //console.log(modelId, varantProductAttributeList);
+    const response = await API.post(
+      "model/web/update-model-list",
+      {
+        userLogin: userLogin,
+        data: {
+          updateModelList: updateModelList,
+        },
+      },
       {
         headers: {
           "Content-Type": "application/json",

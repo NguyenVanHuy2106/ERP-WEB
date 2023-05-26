@@ -14,6 +14,7 @@ export const getAllDeliveryType = async () => {
 export const addNewDeliveryType = async (
   userLogin,
   deliveryTypeName,
+  partnerServiceCode,
   description,
   isActived
 ) => {
@@ -24,6 +25,7 @@ export const addNewDeliveryType = async (
         userLogin: userLogin,
         data: {
           deliveryTypeName: deliveryTypeName,
+          partnerServiceCode: partnerServiceCode,
           deliveryTypeDescription: description,
           isActived: isActived,
         },
@@ -43,7 +45,8 @@ export const updateDeliveryType = async (
   deliveryTypeId,
   deliveryTypeName,
   description,
-  isActived
+  isActived,
+  partnerServiceCode
 ) => {
   try {
     const response = await API.post(
@@ -55,6 +58,7 @@ export const updateDeliveryType = async (
             deliveryTypeName: deliveryTypeName,
             deliveryTypeDescription: description,
             isActived: isActived,
+            partnerServiceCode: partnerServiceCode,
             isDeleted: 0,
           },
         },

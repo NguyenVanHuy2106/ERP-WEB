@@ -20,7 +20,11 @@ export const addNewProductAPI = async (
   subgroupId,
   brandId,
   quantityUnitId,
-  modelAttributeList
+  modelAttributeList,
+  length,
+  width,
+  height,
+  weight
 ) => {
   try {
     const response = await API.post(
@@ -37,6 +41,10 @@ export const addNewProductAPI = async (
             subgroupId: subgroupId,
             brandId: brandId,
             quantityUnitId: quantityUnitId,
+            length: length,
+            width: width,
+            height: height,
+            weight: weight,
             isActived: 1,
           },
           modelAttributeList: modelAttributeList,

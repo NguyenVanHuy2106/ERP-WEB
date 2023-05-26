@@ -19,6 +19,11 @@ import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import { useLocation } from "react-router-dom";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select from "@mui/material/Select";
 // import Switch from "react-switch";
 import {
   getAllDeliveryType,
@@ -63,6 +68,8 @@ function MDDeliveryType({ route, navigate }) {
   const [deliveryTypeData, setDeliveryTypeData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
+  const [partnerServiceCode, setPartnerServiceCode] = useState("");
+  const [partnerServiceCodeEdit, setPartnerServiceCodeEdit] = useState("");
   const [openModal, setOpenModal] = React.useState(false);
   const [openModalEdit, setOpenModalEdit] = React.useState(false);
   const handleOpenModalEdit = () => setOpenModalEdit(true);
@@ -74,6 +81,12 @@ function MDDeliveryType({ route, navigate }) {
     setOpenModal(false);
     setIsError(false);
     setError("");
+  };
+  const handleChangePartnerServiceCode = (event) => {
+    setPartnerServiceCode(event.target.value);
+  };
+  const handleChangePartnerServiceCodeEdit = (event) => {
+    setPartnerServiceCodeEdit(event.target.value);
   };
   const [checked, setChecked] = React.useState(true);
   // const [editChecked, setEditChecked] = React.useState(true);
@@ -107,6 +120,7 @@ function MDDeliveryType({ route, navigate }) {
       const result = await addNewDeliveryType(
         userId,
         tFDeliveryTypeValue,
+        partnerServiceCode,
         tFDesValue,
         1
       );
@@ -175,7 +189,8 @@ function MDDeliveryType({ route, navigate }) {
     setTFDeliveryTypeEditValue(item.deliveryTypeName);
     setTFDesEditValue(item.deliveryTypeDescription);
     setDeliveryTypeIdEditValue(item.deliveryTypeId);
-    if (item.isActived == 1) setIsActived(true);
+    setPartnerServiceCodeEdit(item.partnerServiceCode);
+    if (item.isActived === 1) setIsActived(true);
     else {
       setIsActived(false);
     }
@@ -191,7 +206,8 @@ function MDDeliveryType({ route, navigate }) {
       deliveryTypeIdEditValue,
       tFDeliveryTypeEditValue,
       tFDesEditValue,
-      isActived
+      isActived,
+      partnerServiceCodeEdit
     );
     if (result.status === 200) {
       setLoading(true);
@@ -386,6 +402,32 @@ function MDDeliveryType({ route, navigate }) {
                 helperText={error}
                 error={isError}
               />
+              <FormControl
+                sx={{
+                  m: 1,
+                  width: "90%",
+                  marginTop: "18px",
+                }}
+              >
+                <InputLabel id="demo-select-small">
+                  Loại dịch vụ đối tác
+                </InputLabel>
+                <Select
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  value={partnerServiceCode}
+                  label="Loại thanh toán"
+                  onChange={handleChangePartnerServiceCode}
+                >
+                  <MenuItem value="">
+                    <em>---Chọn loại dịch vụ đối tác---</em>
+                  </MenuItem>
+
+                  <MenuItem value={1}>1 - Giao hàng nhanh</MenuItem>
+                  <MenuItem value={2}>2 - Giao hàng tiêu chuẩn</MenuItem>
+                  <MenuItem value={3}>3 - Giao hàng tiết kiệm</MenuItem>
+                </Select>
+              </FormControl>
               <TextField
                 id="outlined-multiline-flexible"
                 label="Mô tả"
@@ -448,6 +490,32 @@ function MDDeliveryType({ route, navigate }) {
                   setTFDeliveryTypeEditValue(value.target.value)
                 }
               />
+              <FormControl
+                sx={{
+                  m: 1,
+                  width: "90%",
+                  marginTop: "18px",
+                }}
+              >
+                <InputLabel id="demo-select-small">
+                  Loại dịch vụ đối tác
+                </InputLabel>
+                <Select
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  value={partnerServiceCodeEdit}
+                  label="Loại thanh toán"
+                  onChange={handleChangePartnerServiceCodeEdit}
+                >
+                  <MenuItem value="">
+                    <em>---Chọn loại dịch vụ đối tác---</em>
+                  </MenuItem>
+
+                  <MenuItem value={1}>1 - Giao hàng nhanh</MenuItem>
+                  <MenuItem value={2}>2 - Giao hàng tiêu chuẩn</MenuItem>
+                  <MenuItem value={3}>3 - Giao hàng tiết kiệm</MenuItem>
+                </Select>
+              </FormControl>
               <TextField
                 id="outlined-multiline-flexible"
                 label="Mô tả"

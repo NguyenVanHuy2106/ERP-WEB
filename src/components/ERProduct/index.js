@@ -10,7 +10,12 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
+import {
+  AiOutlineSearch,
+  AiOutlinePlus,
+  AiOutlineCheck,
+  AiOutlineFileAdd,
+} from "react-icons/ai";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -26,12 +31,18 @@ import CardMedia from "@mui/material/CardMedia";
 import { CardActionArea } from "@mui/material";
 import Switch from "react-switch";
 import "./css/index.css";
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+
+import { FaPlus, FaRegTrashAlt, FaLaptopHouse } from "react-icons/fa";
+
 import { storage } from "../../server/FirebaseConfig";
 import { appGetAllMainGroup } from "../../controller/MDMainGroupController";
 import { getAllSubGroupByMainGroup } from "../../controller/MDSubGroupController";
 import { AppGetAllBrand } from "../../controller/MDBrandController";
-import { getAllModelProduct, getModelDetail } from "../../controller/ERProduct";
+import {
+  getAllModelProduct,
+  getModelDetail,
+  updateModelList,
+} from "../../controller/ERProduct";
 import {
   getAllBrand,
   addNewBrand,
@@ -98,15 +109,41 @@ function ERProduct({ route, navigate }) {
   const [isError, setIsError] = useState(false);
   let userId = localStorage.getItem("userId");
   const [selectedItems, setSelectedItems] = useState([]);
+  // const handleCheckboxChange = (event, item, isActived) => {
+  //   if (event.target.checked) {
+  //     setSelectedItems([...selectedItems, { item, isActived }]);
+  //   } else {
+  //     setSelectedItems(
+  //       selectedItems.filter((selectedItem) => selectedItem !== item)
+  //     );
+  //   }
+  // };
+  // const handleCheckboxChange = (event, itemModelId, itemIsActived) => {
+  //   if (event.target.checked) {
+  //     setSelectedItems([
+  //       ...selectedItems,
+  //       { modelId: itemModelId, isActived: true },
+  //     ]);
+  //   } else {
+  //     setSelectedItems(
+  //       selectedItems.filter(
+  //         (selectedItem) => selectedItem.modelId !== itemModelId
+  //       )
+  //     );
+  //   }
+  // };
   const handleCheckboxChange = (event, item) => {
+    const { modelId, isActived } = item;
+
     if (event.target.checked) {
-      setSelectedItems([...selectedItems, item]);
+      setSelectedItems([...selectedItems, { modelId, isActived: !isActived }]);
     } else {
       setSelectedItems(
-        selectedItems.filter((selectedItem) => selectedItem !== item)
+        selectedItems.filter((selectedItem) => selectedItem.modelId !== modelId)
       );
     }
   };
+
   const handleChangeMainGroupIdSelect = (event) => {
     setMainGroupIdSelect(event.target.value);
     HandleSubGroup(event.target.value);
@@ -202,6 +239,15 @@ function ERProduct({ route, navigate }) {
     const result = await getAllModelProduct(mainGroupId, subGroupId, brandId);
     if (result.status === 200) {
       setModelList(result.data.data.modelList);
+    }
+  };
+  const handleDeleteItems = async () => {
+    setLoading(false);
+    const result = await updateModelList(userId, selectedItems);
+    console.log(result);
+    if (result.status === 200) {
+      setLoading(true);
+      getAllModel(null, null, null);
     }
   };
 
@@ -362,12 +408,25 @@ function ERProduct({ route, navigate }) {
                 ))}
               </Select>
             </FormControl>
-
-            <div className="searchMargin">
+            <div style={{ marginLeft: 8, marginRight: 8 }}>
               <Button variant="contained" onClick={HandleClick}>
                 <AiOutlineSearch size={20} />
-                Tim kiem
+                Tìm
               </Button>
+            </div>
+            <div style={{ marginLeft: 8, marginRight: 8 }}>
+              <Button variant="contained" onClick={() => handleDeleteItems()}>
+                <FiTrash size={15} />
+                Xoá
+              </Button>
+            </div>
+            <div style={{ marginLeft: 8, marginRight: 8 }}>
+              <Link to={"/products"}>
+                <Button variant="contained">
+                  <AiOutlineFileAdd size={15} />
+                  Thêm
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
@@ -406,6 +465,12 @@ function ERProduct({ route, navigate }) {
                   >
                     Kích hoạt
                   </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col-4"
+                  >
+                    Khai báo tồn
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -413,11 +478,25 @@ function ERProduct({ route, navigate }) {
                   <tr key={index}>
                     <td>
                       <label>
-                        <input
+                        {/* <input
                           type="checkbox"
                           checked={selectedItems.includes(item.modelId)}
                           onChange={(event) =>
-                            handleCheckboxChange(event, item.modelId)
+                            handleCheckboxChange(
+                              event,
+                              item.modelId,
+                              item.isActived
+                            )
+                          }
+                        /> */}
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.some(
+                            (selectedItem) =>
+                              selectedItem.modelId === item.modelId
+                          )}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, item)
                           }
                         />
                       </label>
@@ -446,6 +525,11 @@ function ERProduct({ route, navigate }) {
                       </Link>
                     </td>
                     <td>{item.isActived ? <AiOutlineCheck /> : ""}</td>
+                    <td>
+                      <Link to={"/inventory"} state={{ data: item.modelId }}>
+                        <FaLaptopHouse className="brandEdit" size={35} />
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>

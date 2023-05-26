@@ -18,6 +18,7 @@ import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import Switch from "react-switch";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
+import { BiBlock } from "react-icons/bi";
 import { storage } from "../../server/FirebaseConfig";
 import {
   getAllBrand,
@@ -62,6 +63,9 @@ function ERCustomer({ route, navigate }) {
   const [postsPerPage] = useState(10);
   const [openModal, setOpenModal] = React.useState(false);
   const [openModalEdit, setOpenModalEdit] = React.useState(false);
+  const [customerObject, setCustomerObject] = useState({});
+  const [customerObjectDetail, setCustomerObjectDetail] = useState({});
+  //console.log(customerObject);
   const handleOpenModalEdit = () => setOpenModalEdit(true);
   const handleCloseModalEdit = () => {
     setOpenModalEdit(false);
@@ -182,16 +186,9 @@ function ERCustomer({ route, navigate }) {
   };
 
   const handleEditClick = (item) => {
-    setTFBrandEditValue(item.brandName);
-    setTFDesEditValue(item.brandDescription);
-    setBrandIdEditValue(item.brandId);
-
-    if (item.isActived === 1) setIsActived(true);
-    else {
-      setIsActived(false);
-    }
-
-    handleOpenModalEdit();
+    setCustomerObject(item);
+    setCustomerObjectDetail(item.md_customer_info);
+    handleOpenModalEdit(item);
   };
   const handleAgrreEdit = async () => {
     const toDate = valueToDate.format("YYYY-MM-DD");
@@ -224,9 +221,35 @@ function ERCustomer({ route, navigate }) {
         <div className="webContainer1 border">Danh sách khách hàng</div>
         <div
           className="d-flex mt-3 align-items-center justify-content-end"
-          style={{ background: "#ffffff", height: "20px" }}
+          style={{ background: "#ffffff", height: "80px" }}
         >
-          <div className="d-flex containerBtn align-items-center justify-content-end"></div>
+          <div className="d-flex containerBtn align-items-center justify-content-end">
+            <div className="plus" style={{ marginRight: "50px" }}>
+              <Button variant="contained" onClick={() => {}}>
+                <div
+                  style={{
+                    display: "flex",
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
+                    paddingLeft: 15,
+                    paddingRight: 15,
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <BiBlock size={18} />
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                      paddingLeft: "8px",
+                    }}
+                  >
+                    Chặn
+                  </div>
+                </div>
+              </Button>
+            </div>
+          </div>
         </div>
 
         <div style={{ background: "#ffffff" }}>
@@ -242,19 +265,13 @@ function ERCustomer({ route, navigate }) {
                       <input type="checkbox" />
                     </label>
                   </th>
+
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
-                    className="col-1"
+                    className="col-2"
                   >
-                    Mã
-                  </th>
-                  <th
-                    style={{ color: "#ffffff", fontWeight: "bold" }}
-                    scope="col"
-                    className="col-3"
-                  >
-                    Tên khách hàng
+                    Tên
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
@@ -298,24 +315,35 @@ function ERCustomer({ route, navigate }) {
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
                     <td>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item.customerId)}
-                          onChange={(event) =>
-                            handleCheckboxChange(event, item.customerId)
-                          }
-                        />
-                        {item.name}
-                      </label>
+                      <input
+                        type="checkbox"
+                        checked={selectedItems.includes(item.customerId)}
+                        onChange={(event) =>
+                          handleCheckboxChange(event, item.customerId)
+                        }
+                      />
+                      {item.name}
                     </td>
-                    <th scope="item">{item.customerId}</th>
                     <td
                       className="brandEdit d-flex align-items-center"
                       onClick={() => handleEditClick(item)}
                     >
-                      <div>
-                        <img
+                      <div
+                        className="d-flex justify-content-center align-items-center"
+                        style={{
+                          width: 40,
+                          height: 40,
+                          backgroundColor: "#cccccc",
+                          borderRadius: 50,
+                        }}
+                      >
+                        <div style={{ fontWeight: "bold" }}>
+                          {item.md_customer_info.firstname.charAt(0)}
+                        </div>
+                        <div style={{ fontWeight: "bold" }}>
+                          {item.md_customer_info.lastname.charAt(0)}
+                        </div>
+                        {/* <img
                           src={
                             item.md_customer_info.avatar
                               ? item.md_customer_info.avatar
@@ -325,7 +353,7 @@ function ERCustomer({ route, navigate }) {
                           width={40}
                           height={40}
                           style={{ borderRadius: 100 }}
-                        />
+                        /> */}
                       </div>
                       <div style={{ marginLeft: 8 }}>
                         {item.md_customer_info.firstname +
@@ -450,41 +478,60 @@ function ERCustomer({ route, navigate }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">
-              Chỉnh sửa thương hiệu sản phẩm
+            <div className="border-bottom fw-bold">Thông tin khách hàng</div>
+            <div style={{ marginLeft: 30 }}>
+              <div className="d-flex" style={{ marginTop: 10 }}>
+                <div className="col-3">Mã khách hàng: </div>
+                <div>{customerObject.customerId}</div>
+              </div>
+              <div className="d-flex" style={{ marginTop: 10 }}>
+                <div className="col-3">Tên khách hàng: </div>
+                <div>
+                  {customerObjectDetail.firstname +
+                    " " +
+                    customerObjectDetail.lastname}
+                </div>
+              </div>
+              <div className="d-flex" style={{ marginTop: 10 }}>
+                <div className="col-3">Số điện thoại: </div>
+                <div>{customerObjectDetail.phoneNumber}</div>
+              </div>
+              <div className="d-flex" style={{ marginTop: 10 }}>
+                <div className="col-3">Email: </div>
+                <div>{customerObjectDetail.email}</div>
+              </div>
+              <div className="d-flex" style={{ marginTop: 10 }}>
+                <div className="col-3">Giới tính: </div>
+                <div>{customerObjectDetail.gender === 1 ? "Nam" : "Nữ"}</div>
+              </div>
+              <div className="d-flex" style={{ marginTop: 10 }}>
+                <div className="col-3">Ngày sinh: </div>
+                <div>
+                  {new Date(customerObjectDetail.birthday).toLocaleDateString()}
+                </div>
+              </div>
+              <div className="d-flex" style={{ marginTop: 10 }}>
+                <div className="col-3">Địa chỉ: </div>
+                <div>
+                  {customerObjectDetail.address +
+                    ", " +
+                    customerObjectDetail.wardName +
+                    ", " +
+                    customerObjectDetail.districtName +
+                    ", " +
+                    customerObjectDetail.provinceName}
+                </div>
+              </div>
             </div>
-            <div
-              className="d-flex align-items-center flex-column"
-              style={{ marginTop: 20 }}
-            >
-              <TextField
-                required
-                id="outlined-basic"
-                label="Tên thương hiệu"
-                variant="outlined"
-                style={{ width: "90%" }}
-                value={tFBrandEditValue}
-                onChange={(value) => setTFBrandEditValue(value.target.value)}
-              />
-
-              <TextField
-                id="outlined-multiline-flexible"
-                label="Mô tả"
-                multiline
-                rows={6}
-                style={{ width: "90%", marginTop: 10 }}
-                value={tFDesEditValue}
-                onChange={(value) => setTFDesEditValue(value.target.value)}
-              />
-            </div>
-            <div style={{ marginTop: 10, marginLeft: 37 }}>
+            <div style={{ marginTop: 10 }}>
               Kích hoạt{" "}
               <Checkbox
                 checked={isActived}
-                onChange={handleEditcheck}
+                //onChange={handleEditcheck}
                 inputProps={{ "aria-label": "controlled" }}
               />
             </div>
+
             <div
               className="d-flex justify-content-center"
               style={{ marginTop: 20 }}
@@ -494,11 +541,11 @@ function ERCustomer({ route, navigate }) {
                   Quay lại
                 </Button>
               </div>
-              <div style={{ marginLeft: 20 }}>
+              {/* <div style={{ marginLeft: 20 }}>
                 <Button variant="contained" onClick={handleAgrreEdit}>
                   Đồng ý
                 </Button>
-              </div>
+              </div> */}
             </div>
           </Box>
         </Modal>

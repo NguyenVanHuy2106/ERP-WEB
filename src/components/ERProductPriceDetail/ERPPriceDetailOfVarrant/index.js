@@ -314,18 +314,6 @@ function ERPPriceDetailOfVarrant({ route, navigate, modelId }) {
       setLoading(true);
     }
   };
-  // const handleAddnewPriceOfModel = async () => {
-  //   const toDate = valueToDate.format("YYYY-MM-DD");
-  //   const result = await addNewPriceOfModel(modelId, priceOfModel, toDate);
-  //   if (result.status === 200) {
-  //     setPriceOfModel(priceOfModel);
-  //     setState(false);
-  //     //console.log(result);
-  //   } else {
-  //     setState(false);
-  //     setErrPrice("Có lỗi khi thêm giá");
-  //   }
-  // };
   const getProductId = async (modelId, varant) => {
     setStatePriceOfProductId(true);
     const result = await getProductIdByVarrant(modelId, varant);

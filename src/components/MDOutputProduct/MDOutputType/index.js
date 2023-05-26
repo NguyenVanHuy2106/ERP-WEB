@@ -260,13 +260,21 @@ function MDOutputType({ route, navigate }) {
     setTFOutputTypeValueEdit(item.outputTypeName);
     setTFDesEditValue(item.description);
     setisCanReturnEdit(item.isCanReturn);
-    setIsSaleEdit(item.isSale);
-    setIsPromotionEdit(item.isPromotion);
+    //setIsSaleEdit(item.isSale);
+    //setIsPromotionEdit(item.isPromotion);
     setOutputTypeIdEditValue(item.outputTypeId);
     setTFEditMaxProductQuantity(item.maxProductQuantity);
     if (item.isActived === 1) setIsActived(true);
     else {
       setIsActived(false);
+    }
+    if (item.isSale === 1) setIsSaleEdit(true);
+    else {
+      setIsSaleEdit(false);
+    }
+    if (item.isPromotion === 1) setIsPromotionEdit(true);
+    else {
+      setIsPromotionEdit(false);
     }
     if (item.isCanReturn === 1) setisCanReturnEdit(true);
     else {

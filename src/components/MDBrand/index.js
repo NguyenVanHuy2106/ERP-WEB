@@ -167,6 +167,7 @@ function MDBrand({ route, navigate }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const [url, setUrl] = useState("");
+  const [urlEdit, setUrlEdit] = useState("");
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -180,12 +181,24 @@ function MDBrand({ route, navigate }) {
       });
     }
   };
+  const handleImageChangeEdit = (e) => {
+    if (e.target.files[0]) {
+      const uploadTask = storage
+        .ref(`images/${e.target.files[0].name}`)
+        .put(e.target.files[0]);
+      uploadTask.on("state_changed", null, null, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
+          setUrlEdit(downloadUrl);
+        });
+      });
+    }
+  };
 
   const handleEditClick = (item) => {
     setTFBrandEditValue(item.brandName);
     setTFDesEditValue(item.brandDescription);
     setBrandIdEditValue(item.brandId);
-
+    setUrlEdit(item.brandImagePath);
     if (item.isActived === 1) setIsActived(true);
     else {
       setIsActived(false);
@@ -203,7 +216,8 @@ function MDBrand({ route, navigate }) {
       brandIdEditValue,
       tFBrandEditValue,
       tFDesEditValue,
-      isActived
+      isActived,
+      urlEdit
     );
     if (result.status === 200) {
       setLoading(true);
@@ -461,6 +475,33 @@ function MDBrand({ route, navigate }) {
           <Box sx={style}>
             <div className="border-bottom fw-bold">
               Chỉnh sửa thương hiệu sản phẩm
+            </div>
+            <div style={{ marginLeft: 37, marginTop: 12 }}>
+              <label htmlFor="image-uploader">
+                {urlEdit ? (
+                  <img
+                    src={urlEdit}
+                    alt="Selected file"
+                    width={150}
+                    height={150}
+                  />
+                ) : (
+                  <div
+                    className="d-flex border border-dashed justify-content-center align-items-center"
+                    style={{ width: 150, height: 150 }}
+                  >
+                    Chọn ảnh
+                  </div>
+                )}
+              </label>
+              <input
+                className="border"
+                id="image-uploader"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChangeEdit}
+                style={{ display: "none" }}
+              />
             </div>
             <div
               className="d-flex align-items-center flex-column"

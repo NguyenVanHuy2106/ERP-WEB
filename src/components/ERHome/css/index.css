@@ -93,6 +93,25 @@
 .textDetailCancel{
     color: #FF0044;
 }
+/* //// */
+
+.boxDetailReview{
+    background: #fff;
+    background-size: 200% auto;
+}
+.boxDetailReview:hover{
+    background-image: linear-gradient(90deg, #ffffff, #663333);
+    transition: background-position 1s ease-out;
+  background-position: -100% center;
+  cursor: pointer;
+}
+.boxDetailReview:hover .textDetailReview{
+    color: #ffffff;
+}
+.boxDetailReview{
+    color: #663333;
+}
+
 /* //////// */
 .chartStyleTitle{
     border-bottom: 1px solid #F5F5F5;

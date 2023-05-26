@@ -67,6 +67,10 @@ export default function MDProduct() {
   //   console.log(mainGroupData);
   const [mainGroupIdSelect, setMainGroupIdSelect] = useState("");
   const [subGroup, setSubGroup] = useState([]);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const [weightP, setWeightP] = useState(0);
+  const [length, setLength] = useState(0);
   const [subGroupIdSelect, setSubGroupIdSelect] = useState("");
   const [brand, setBrand] = useState([]);
   const [brandIdSelect, setBrandIdSelect] = useState("");
@@ -223,7 +227,11 @@ export default function MDProduct() {
         subGroupIdSelect,
         brandIdSelect,
         quantityIdSelect,
-        items
+        items,
+        length,
+        width,
+        height,
+        weightP
       );
       if (result.status === 200) {
         setShowAlert(true);
@@ -251,6 +259,18 @@ export default function MDProduct() {
 
   const handleReset = () => {
     setActiveStep(0);
+  };
+  const handleChangeLength = (event) => {
+    setLength(event.target.value);
+  };
+  const handleChangeWidth = (event) => {
+    setWidth(event.target.value);
+  };
+  const handleChangeHeight = (event) => {
+    setHeight(event.target.value);
+  };
+  const handleChangeWeightP = (event) => {
+    setWeightP(event.target.value);
   };
   const handleChangeModelName = (event) => {
     setModelName(event.target.value);
@@ -344,7 +364,6 @@ export default function MDProduct() {
                 placeholder="Nhập tên Model"
                 onChange={handleChangeModelName}
                 style={{
-                  width: 500,
                   height: 50,
                   marginTop: 12,
                   paddingLeft: 10,
@@ -439,6 +458,70 @@ export default function MDProduct() {
                 ))}
               </select>
             </div>
+            <div className="d-flex flex-column" style={{ marginTop: 16 }}>
+              <label htmlFor="text-input">Khối lượng sản phẩm (gram)</label>
+              <input
+                id="text-input"
+                type="number"
+                value={weightP}
+                placeholder="Nhập khối lượng sản phẩm"
+                onChange={handleChangeWeightP}
+                style={{
+                  width: 500,
+                  height: 50,
+                  marginTop: 12,
+                  paddingLeft: 10,
+                }}
+              />
+            </div>
+            <div className="d-flex flex-column" style={{ marginTop: 16 }}>
+              <label htmlFor="text-input">Chiều dài sản phẩm (cm)</label>
+              <input
+                id="text-input"
+                type="number"
+                value={length}
+                placeholder="Nhập chiều dài sản phẩm"
+                onChange={handleChangeLength}
+                style={{
+                  width: 500,
+                  height: 50,
+                  marginTop: 12,
+                  paddingLeft: 10,
+                }}
+              />
+            </div>
+            <div className="d-flex flex-column" style={{ marginTop: 16 }}>
+              <label htmlFor="text-input">Chiều rộng sản phẩm (cm)</label>
+              <input
+                id="text-input"
+                type="number"
+                value={width}
+                placeholder="Nhập chiều rộng sản phẩm"
+                onChange={handleChangeWidth}
+                style={{
+                  width: 500,
+                  height: 50,
+                  marginTop: 12,
+                  paddingLeft: 10,
+                }}
+              />
+            </div>
+            <div className="d-flex flex-column" style={{ marginTop: 16 }}>
+              <label htmlFor="text-input">Chiều cao sản phẩm (cm)</label>
+              <input
+                id="text-input"
+                type="number"
+                value={height}
+                placeholder="Nhập chiều rộng sản phẩm"
+                onChange={handleChangeHeight}
+                style={{
+                  width: 500,
+                  height: 50,
+                  marginTop: 12,
+                  paddingLeft: 10,
+                }}
+              />
+            </div>
           </div>
 
           <div style={{ marginTop: 16 }}>
@@ -501,7 +584,10 @@ export default function MDProduct() {
               <Button
                 onClick={handleAddItem}
                 variant="contained"
-                style={{ marginRight: 20 }}
+                style={{
+                  marginRight: 20,
+                  marginTop: 12,
+                }}
               >
                 <div
                   style={{
@@ -724,7 +810,7 @@ export default function MDProduct() {
               </div>
             </div>
           </div>
-          <div>Huy2</div>
+
           {/* <Drawer anchor="right" open={isOpenDrawer} onClose={toggleDrawer}>
             <div>Huy</div>
           </Drawer> */}

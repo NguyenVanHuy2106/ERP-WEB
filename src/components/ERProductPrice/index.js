@@ -258,9 +258,7 @@ function ERProductPrice({ route, navigate }) {
   };
 
   useEffect(() => {
-    setTime();
-    //getAllModel(null, null, null);
-    HandleClick("0");
+    HandleClick(0);
     //HandleGetAllMainGroup();
     //HandleGetAllBrand();
   }, []);
@@ -478,10 +476,8 @@ function ERProductPrice({ route, navigate }) {
                         : ""}
                     </td>
                     <td>
-                      {item.modelPrice.fromDate
-                        ? new Date(
-                            item.modelPrice.fromDate
-                          ).toLocaleDateString()
+                      {item.modelPrice.toDate
+                        ? new Date(item.modelPrice.toDate).toLocaleDateString()
                         : ""}
                     </td>
                   </tr>

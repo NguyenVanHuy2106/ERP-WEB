@@ -173,6 +173,7 @@ function MDMainGroup({ route, navigate }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const [url, setUrl] = useState("");
+  const [urlEdit, setUrlEdit] = useState("");
 
   const handleImageChange = (e) => {
     if (e.target.files[0]) {
@@ -186,12 +187,24 @@ function MDMainGroup({ route, navigate }) {
       });
     }
   };
+  const handleImageChangeEdit = (e) => {
+    if (e.target.files[0]) {
+      const uploadTask = storage
+        .ref(`images/${e.target.files[0].name}`)
+        .put(e.target.files[0]);
+      uploadTask.on("state_changed", null, null, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
+          setUrlEdit(downloadUrl);
+        });
+      });
+    }
+  };
 
   const handleEditClick = (item) => {
     setTFMainGroupEditValue(item.maingroupName);
     setTFDesEditValue(item.maingroupDescription);
-
     setMainGroupIdEditValue(item.maingroupId);
+    setUrlEdit(item.maingroupImagePath);
     if (item.isActived == 1) setIsActived(true);
     else {
       setIsActived(false);
@@ -201,7 +214,7 @@ function MDMainGroup({ route, navigate }) {
   };
   const handleAgrreEdit = async () => {
     const toDate = valueToDate.format("YYYY-MM-DD");
-
+    //console.log(urlEdit);
     handleCloseModalEdit();
     setLoading(false);
     const result = await updateMainGroup(
@@ -209,7 +222,8 @@ function MDMainGroup({ route, navigate }) {
       mainGroupIdEditValue,
       tFMainGroupEditValue,
       tFDesEditValue,
-      isActived
+      isActived,
+      urlEdit
     );
     if (result.status === 200) {
       setLoading(true);
@@ -396,8 +410,6 @@ function MDMainGroup({ route, navigate }) {
                 onChange={handleImageChange}
                 style={{ display: "none" }}
               />
-              {/* <input type="file" onChange={handleImageChange} />
-              {url && <img src={url} alt="Uploaded" width="150" height="100" />} */}
             </div>
             <div
               className="d-flex align-items-center flex-column"
@@ -461,7 +473,34 @@ function MDMainGroup({ route, navigate }) {
               className="border-bottom fw-bold"
               style={{ paddingBottom: "20px" }}
             >
-              Chỉnh sửa Model sản phẩm
+              Chỉnh sửa thông tin ngành hàng
+            </div>
+            <div style={{ marginLeft: 37, marginTop: 12 }}>
+              <label htmlFor="image-uploader">
+                {urlEdit ? (
+                  <img
+                    src={urlEdit}
+                    alt="Selected file"
+                    width={150}
+                    height={150}
+                  />
+                ) : (
+                  <div
+                    className="d-flex border border-dashed justify-content-center align-items-center"
+                    style={{ width: 150, height: 150 }}
+                  >
+                    Chọn ảnh
+                  </div>
+                )}
+              </label>
+              <input
+                className="border"
+                id="image-uploader"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChangeEdit}
+                style={{ display: "none" }}
+              />
             </div>
             <div
               className="d-flex align-items-center flex-column"

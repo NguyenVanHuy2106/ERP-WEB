@@ -59,7 +59,8 @@ export const updateBrand = async (
   brandId,
   brandName,
   description,
-  isActived
+  isActived,
+  imagePath
 ) => {
   try {
     const response = await API.post(
@@ -73,6 +74,7 @@ export const updateBrand = async (
             brandDescription: description,
             isActived: isActived,
             isDeleted: 0,
+            imagePath: imagePath,
           },
         },
       },

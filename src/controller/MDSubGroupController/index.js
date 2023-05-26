@@ -33,7 +33,8 @@ export const addNewSubGroup = async (
   subGroupName,
   mainGroupId,
   description,
-  imagePath
+  imagePath,
+  isRequestImei
 ) => {
   try {
     const response = await API.post(
@@ -43,6 +44,7 @@ export const addNewSubGroup = async (
         data: {
           subgroupName: subGroupName,
           subgroupDescription: description,
+          isRequestImei: isRequestImei,
           maingroupId: mainGroupId,
           isActived: 1,
           imagePath: imagePath,
@@ -65,7 +67,8 @@ export const updateSubGroup = async (
   subGroupName,
   mainGroupId,
   description,
-  isActived
+  isActived,
+  imagePath
 ) => {
   try {
     const response = await API.post(
@@ -80,6 +83,7 @@ export const updateSubGroup = async (
             maingroupId: mainGroupId,
             isActived: isActived,
             isDeleted: 0,
+            imagePath: imagePath,
           },
         },
       },

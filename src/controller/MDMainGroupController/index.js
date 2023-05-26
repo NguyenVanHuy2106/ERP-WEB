@@ -86,9 +86,11 @@ export const updateMainGroup = async (
   mainGroupId,
   mainGroupName,
   description,
-  isActived
+  isActived,
+  imagePath
 ) => {
   try {
+    //console.log(imagePath);
     const response = await API.post(
       `maingroup/update-maingroup`,
       {
@@ -100,6 +102,7 @@ export const updateMainGroup = async (
             maingroupDescription: description,
             isActived: isActived,
             isDeleted: 0,
+            imagePath: imagePath,
           },
         },
       },

@@ -61,7 +61,7 @@ const style = {
 };
 function ERPPriceDetailOfModel({ route, navigate, modelId }) {
   const classes = useStyles();
-  // const { modelId } = useParams();
+  //const { modelId } = useParams();
   const location = useLocation();
   //console.log(location.state.price);
   //const price = location.state.price;
@@ -230,6 +230,7 @@ function ERPPriceDetailOfModel({ route, navigate, modelId }) {
   const getModelInfoDetail = async (modelId) => {
     setLoading(false);
     const result = await getModelDetail(modelId);
+    //console.log(result);
     if (result.status === 200) {
       //console.log(result.data.data.modelInformation);
       setModelInfo(result.data.data.modelInformation);

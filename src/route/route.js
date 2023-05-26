@@ -13,6 +13,8 @@ import ShopList from "../components/shops/shopList";
 import Promotion from "../components/promotion/promotion";
 import MDDeliveryType from "../components/MDDeliveryType";
 import MDBrand from "../components/MDBrand";
+import MDInventoryStatus from "../components/MDInventoryStatus";
+import MDInventory from "../components/MDInventory";
 // import MainGroup from "../components/MDMainGroup_SubGroup/MDMainGroup";
 // import SubGroup from "../components/subGroup/subGroup";
 import MDQuantityUnit from "../components/MDQuantityUnit";
@@ -20,11 +22,18 @@ import MDStore from "../components/MDStore";
 import MDOutputProduct from "../components/MDOutputProduct";
 import MDMainGroupSubGroup from "../components/MDMainGroup_SubGroup";
 import MDProduct from "../components/MDProduct";
+import MDPromotion from "../components/MDPromotion";
 import ERCustomer from "../components/ERCustomer";
 import ERProduct from "../components/ERProduct";
 import ERProductDetail from "../components/ERProductDetail";
 import ERProductPrice from "../components/ERProductPrice";
 import ERProductPriceDetail from "../components/ERProductPriceDetail";
+import EROrder from "../components/EROrder";
+import EROrderDetail from "../components/EROrderDetail";
+import EROutputVoucher from "../components/EROutputVoucher";
+import EROutputVoucherDetail from "../components/EROutputVoucherDetail";
+import ERVoucherType from "../components/ERVoucherType";
+import ERInventory from "../components/ERInventory";
 function App() {
   return (
     <BrowserRouter>
@@ -37,7 +46,6 @@ function App() {
         <Route path="/district" element={<District />} />
         <Route path="/province" element={<Province />} />
         <Route path="/shopList" element={<ShopList />} />
-        <Route path="/promotion" element={<Promotion />} />
         <Route path="/deliveryType" element={<MDDeliveryType />} />
         <Route path="/brand" element={<MDBrand />} />
         {/* <Route path="/mainGroup" element={<MainGroup />} />
@@ -55,6 +63,18 @@ function App() {
         <Route path="/productManage" element={<ERProduct />} />
         <Route path="/productManage/:modelId" element={<ERProductDetail />} />
         <Route path="/customers" element={<ERCustomer />} />
+        <Route path="/inventoryStatus" element={<MDInventoryStatus />} />
+        <Route path="/inventory" element={<MDInventory />} />
+        <Route path="/inventoryManage" element={<ERInventory />} />
+        <Route path="/orders" element={<EROrder />} />
+        <Route path="/orders/:saleOrderId" element={<EROrderDetail />} />
+        <Route path="/outputVoucher" element={<EROutputVoucher />} />
+        <Route
+          path="/outputVoucher/:outputVoucherId"
+          element={<EROutputVoucherDetail />}
+        />
+        <Route path="/voucherType" element={<ERVoucherType />} />
+        <Route path="/promotion" element={<MDPromotion />} />
       </Routes>
     </BrowserRouter>
   );

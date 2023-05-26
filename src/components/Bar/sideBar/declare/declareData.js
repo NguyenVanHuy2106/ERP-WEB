@@ -1,8 +1,12 @@
 import React from "react";
 export const declareData = [
   {
-    title: "Khai báo Model sản phẩm",
-    path: "/model",
+    title: "Khai báo trạng thái tồn",
+    path: "/inventoryStatus",
+  },
+  {
+    title: "Khai báo tồn sản phẩm",
+    path: "/inventory",
   },
   {
     title: "Khai báo thương hiệu sản phẩm",
@@ -34,11 +38,15 @@ export const declareData = [
     title: "Khai báo sản phẩm",
     path: "/products",
   },
+  {
+    title: "Khai báo chương trình khuyến mãi",
+    path: "/promotion",
+  },
 ];
 export const shipmentOrderData = [
   {
-    title: "Quản lý vận đơn",
-    path: "#",
+    title: "Quản lý đơn hàng",
+    path: "/orders",
   },
   {
     title: "Quản lý sản phẩm",
@@ -47,6 +55,10 @@ export const shipmentOrderData = [
   {
     title: "Quản lý giá sản phẩm",
     path: "/productPrice",
+  },
+  {
+    title: "Quản lý tồn kho",
+    path: "/inventoryManage",
   },
 ];
 
@@ -63,7 +75,7 @@ export const voucherConcernData = [
   },
   {
     title: "Tra cứu phiếu thu/chi",
-    path: "#",
+    path: "/voucherType",
   },
   {
     title: "Tra cứu phiếu nhập",
@@ -71,6 +83,6 @@ export const voucherConcernData = [
   },
   {
     title: "Tra cứu phiếu xuất",
-    path: "#",
+    path: "/outputVoucher",
   },
 ];

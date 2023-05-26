@@ -1,10 +1,41 @@
 import React, { useState, useEffect, useStyle, useMemo } from "react";
-import { AiTwotoneCalendar } from "react-icons/ai";
-import { FaMotorcycle, FaCheck, FaBan } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { BsCartCheck } from "react-icons/bs";
+import { BiMoney } from "react-icons/bi";
+import { GiWideArrowDunk } from "react-icons/gi";
+import { FaMotorcycle } from "react-icons/fa";
 import "./css/index.css";
 import Backdrop from "@mui/material/Backdrop";
 import { makeStyles } from "@material-ui/core/styles";
-import { RingLoader, CircleLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { TextField } from "@mui/material";
+import dayjs from "dayjs";
+import {
+  countOrder,
+  getReportSaleOrderInMonthAPI,
+  getReportRevenueAPI,
+} from "../../controller/ERHome";
+import {
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Bar,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+  PieChart,
+  Cell,
+  Pie,
+} from "recharts";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -24,14 +55,63 @@ const style = {
 function ERHome({ route, navigate }) {
   const classes = useStyles();
   let [loading, setLoading] = useState(false);
+  const [resCount, setResCount] = useState({});
+  const [reportSaleOrderList, setReportSaleOrderList] = useState([]);
+  const [reportRevenue, setReportRevenue] = useState([]);
+  console.log(reportRevenue);
+  const currentDate = new Date();
+  const [selectedDate, setSelectedDate] = useState(currentDate);
+  const [reportColumn, setReportColumn] = useState([]);
+  const handleDateChange = (date) => {
+    reportRevenues(date);
+    setSelectedDate(date);
+  };
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
     }, 2000);
   };
+  const getOrderQuantity = async () => {
+    const result = await countOrder();
+    if (result.status === 200) {
+      setResCount(result.data.data.resCount);
+    }
+  };
+  const report = async () => {
+    const result = await getReportSaleOrderInMonthAPI();
+    if (result.status === 200) {
+      setReportSaleOrderList(result.data);
+      // console.log(result.data);
+    }
+  };
+
+  const COLORS = ["#0088FE", "#00C49F"];
+  //console.log(reportRevenue);
+  const reportRevenues = async (selectedDate) => {
+    const month = dayjs(selectedDate).format("MM");
+    const year = dayjs(selectedDate).format("YYYY");
+    //console.log(month, year);
+    const result = await getReportRevenueAPI(month, year);
+    if (result.status === 200) {
+      setReportRevenue(result.data);
+      //console.log(reportRevenue);
+    }
+  };
   useEffect(() => {
     setTime();
+    getOrderQuantity();
+    report();
+    reportRevenues(selectedDate);
   }, []);
+
+  const data = [
+    {
+      name: "Page A",
+      uv: 4000,
+      pv: 2400,
+      amt: 2400,
+    },
+  ];
 
   return (
     <div
@@ -41,18 +121,31 @@ function ERHome({ route, navigate }) {
     >
       <div className="webContainer">
         <div className="webContainer1 border">Trang chủ</div>
-        <div className="chartContainer">
-          <div style={{ border: "1px solid #888888", borderRadius: 5 }}>
+        <div
+          className="chartContainer"
+          style={{
+            maxWidth: "1500px",
+            display: "flex",
+            flexWrap: "wrap",
+          }}
+        >
+          <div
+            style={{
+              border: "1px solid #663333",
+              borderRadius: 5,
+              marginTop: 12,
+            }}
+          >
             <div
               className="d-flex justify-content-around"
               style={{
                 height: "100px",
                 width: "300px",
-                backgroundColor: "#888888",
+                backgroundColor: "#663333",
               }}
             >
               <div className="d-flex align-items-center">
-                <AiTwotoneCalendar size={50} color="#ffffff" />
+                <BsCartCheck size={50} color="#ffffff" />
               </div>
               <div
                 className="d-flex justify-content-center align-items-center"
@@ -63,26 +156,85 @@ function ERHome({ route, navigate }) {
                 }}
               >
                 <div className="textColor" style={{ fontSize: 30 }}>
-                  15
+                  {resCount.confirmWaiting}
+                </div>
+                <div className="textColor">Chờ xác nhận</div>
+              </div>
+            </div>
+            <Link to={`/orders`} state={{ data: "confirm" }}>
+              <div
+                className="d-flex align-items-center boxDetailReview"
+                style={{
+                  height: "40px",
+                  marginTop: "1px",
+                  borderBottomLeftRadius: 5,
+                  borderBottomRightRadius: 5,
+                }}
+              >
+                <div
+                  style={{ marginLeft: "20px" }}
+                  className="textDetailReview"
+                >
+                  Chi tiết
+                </div>
+              </div>
+            </Link>
+          </div>
+          <div
+            style={{
+              border: "1px solid #888888",
+              borderRadius: 5,
+              marginTop: 12,
+            }}
+          >
+            <div
+              className="d-flex justify-content-around"
+              style={{
+                height: "100px",
+                width: "300px",
+                backgroundColor: "#888888",
+              }}
+            >
+              <div className="d-flex align-items-center">
+                <GiWideArrowDunk size={50} color="#ffffff" />
+              </div>
+              <div
+                className="d-flex justify-content-center align-items-center"
+                style={{
+                  marginLeft: 20,
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                <div className="textColor" style={{ fontSize: 30 }}>
+                  {resCount.outputWaiting}
                 </div>
                 <div className="textColor">Chờ xử lý</div>
               </div>
             </div>
-            <div
-              className="d-flex align-items-center boxDetailWait"
-              style={{
-                height: "40px",
-                marginTop: "1px",
-                borderBottomLeftRadius: 5,
-                borderBottomRightRadius: 5,
-              }}
-            >
-              <div style={{ marginLeft: "20px" }} className="textDetailWait">
-                Chi tiết
+            <Link to={`/orders`} state={{ data: "waitGetProduct" }}>
+              <div
+                className="d-flex align-items-center boxDetailWait"
+                style={{
+                  height: "40px",
+                  marginTop: "1px",
+                  borderBottomLeftRadius: 5,
+                  borderBottomRightRadius: 5,
+                }}
+              >
+                <div style={{ marginLeft: "20px" }} className="textDetailWait">
+                  Chi tiết
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
-          <div style={{ border: "1px solid #337ab7", borderRadius: 5 }}>
+          <div
+            style={{
+              border: "1px solid #337ab7",
+              borderRadius: 5,
+              marginTop: 12,
+            }}
+          >
             <div
               className="d-flex justify-content-around"
               style={{
@@ -103,29 +255,37 @@ function ERHome({ route, navigate }) {
                 }}
               >
                 <div className="textColor" style={{ fontSize: 30 }}>
-                  15
+                  {resCount.deliverying}
                 </div>
                 <div className="textColor">Đang giao</div>
               </div>
             </div>
-            <div
-              className=" d-flex align-items-center boxDetailDelivery"
-              style={{
-                height: "40px",
-                marginTop: "1px",
-                borderBottomLeftRadius: 5,
-                borderBottomRightRadius: 5,
-              }}
-            >
+            <Link to={`/orders`} state={{ data: "delivery" }}>
               <div
-                style={{ marginLeft: "20px" }}
-                className="textDetailDelivery"
+                className=" d-flex align-items-center boxDetailDelivery"
+                style={{
+                  height: "40px",
+                  marginTop: "1px",
+                  borderBottomLeftRadius: 5,
+                  borderBottomRightRadius: 5,
+                }}
               >
-                Chi tiết
+                <div
+                  style={{ marginLeft: "20px" }}
+                  className="textDetailDelivery"
+                >
+                  Chi tiết
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
-          <div style={{ border: "1px solid #00CC00", borderRadius: 5 }}>
+          <div
+            style={{
+              border: "1px solid #00CC00",
+              borderRadius: 5,
+              marginTop: 12,
+            }}
+          >
             <div
               className="d-flex justify-content-around"
               style={{
@@ -135,7 +295,7 @@ function ERHome({ route, navigate }) {
               }}
             >
               <div className="d-flex align-items-center">
-                <FaCheck size={50} color="#ffffff" />
+                <BiMoney size={50} color="#ffffff" />
               </div>
               <div
                 className="d-flex justify-content-center align-items-center"
@@ -146,84 +306,194 @@ function ERHome({ route, navigate }) {
                 }}
               >
                 <div className="textColor" style={{ fontSize: 30 }}>
-                  15
+                  {resCount.sucess}
                 </div>
-                <div className="textColor">Hoàn tất</div>
+                <div className="textColor">Chờ thu tiền</div>
               </div>
             </div>
+            <Link to={`/orders`} state={{ data: "waitGetMoney" }}>
+              <div
+                className="d-flex align-items-center boxDetailComplete"
+                style={{
+                  height: "40px",
+                  marginTop: "1px",
+                  borderBottomLeftRadius: 5,
+                  borderBottomRightRadius: 5,
+                }}
+              >
+                <div
+                  style={{ marginLeft: "20px" }}
+                  className="textDetailComplete"
+                >
+                  Chi tiết
+                </div>
+              </div>
+            </Link>
+          </div>
+        </div>
+
+        <div
+          className="d-flex justify-content-between"
+          style={{ width: "100%" }}
+        >
+          <div
+            className="mt-4"
+            style={{
+              width: "100%",
+              marginRight: 10,
+            }}
+          >
+            <div className="chartStyleTitle">
+              Biểu đồ số lượng đơn hàng trong tháng
+            </div>
             <div
-              className="d-flex align-items-center boxDetailComplete"
               style={{
-                height: "40px",
-                marginTop: "1px",
-                borderBottomLeftRadius: 5,
-                borderBottomRightRadius: 5,
+                width: "100%",
+                height: 400,
+                backgroundColor: "#ffffff",
               }}
             >
-              <div
-                style={{ marginLeft: "20px" }}
-                className="textDetailComplete"
-              >
-                Chi tiết
-              </div>
+              <ResponsiveContainer>
+                <BarChart
+                  width="100%"
+                  height={400}
+                  data={reportSaleOrderList}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="count" name="Số lượng" fill="#82ca9d" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
-          <div style={{ border: "1px solid #FF0044", borderRadius: 5 }}>
-            <div
-              className="d-flex justify-content-around"
-              style={{
-                height: "100px",
-                width: "300px",
-                backgroundColor: "#FF0044",
-              }}
-            >
-              <div className="d-flex align-items-center">
-                <FaBan size={50} color="#ffffff" />
+          <div
+            className="mt-4"
+            style={{ width: "100%", marginLeft: 10, marginRight: 4 }}
+          >
+            <div>
+              <div className="chartStyleTitle">
+                Biểu đồ doanh thu trong tháng
               </div>
               <div
-                className="d-flex justify-content-center align-items-center"
                 style={{
-                  marginLeft: 20,
-                  display: "flex",
-                  flexDirection: "column",
+                  width: "100%",
+                  height: 400,
+                  backgroundColor: "#ffffff",
                 }}
               >
-                <div className="textColor" style={{ fontSize: 30 }}>
-                  15
-                </div>
-                <div className="textColor">Huỷ giao</div>
-              </div>
-            </div>
-            <div
-              className="d-flex align-items-center boxDetailCancel"
-              style={{
-                height: "40px",
-                marginTop: 1,
-                borderBottomLeftRadius: 5,
-                borderBottomRightRadius: 5,
-              }}
-            >
-              <div style={{ marginLeft: "20px" }} className="textDetailCancel">
-                Chi tiết
+                <ResponsiveContainer>
+                  <LineChart
+                    width="100%"
+                    height={400}
+                    data={reportSaleOrderList}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip
+                      formatter={(value) =>
+                        new Intl.NumberFormat("vi-VN", {
+                          style: "currency",
+                          currency: "VND",
+                        }).format(value)
+                      }
+                    />
+                    <Legend />
+                    <Line
+                      type="monotone"
+                      dataKey="total"
+                      name="Doanh thu"
+                      stroke="#8884d8"
+                      activeDot={{ r: 8 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
         </div>
-        <div className="chartContainer">
-          <div>
-            <div className="chartStyleTitle">
-              Biểu đồ số lượng đơn hàng trong tuần
-            </div>
-            <div className="chartStyleBody">
-              Biểu đồ số lượng đơn hàng trong tuần
-            </div>
+        <div
+          className="d-flex justify-content-start mt-4 flex-column"
+          style={{
+            width: "49%",
+            justifyContent: "center",
+            backgroundColor: "#ffffff",
+          }}
+        >
+          <div
+            style={{
+              marginTop: 16,
+              marginLeft: 16,
+            }}
+          >
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DesktopDatePicker
+                label="Chọn Tháng/Năm"
+                inputFormat="MM/YYYY"
+                value={selectedDate}
+                onChange={handleDateChange}
+                renderInput={(params) => <TextField {...params} />}
+                views={["year", "month"]}
+                openTo="year"
+                minDate={new Date("2000-01-01")} // (Tuỳ chọn) Đặt ngày tối thiểu có thể chọn
+                maxDate={new Date("2100-12-31")} // (Tuỳ chọn) Đặt ngày tối đa có thể chọn
+              />
+            </LocalizationProvider>
           </div>
-          <div>
-            <div className="chartStyleTitle">
-              Biểu đồ số lượng đơn hàng trong tháng
-            </div>
-            <div className="chartStyleBody">
-              Biểu đồ số lượng đơn hàng trong tuần
+          <div className="mt-4">
+            <div
+              style={{
+                width: "100%",
+                height: 400,
+                backgroundColor: "#ffffff",
+              }}
+            >
+              <ResponsiveContainer>
+                <BarChart
+                  width={500}
+                  height={300}
+                  data={reportRevenue}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <YAxis />
+                  <Tooltip
+                    formatter={(value) =>
+                      new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(value)
+                    }
+                  />
+                  <Legend />
+                  <Bar dataKey="revenueGoods" name="Hàng hoá" fill="#82ca9d" />
+                  <Bar
+                    dataKey="revenueShipping"
+                    name="Giao hàng"
+                    fill="#8884d8"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
