@@ -81,6 +81,7 @@ function MDSaleOrderType({ route, navigate }) {
   const [tFEditMaxProductQuantity, setTFEditMaxProductQuantity] = useState("");
   const [tFEMaxProductQuantity, setTFMaxProductQuantity] = useState("");
   const [outputTypeIdEditValue, setOutputTypeIdEditValue] = useState("");
+  const [saleOrderTypeIdEditValue, setSaleOrderTypeIdEditValue] = useState("");
   const [outputType, setOutputType] = useState([]);
   const [outputTypeEdit, setOutputTypeEdit] = useState([]);
   const [paymentOrderType, setPaymentOrderType] = useState([]);
@@ -251,6 +252,18 @@ function MDSaleOrderType({ route, navigate }) {
     } else {
       handleCloseModal();
       setLoading(false);
+      const saleOrderTypeData = {};
+      saleOrderTypeData.saleOrderTypeName = tFSaleOrderTypeValue;
+      saleOrderTypeData.IsAutoReviewed = isAutoReviewed;
+      saleOrderTypeData.isSupplementPromotion = isSupplementPromotion;
+      saleOrderTypeData.isAutoOutputProduct = isAutoOutputProduct;
+      saleOrderTypeData.isCollectMoney = isCollectMoney;
+      saleOrderTypeData.isOutput = isOutput;
+      saleOrderTypeData.outputTypeId = outputTypeSelect;
+      saleOrderTypeData.paymentOrderTypeId = paymentOrderTypeSelect;
+      saleOrderTypeData.deliveryTypeId = null;
+      saleOrderTypeData.description = tFDesValue;
+      saleOrderTypeData.isActived = 1;
       // userLogin,
       // saleOrderTypeName,
       // IsAutoReviewed,
@@ -262,19 +275,7 @@ function MDSaleOrderType({ route, navigate }) {
       // paymentOrderTypeId,
       // deliveryTypeId,
       // description
-      const result = await addNewSaleOrderType(
-        userId,
-        tFSaleOrderTypeValue,
-        isAutoReviewed,
-        isSupplementPromotion,
-        isAutoOutputProduct,
-        isCollectMoney,
-        isOutput,
-        outputTypeSelect,
-        paymentOrderTypeSelect,
-        deliveryTypeSelect,
-        tFDesValue
-      );
+      const result = await addNewSaleOrderType(userId, saleOrderTypeData);
       if (result.status === 200) {
         setLoading(true);
         HandleClick();
@@ -380,8 +381,11 @@ function MDSaleOrderType({ route, navigate }) {
 
   const handleEditClick = (item) => {
     setGetPriceTypeEdit(item.getPriceType);
-    setOutputTypeSelectEdit(item.voucherTypeId);
-    setTFSaleOrderTypeValueEdit(item.outputTypeName);
+    setSaleOrderTypeIdEditValue(item.saleOrderTypeId);
+    setOutputTypeSelectEdit(item.outputTypeId);
+    setTFSaleOrderTypeValueEdit(item.saleOrderTypeName);
+    setPaymentOrderTypeSelectEdit(item.paymentOrderTypeId);
+    setDeliveryTypeSelectEdit(item.deleteSaleOrderTypeId);
     setTFDesEditValue(item.description);
     setisCanReturnEdit(item.isCanReturn);
     setIsSaleEdit(item.isSale);
@@ -392,28 +396,64 @@ function MDSaleOrderType({ route, navigate }) {
     else {
       setIsActived(false);
     }
-    if (item.isCanReturn === 1) setisCanReturnEdit(true);
+    if (item.IsAutoReviewed === 1) setIsAutoReviewedEdit(true);
     else {
-      setisCanReturnEdit(false);
+      setIsAutoReviewedEdit(false);
     }
-
+    if (item.isSupplementPromotion === 1) setIsSupplementPromotionEdit(true);
+    else {
+      setIsSupplementPromotionEdit(false);
+    }
+    if (item.isAutoOutputProduct === 1) setIsAutoOutputProductEdit(true);
+    else {
+      setIsAutoOutputProductEdit(false);
+    }
+    if (item.isCollectMoney === 1) setIsCollectMoneyEdit(true);
+    else {
+      setIsCollectMoneyEdit(false);
+    }
+    if (item.isOutput === 1) setIsOutputEdit(true);
+    else {
+      setIsOutputEdit(false);
+    }
     handleOpenModalEdit();
   };
   const handleAgrreEdit = async () => {
     handleCloseModalEdit();
     setLoading(false);
+    // {
+    //   saleOrderTypeName: saleOrderTypeName,
+    //   IsAutoReviewed: IsAutoReviewed,
+    //   isSupplementPromotion: isSupplementPromotion,
+    //   isAutoOutputProduct: isAutoOutputProduct,
+    //   isCollectMoney: isCollectMoney,
+    //   isOutput: isOutput,
+    //   outputTypeId: outputTypeId,
+    //   paymentOrderTypeId: paymentOrderTypeId,
+    //   deliveryTypeId: deliveryTypeId,
+    //   description: description,
+    //   isActived: isActived,
+    //   isDeleted: 0,
+    // }
+    const updateData = {};
+    updateData.saleOrderTypeName = tFSaleOrderTypeValueEdit;
+    updateData.IsAutoReviewed = isAutoReviewedEdit;
+    updateData.isSupplementPromotion = isSupplementPromotionEdit;
+    updateData.isAutoOutputProduct = isAutoOutputProductEdit;
+    updateData.isCollectMoney = isCollectMoneyEdit;
+    updateData.isOutput = isOutputEdit;
+    updateData.outputTypeId = outputTypeIdEditValue;
+    updateData.paymentOrderTypeId = paymentOrderTypeSelectEdit;
+    updateData.deliveryTypeId = null;
+    updateData.description = tFDesEditValue;
+    updateData.isActived = checked;
+    updateData.isDeleted = 0;
+    //console.log(updateData);
 
-    const result = await updateAPI(
+    const result = await updateSaleOrderType(
       userId,
-      outputTypeIdEditValue,
-      tFSaleOrderTypeValueEdit,
-      getPriceTypeEdit,
-      isCanReturnEdit,
-      isSaleEdit,
-      isPromotionEdit,
-      outputTypeSelectEdit,
-      tFDesEditValue,
-      isActived
+      saleOrderTypeIdEditValue,
+      updateData
     );
     if (result.status === 200) {
       setLoading(true);
@@ -503,7 +543,7 @@ function MDSaleOrderType({ route, navigate }) {
                     scope="col"
                     className="col-4"
                   >
-                    Tên hình thức xuất
+                    Tên loại yêu cầu xuất
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
@@ -579,7 +619,7 @@ function MDSaleOrderType({ route, navigate }) {
               className="border-bottom fw-bold"
               style={{ paddingBottom: "12px" }}
             >
-              Thêm mới hình thức xuất
+              Thêm mới loại yêu cầu xuất
             </div>
             <div
               className="d-flex align-items-center flex-column"
@@ -643,7 +683,7 @@ function MDSaleOrderType({ route, navigate }) {
                   ))}
                 </Select>
               </FormControl>
-              <FormControl sx={{ m: 1, width: "90%", marginTop: "7px" }}>
+              {/* <FormControl sx={{ m: 1, width: "90%", marginTop: "7px" }}>
                 <InputLabel id="demo-select-small">
                   Hình thức giao hàng
                 </InputLabel>
@@ -666,7 +706,7 @@ function MDSaleOrderType({ route, navigate }) {
                     </MenuItem>
                   ))}
                 </Select>
-              </FormControl>
+              </FormControl> */}
               <TextField
                 id="outlined-multiline-flexible"
                 label="Mô tả"
@@ -790,13 +830,13 @@ function MDSaleOrderType({ route, navigate }) {
           <Box sx={style}>
             <div
               className="border-bottom fw-bold"
-              style={{ paddingBottom: "20px" }}
+              style={{ paddingBottom: "12px" }}
             >
-              Chỉnh sửa hình thức xuất
+              Thêm mới hình thức xuất
             </div>
             <div
               className="d-flex align-items-center flex-column"
-              style={{ marginTop: "20px" }}
+              style={{ marginTop: "12px" }}
             >
               <TextField
                 required
@@ -808,58 +848,83 @@ function MDSaleOrderType({ route, navigate }) {
                 onChange={(newValue) =>
                   setTFSaleOrderTypeValueEdit(newValue.target.value)
                 }
-                helperText={error}
-                error={isError}
               />
-              <FormControl sx={{ m: 1, width: "90%", marginTop: "18px" }}>
-                <InputLabel id="demo-select-small">Phương thức giá</InputLabel>
-                <Select
-                  labelId="demo-select-small"
-                  id="demo-select-small"
-                  value={getPriceTypeEdit}
-                  label="Phương thức lấy giá"
-                  onChange={handleChangeGetPriceTypeEdit}
-                >
-                  <MenuItem value="">
-                    <em>---Chọn phương thức---</em>
-                  </MenuItem>
 
-                  <MenuItem value={1}>Giá bán</MenuItem>
-                  <MenuItem value={2}>Giá vốn</MenuItem>
-                  <MenuItem value={3}>Giá bằng 0</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl sx={{ m: 1, width: "90%", marginTop: "18px" }}>
-                <InputLabel id="demo-select-small">
-                  Hình thức thu/chi
-                </InputLabel>
+              <FormControl sx={{ m: 1, width: "90%", marginTop: "12px" }}>
+                <InputLabel id="demo-select-small">Hình thức xuất</InputLabel>
                 <Select
                   labelId="demo-select-small"
                   id="demo-select-small"
                   value={outputTypeSelectEdit}
-                  label="Hình thức thu/chi"
+                  label="Hình thức xuất"
                   onChange={handleChangeOutputTypeSelectEdit}
                 >
                   <MenuItem value="">
-                    <em>---Chọn hình thức thu/chi---</em>
+                    <em>---Chọn hình thức xuất---</em>
                   </MenuItem>
                   {outputType.map((item, index) => (
-                    <MenuItem
-                      key={item.voucherTypeId}
-                      value={item.voucherTypeId}
-                    >
-                      {item.voucherTypeId + " - " + item.voucherTypeName}
+                    <MenuItem key={item.outputTypeId} value={item.outputTypeId}>
+                      {item.outputTypeId + " - " + item.outputTypeName}
                     </MenuItem>
                   ))}
                 </Select>
               </FormControl>
+              <FormControl sx={{ m: 1, width: "90%", marginTop: "7px" }}>
+                <InputLabel id="demo-select-small">
+                  Hình thức thanh toán
+                </InputLabel>
+                <Select
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  value={paymentOrderTypeSelectEdit}
+                  label="Hình thức thanh toán"
+                  onChange={handleChangePaymentOrderTypeSelectEdit}
+                >
+                  <MenuItem value="">
+                    <em>---Chọn hình thức thanh toán---</em>
+                  </MenuItem>
+                  {paymentOrderType.map((item, index) => (
+                    <MenuItem
+                      key={item.paymentOrderTypeId}
+                      value={item.paymentOrderTypeId}
+                    >
+                      {item.paymentOrderTypeId +
+                        " - " +
+                        item.paymentOrderTypeName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {/* <FormControl sx={{ m: 1, width: "90%", marginTop: "7px" }}>
+                <InputLabel id="demo-select-small">
+                  Hình thức giao hàng
+                </InputLabel>
+                <Select
+                  labelId="demo-select-small"
+                  id="demo-select-small"
+                  value={deliveryTypeSelectEdit}
+                  label="Hình thức giao hàng"
+                  onChange={handleChangeDeliveryTypeSelectEdit}
+                >
+                  <MenuItem value="">
+                    <em>---Chọn hình thức giao hàng---</em>
+                  </MenuItem>
+                  {deliveryType.map((item, index) => (
+                    <MenuItem
+                      key={item.deliveryTypeId}
+                      value={item.deliveryTypeId}
+                    >
+                      {item.deliveryTypeId + " - " + item.deliveryTypeName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl> */}
               <TextField
                 id="outlined-multiline-flexible"
                 label="Mô tả"
                 multiline
                 rows={6}
-                style={{ width: "90%", marginTop: "20px" }}
-                value={tFDesEditValue}
+                style={{ width: "90%", marginTop: "7px" }}
                 onChange={(newValue) =>
                   setTFDesEditValue(newValue.target.value)
                 }
@@ -874,48 +939,82 @@ function MDSaleOrderType({ route, navigate }) {
                 inputProps={{ "aria-label": "controlled" }}
               />
             </div> */}
-            <div style={{ marginTop: "20px", marginLeft: 38 }}>
-              <div className="row">
-                <div className="col-3 d-flex align-items-center">
-                  Kích hoạt{" "}
+            <div
+              style={{ marginTop: "12px", marginLeft: 38 }}
+              className="d-flex flex-column justify-content-center"
+            >
+              <div className="d-flex">
+                <div className="row col-6">
+                  <div className="col-8 d-flex align-items-center">
+                    Kích hoạt{" "}
+                  </div>
+                  <Checkbox
+                    className="col-1"
+                    checked={checked}
+                    onChange={handleChange}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
                 </div>
-                <Checkbox
-                  className="col-1"
-                  checked={isActived}
-                  onChange={handleEditcheck}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              </div>
-              <div className="row">
-                <div className="col-3 d-flex align-items-center">
-                  Cho phép nhập trả
+                <div className="row col-7">
+                  <div className="col-8 d-flex align-items-center">
+                    Tự động duyệt
+                  </div>
+                  <Checkbox
+                    className="col-1"
+                    checked={isAutoReviewedEdit}
+                    onChange={handleChangeIsAutoReviewedEdit}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
                 </div>
-                <Checkbox
-                  className="col-1"
-                  checked={isCanReturnEdit}
-                  onChange={handleChangeIsCanReturnEdit}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
               </div>
-              <div className="row">
-                <div className="col-3 d-flex align-items-center">Xuất bán</div>
-                <Checkbox
-                  className="col-1"
-                  checked={isSaleEdit}
-                  onChange={handleChangeIsSaleEdit}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
-              </div>
-              <div className="row">
-                <div className="col-3 d-flex align-items-center">
-                  Xuất khuyến mãi
+              <div className="d-flex">
+                <div className="row col-6">
+                  <div className="col-8 d-flex align-items-center">
+                    Xuất bổ sung khuyến mãi
+                  </div>
+                  <Checkbox
+                    className="col-1"
+                    checked={isSupplementPromotionEdit}
+                    onChange={handleChangeIsSupplementPromotionEdit}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
                 </div>
-                <Checkbox
-                  className="col-1"
-                  checked={isPromotionEdit}
-                  onChange={handleChangeIsPromotionEdit}
-                  inputProps={{ "aria-label": "controlled" }}
-                />
+
+                <div className="row col-7">
+                  <div className="col-8 d-flex align-items-center">
+                    Tự động xuất hàng
+                  </div>
+                  <Checkbox
+                    className="col-1"
+                    checked={isAutoOutputProductEdit}
+                    onChange={handleChangeIsAutoOutputProductEdit}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                </div>
+              </div>
+              <div className="d-flex">
+                <div className="row col-6">
+                  <div className="col-8 d-flex align-items-center">
+                    Có xuất hàng hay không
+                  </div>
+                  <Checkbox
+                    className="col-1"
+                    checked={isOutputEdit}
+                    onChange={handleChangeIsOutputEdit}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                </div>
+                <div className="row col-7">
+                  <div className="col-8 d-flex align-items-center">
+                    Thu tiền khi xuất hàng
+                  </div>
+                  <Checkbox
+                    className="col-1"
+                    checked={isCollectMoneyEdit}
+                    onChange={handleChangeIsCollectMoneyEdit}
+                    inputProps={{ "aria-label": "controlled" }}
+                  />
+                </div>
               </div>
             </div>
 

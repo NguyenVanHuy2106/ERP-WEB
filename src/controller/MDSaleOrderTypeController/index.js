@@ -11,37 +11,13 @@ export const getAllSaleOrderType = async () => {
     return err;
   }
 };
-export const addNewSaleOrderType = async (
-  userLogin,
-  saleOrderTypeName,
-  IsAutoReviewed,
-  isSupplementPromotion,
-  isAutoOutputProduct,
-  isCollectMoney,
-  isOutput,
-  outputTypeId,
-  paymentOrderTypeId,
-  deliveryTypeId,
-  description
-) => {
+export const addNewSaleOrderType = async (userLogin, data) => {
   try {
     const response = await API.post(
       "saleOrderType/addNew",
       {
         userLogin: userLogin,
-        data: {
-          saleOrderTypeName: saleOrderTypeName,
-          IsAutoReviewed: IsAutoReviewed,
-          isSupplementPromotion: isSupplementPromotion,
-          isAutoOutputProduct: isAutoOutputProduct,
-          isCollectMoney: isCollectMoney,
-          isOutput: isOutput,
-          outputTypeId: outputTypeId,
-          paymentOrderTypeId: paymentOrderTypeId,
-          deliveryTypeId: deliveryTypeId,
-          description: description,
-          isActived: 1,
-        },
+        data: data,
       },
       {
         headers: {
@@ -57,17 +33,7 @@ export const addNewSaleOrderType = async (
 export const updateSaleOrderType = async (
   userLogin,
   saleOrderTypeId,
-  saleOrderTypeName,
-  IsAutoReviewed,
-  isSupplementPromotion,
-  isAutoOutputProduct,
-  isCollectMoney,
-  isOutput,
-  outputTypeId,
-  paymentOrderTypeId,
-  deliveryTypeId,
-  description,
-  isActived
+  updateData
 ) => {
   try {
     const response = await API.post(
@@ -76,20 +42,7 @@ export const updateSaleOrderType = async (
         userLogin: userLogin,
         data: {
           saleOrderTypeId: saleOrderTypeId,
-          updateData: {
-            saleOrderTypeName: saleOrderTypeName,
-            IsAutoReviewed: IsAutoReviewed,
-            isSupplementPromotion: isSupplementPromotion,
-            isAutoOutputProduct: isAutoOutputProduct,
-            isCollectMoney: isCollectMoney,
-            isOutput: isOutput,
-            outputTypeId: outputTypeId,
-            paymentOrderTypeId: paymentOrderTypeId,
-            deliveryTypeId: deliveryTypeId,
-            description: description,
-            isActived: isActived,
-            isDeleted: 0,
-          },
+          updateData: updateData,
         },
       },
       {

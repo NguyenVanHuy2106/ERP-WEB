@@ -26,6 +26,10 @@ import {
   updateBrand,
   deleteBrand,
 } from "../../controller/MDBrandController";
+import {
+  getAllVoucherType,
+  getAllVoucherTypeDetail,
+} from "../../controller/ERVoucherType";
 import PaginationShop from "../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -45,77 +49,26 @@ const style = {
 };
 function ERVoucherType({ route, navigate }) {
   const classes = useStyles();
-  const [tFValue, setTFValue] = useState("");
-  const [tFBrandValue, setTFBrandValue] = useState("");
+  const [tFSaleOrderValue, setTFSaleOrderValue] = useState("");
+  const [tFVoucherIdValue, setTFVoucherIdValue] = useState("");
 
-  const [tFDesValue, setTFDesValue] = useState("");
-  const [tFBrandEditValue, setTFBrandEditValue] = useState("");
-  const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [brandIdEditValue, setBrandIdEditValue] = useState("");
-  const [isActived, setIsActived] = useState(false);
+  const [voucherTypeList, setVoucherTypeList] = useState([]);
+
+  const [cashList, setCashList] = useState(0);
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
-  const [brandData, setBrandData] = useState([]);
-  //const [valueCatData, setValueCatData] = useState([]);
+
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
-  const [openModal, setOpenModal] = React.useState(false);
+
   const [openModalEdit, setOpenModalEdit] = React.useState(false);
   const handleOpenModalEdit = () => setOpenModalEdit(true);
   const handleCloseModalEdit = () => {
     setOpenModalEdit(false);
   };
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setIsError(false);
-    setError("");
-    setUrl("");
-  };
-  const [checked, setChecked] = React.useState(true);
-  const [editChecked, setEditChecked] = React.useState(true);
-  const [error, setError] = React.useState("");
-  const [isError, setIsError] = useState(false);
+
   let userId = localStorage.getItem("userId");
-  const [selectedItems, setSelectedItems] = useState([]);
-  const handleCheckboxChange = (event, item) => {
-    if (event.target.checked) {
-      setSelectedItems([...selectedItems, item]);
-    } else {
-      setSelectedItems(
-        selectedItems.filter((selectedItem) => selectedItem !== item)
-      );
-    }
-  };
-  const handleEditcheck = (event) => {
-    setIsActived(event.target.checked);
-  };
-  const handleChange = (event) => {
-    setChecked(event.target.checked);
-  };
-  const handleAgrre = async () => {
-    if (tFBrandValue.length === 0) {
-      setError("Vui long nhap ten danh muc");
-      setIsError(true);
-    } else {
-      handleCloseModal();
-      setLoading(false);
-      const result = await addNewBrand(
-        userId,
-        tFBrandValue,
-        tFDesValue,
-        1,
-        url
-      );
-      if (result.status === 200) {
-        setLoading(true);
-        HandleClick();
-        setError("");
-        setTFBrandValue("");
-      }
-    }
-  };
 
   var firstDateInMonth =
     1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
@@ -130,99 +83,44 @@ function ERVoucherType({ route, navigate }) {
       setLoading(true);
     }, 1000);
   };
-  const HandleClick = async () => {
+
+  const getVoucherDetail = async (userId, data) => {
+    //console.log(userId, data);
+    const result = await getAllVoucherTypeDetail(userId, data);
+    if (result.status === 200) {
+      setCashList(result.data.data.paymentVoucherDetails);
+      //console.log(result.data.data.paymentVoucherDetails);
+    }
+  };
+  const getVoucherTypeList = async () => {
     setLoading(false);
     const fromDate = valueFromDate.format("YYYY-MM-DD");
     const toDate = valueToDate.format("YYYY-MM-DD");
-    //console.log(tFValue, fromDate, toDate);
-    const result = await getAllBrand();
-    if (result.status === 200) {
-      setBrandData(result.data.data.brands);
-      setLoading(true);
-    }
-  };
-  const CheckActive = (isActive) => {
-    if (isActive === 1) {
-      return <AiOutlineCheck />;
-    }
-  };
-  const handleDeleteBrand = async () => {
-    //console.log(item.MODELID);
-    setLoading(false);
-    const result = await deleteBrand(userId, selectedItems);
+    const dataCondition = {};
+    dataCondition.saleOrderId = tFSaleOrderValue;
+    dataCondition.paymentVoucherId = tFVoucherIdValue;
+    dataCondition.createFrom = fromDate;
+    dataCondition.createTo = toDate;
+    const result = await getAllVoucherType(userId, dataCondition);
     if (result.status === 200) {
       setLoading(true);
-      HandleClick();
+      setVoucherTypeList(result.data.data);
+      //console.log(result.data.data);
     }
   };
 
   useEffect(() => {
     setTime();
-    HandleClick();
+    getVoucherTypeList();
   }, []);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = brandData.slice(indexOfFirstPost, indexOfLastPost);
+  const currentPosts = voucherTypeList.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const [url, setUrl] = useState("");
-  const [urlEdit, setUrlEdit] = useState("");
-
-  const handleImageChange = (e) => {
-    if (e.target.files[0]) {
-      const uploadTask = storage
-        .ref(`images/${e.target.files[0].name}`)
-        .put(e.target.files[0]);
-      uploadTask.on("state_changed", null, null, () => {
-        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
-          setUrl(downloadUrl);
-        });
-      });
-    }
-  };
-  const handleImageChangeEdit = (e) => {
-    if (e.target.files[0]) {
-      const uploadTask = storage
-        .ref(`images/${e.target.files[0].name}`)
-        .put(e.target.files[0]);
-      uploadTask.on("state_changed", null, null, () => {
-        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
-          setUrlEdit(downloadUrl);
-        });
-      });
-    }
-  };
-
   const handleEditClick = (item) => {
-    setTFBrandEditValue(item.brandName);
-    setTFDesEditValue(item.brandDescription);
-    setBrandIdEditValue(item.brandId);
-    setUrlEdit(item.brandImagePath);
-    if (item.isActived === 1) setIsActived(true);
-    else {
-      setIsActived(false);
-    }
-
+    getVoucherDetail(userId, item);
     handleOpenModalEdit();
-  };
-  const handleAgrreEdit = async () => {
-    const toDate = valueToDate.format("YYYY-MM-DD");
-
-    handleCloseModalEdit();
-    setLoading(false);
-    const result = await updateBrand(
-      userId,
-      brandIdEditValue,
-      tFBrandEditValue,
-      tFDesEditValue,
-      isActived,
-      urlEdit
-    );
-    if (result.status === 200) {
-      setLoading(true);
-      HandleClick();
-    }
   };
 
   return (
@@ -237,56 +135,60 @@ function ERVoucherType({ route, navigate }) {
       >
         <div className="webContainer1 border">Tra cứu phiếu thu/chi</div>
         <div
-          className="d-flex mt-3 align-items-center justify-content-end"
-          style={{ background: "#ffffff", height: "80px" }}
+          className="d-flex mt-3 align-items-center justify-content-start"
+          style={{ background: "#ffffff", height: "80px", paddingLeft: 30 }}
         >
-          <div className="d-flex containerBtn align-items-center justify-content-end">
-            <div className="plus" style={{ marginRight: "10px" }}>
-              <Button variant="contained" onClick={handleDeleteBrand}>
-                <div
-                  style={{
-                    display: "flex",
-                    paddingBottom: "3px",
-                    paddingTop: "3px",
-                    paddingLeft: 15,
-                    paddingRight: 15,
-                    justifyItems: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <FaRegTrashAlt size={18} />
-                  <div
-                    style={{
-                      fontWeight: "bold",
-                      paddingLeft: "8px",
-                    }}
-                  >
-                    Xoá
-                  </div>
-                </div>
-              </Button>
+          <div className="d-flex mt-3 justify-content-start  search align-items-center">
+            <div className="searchMargin">
+              <TextField
+                id="outlined-basic"
+                label="Mã đơn hàng"
+                variant="outlined"
+                type="number"
+                onChange={(newValue) =>
+                  setTFSaleOrderValue(newValue.target.value)
+                }
+              />
             </div>
-            <div className="plus" style={{ marginRight: "50px" }}>
-              <Button variant="contained" onClick={handleOpenModal}>
-                <div
-                  style={{
-                    display: "flex",
-                    paddingBottom: "3px",
-                    paddingTop: "3px",
-                    justifyItems: "center",
-                    alignItems: "center",
+            <div className="searchMargin">
+              <TextField
+                id="outlined-basic"
+                label="Mã phiếu thu/chi"
+                variant="outlined"
+                type="number"
+                onChange={(newValue) =>
+                  setTFVoucherIdValue(newValue.target.value)
+                }
+              />
+            </div>
+            <div className="m-3">
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Từ ngày"
+                  value={valueFromDate}
+                  onChange={(newValue) => {
+                    setValueFromDate(newValue);
                   }}
-                >
-                  <FaPlus size={18} />
-                  <div
-                    style={{
-                      fontWeight: "bold",
-                      paddingLeft: "8px",
-                    }}
-                  >
-                    Thêm mới
-                  </div>
-                </div>
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+            <div>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DesktopDatePicker
+                  label="Đến ngày"
+                  value={valueToDate}
+                  onChange={(newValue) => {
+                    setValueToDate(newValue);
+                  }}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </LocalizationProvider>
+            </div>
+            <div className="searchMargin">
+              <Button variant="contained" onClick={() => getVoucherTypeList()}>
+                <AiOutlineSearch size={20} />
+                Tra cứu
               </Button>
             </div>
           </div>
@@ -300,31 +202,37 @@ function ERVoucherType({ route, navigate }) {
             <table className="table mt-2 ">
               <thead>
                 <tr style={{ background: "#848482" }}>
-                  <th>
-                    <label>
-                      <input type="checkbox" />
-                    </label>
-                  </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                     className="col-1"
                   >
-                    Mã
+                    Mã phiếu
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
-                    className="col-4"
+                    className="col"
                   >
-                    Tên thương hiệu
+                    Đơn hàng
                   </th>
-
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                   >
-                    Kích hoạt
+                    Loại phiếu
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Khách hàng
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Tổng tiền
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
@@ -332,40 +240,44 @@ function ERVoucherType({ route, navigate }) {
                   >
                     Ngày tạo
                   </th>
-                  <th
-                    style={{ color: "#ffffff", fontWeight: "bold" }}
-                    scope="col"
-                  >
-                    Người tạo
-                  </th>
                 </tr>
               </thead>
               <tbody>
                 {currentPosts.map((item, index) => (
                   <tr key={index}>
-                    <td>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={selectedItems.includes(item.brandId)}
-                          onChange={(event) =>
-                            handleCheckboxChange(event, item.brandId)
-                          }
-                        />
-                        {item.name}
-                      </label>
-                    </td>
-                    <th scope="item">{item.brandId}</th>
-                    <td
+                    <th
+                      scope="item"
                       className="brandEdit"
-                      onClick={() => handleEditClick(item)}
+                      onClick={() => {
+                        handleEditClick(item);
+                      }}
                     >
-                      {item.brandName}
+                      {item.paymentVoucherId}
+                    </th>
+                    <td>{item.voucherConcern}</td>
+                    <td>{item.voucherTypeId + " - " + item.voucherTypeName}</td>
+                    <td>
+                      <div>
+                        <div>
+                          {item.customerName + " - " + item.customerPhone}
+                        </div>
+                        <div>{item.customerFullAddress}</div>
+                      </div>
                     </td>
-
-                    <td>{CheckActive(item.isActived)}</td>
+                    <td>
+                      <div>
+                        <div>
+                          {"Trước thuế: " +
+                            item.totalAmountBeforeVAT.toLocaleString()}
+                        </div>
+                        <div>{"Thuế: " + item.totalVAT.toLocaleString()}</div>
+                        <div>
+                          {"Sau thuế: " +
+                            item.totalAmountAfterVAT.toLocaleString()}
+                        </div>
+                      </div>
+                    </td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
-                    <td>{item.createdUser}</td>
                   </tr>
                 ))}
               </tbody>
@@ -374,7 +286,7 @@ function ERVoucherType({ route, navigate }) {
           <div className="d-flex justify-content-center">
             <PaginationShop
               postsPerPage={postsPerPage}
-              totalPosts={brandData.length}
+              totalPosts={voucherTypeList.length}
               paginate={paginate}
             />
           </div>
@@ -382,159 +294,52 @@ function ERVoucherType({ route, navigate }) {
       </div>
       <div>
         <Modal
-          open={openModal}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description"
-        >
-          <Box sx={style}>
-            <div
-              className="border-bottom fw-bold"
-              style={{ paddingBottom: "16px" }}
-            >
-              Thêm mới thương hiệu sản phẩm
-            </div>
-            <div style={{ marginLeft: 37, marginTop: 12 }}>
-              <label htmlFor="image-uploader">
-                {url ? (
-                  <img src={url} alt="Selected file" width={150} height={150} />
-                ) : (
-                  <div
-                    className="d-flex border border-dashed justify-content-center align-items-center"
-                    style={{ width: 150, height: 150 }}
-                  >
-                    Chọn ảnh
-                  </div>
-                )}
-              </label>
-              <input
-                className="border"
-                id="image-uploader"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                style={{ display: "none" }}
-              />
-              {/* <input type="file" onChange={handleImageChange} />
-              {url && <img src={url} alt="Uploaded" width="150" height="100" />} */}
-            </div>
-            <div
-              className="d-flex align-items-center flex-column"
-              style={{ marginTop: 24 }}
-            >
-              <TextField
-                required
-                id="outlined-basic"
-                label="Tên thương hiệu"
-                variant="outlined"
-                style={{ width: "90%" }}
-                onChange={(newValue) => setTFBrandValue(newValue.target.value)}
-                helperText={error}
-                error={isError}
-              />
-
-              <TextField
-                id="outlined-multiline-flexible"
-                label="Mô tả"
-                multiline
-                rows={6}
-                style={{ width: "90%", marginTop: 20 }}
-                onChange={(newValue) => setTFDesValue(newValue.target.value)}
-              />
-            </div>
-            <div style={{ marginTop: 10, marginLeft: 37 }}>
-              Kích hoạt{" "}
-              <Checkbox
-                disabled
-                checked={checked}
-                onChange={handleChange}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            </div>
-            <div
-              className="d-flex justify-content-center"
-              style={{ marginTop: 20 }}
-            >
-              <div style={{ marginRight: 20 }}>
-                <Button variant="outlined" onClick={handleCloseModal}>
-                  Quay lại
-                </Button>
-              </div>
-              <div style={{ marginLeft: 20 }}>
-                <Button variant="contained" onClick={handleAgrre}>
-                  Đồng ý
-                </Button>
-              </div>
-            </div>
-          </Box>
-        </Modal>
-        <Modal
           open={openModalEdit}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <div className="border-bottom fw-bold">
-              Chỉnh sửa thương hiệu sản phẩm
-            </div>
-            <div style={{ marginLeft: 37, marginTop: 12 }}>
-              <label htmlFor="image-uploader">
-                {urlEdit ? (
-                  <img
-                    src={urlEdit}
-                    alt="Selected file"
-                    width={150}
-                    height={150}
-                  />
-                ) : (
-                  <div
-                    className="d-flex border border-dashed justify-content-center align-items-center"
-                    style={{ width: 150, height: 150 }}
-                  >
-                    Chọn ảnh
-                  </div>
-                )}
-              </label>
-              <input
-                className="border"
-                id="image-uploader"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChangeEdit}
-                style={{ display: "none" }}
-              />
-            </div>
+            <div className="border-bottom fw-bold">Chi tiết phiếu</div>
+
             <div
               className="d-flex align-items-center flex-column"
               style={{ marginTop: 20 }}
             >
-              <TextField
-                required
-                id="outlined-basic"
-                label="Tên thương hiệu"
-                variant="outlined"
-                style={{ width: "90%" }}
-                value={tFBrandEditValue}
-                onChange={(value) => setTFBrandEditValue(value.target.value)}
-              />
+              {cashList && (
+                <table className="table mt-2 ">
+                  <thead>
+                    <tr style={{ background: "#848482" }}>
+                      <th
+                        style={{ color: "#ffffff", fontWeight: "bold" }}
+                        scope="col"
+                        className="col-4"
+                      >
+                        Số tiền
+                      </th>
+                      <th
+                        style={{ color: "#ffffff", fontWeight: "bold" }}
+                        scope="col"
+                        className="col"
+                      >
+                        Ngày thao tác
+                      </th>
+                    </tr>
+                  </thead>
 
-              <TextField
-                id="outlined-multiline-flexible"
-                label="Mô tả"
-                multiline
-                rows={6}
-                style={{ width: "90%", marginTop: 10 }}
-                value={tFDesEditValue}
-                onChange={(value) => setTFDesEditValue(value.target.value)}
-              />
+                  <tbody>
+                    {cashList.map((item, index) => (
+                      <tr key={index}>
+                        <td>{item.cash.toLocaleString()}</td>
+                        <td>
+                          {new Date(item.createdDate).toLocaleDateString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
             </div>
-            <div style={{ marginTop: 10, marginLeft: 37 }}>
-              Kích hoạt{" "}
-              <Checkbox
-                checked={isActived}
-                onChange={handleEditcheck}
-                inputProps={{ "aria-label": "controlled" }}
-              />
-            </div>
+
             <div
               className="d-flex justify-content-center"
               style={{ marginTop: 20 }}
@@ -542,11 +347,6 @@ function ERVoucherType({ route, navigate }) {
               <div style={{ marginRight: 20 }}>
                 <Button variant="outlined" onClick={handleCloseModalEdit}>
                   Quay lại
-                </Button>
-              </div>
-              <div style={{ marginLeft: 20 }}>
-                <Button variant="contained" onClick={handleAgrreEdit}>
-                  Đồng ý
                 </Button>
               </div>
             </div>
