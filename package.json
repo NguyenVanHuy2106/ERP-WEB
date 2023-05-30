@@ -53,9 +53,9 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "postinstall": "npm install --legacy-peer-deps",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "postinstall": "npm install --legacy-peer-deps"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [
