@@ -54,11 +54,12 @@ const style = {
 };
 function ERHome({ route, navigate }) {
   const classes = useStyles();
+  let userId = localStorage.getItem("userId");
   let [loading, setLoading] = useState(false);
   const [resCount, setResCount] = useState({});
   const [reportSaleOrderList, setReportSaleOrderList] = useState([]);
   const [reportRevenue, setReportRevenue] = useState([]);
-  console.log(reportRevenue);
+  //console.log(reportRevenue);
   const currentDate = new Date();
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const [reportColumn, setReportColumn] = useState([]);
@@ -72,7 +73,7 @@ function ERHome({ route, navigate }) {
     }, 2000);
   };
   const getOrderQuantity = async () => {
-    const result = await countOrder();
+    const result = await countOrder(userId);
     if (result.status === 200) {
       setResCount(result.data.data.resCount);
     }

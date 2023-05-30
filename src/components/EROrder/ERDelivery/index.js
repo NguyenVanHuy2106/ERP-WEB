@@ -27,7 +27,7 @@ import {
   deleteMainGroup,
 } from "../../../controller/MDMainGroupController";
 
-import { getOrderListAPI } from "../../../controller/EROrder";
+import { getOrderListAPI, updateOrderAPI } from "../../../controller/EROrder";
 import PaginationShop from "../../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -218,6 +218,7 @@ function ERDelivery({ route, navigate }) {
                           data: item,
                           isConfirm: false,
                           isWaiGetProduct: false,
+                          isDelivery: true,
                         }}
                       >
                         {item.saleOrderId}

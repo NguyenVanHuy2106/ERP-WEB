@@ -61,6 +61,7 @@ function EROrderDetail({ route }) {
   const isConfirm = data.state.isConfirm;
   const isWaiGetProduct = data.state.isWaiGetProduct;
   const isIncome = data.state.isIncome || false;
+  const isDelivery = data.state.isDelivery || false;
   //console.log(isIncome);
   const [openModal, setOpenModal] = React.useState(false);
   const [deleteNote, setDeleteNote] = useState("");
@@ -167,6 +168,23 @@ function EROrderDetail({ route }) {
       navigate("/orders", { replace: true });
     }
     // // console.log(saleOrder);
+  };
+  const handleDelivery = async () => {
+    let saleOrderIdList = [];
+    saleOrderIdList.push(saleOrderId.saleOrderId);
+    const result = await updateOrderAPI(
+      userId,
+      saleOrderIdList,
+      null,
+      1,
+      null,
+      null,
+      null,
+      ""
+    );
+    if (result.status === 200) {
+      navigate("/orders", { replace: true });
+    }
   };
 
   useEffect(() => {
@@ -531,6 +549,27 @@ function EROrderDetail({ route }) {
                   Thu tiền
                 </button>
               </div>
+            </div>
+          )}
+          {isDelivery && (
+            <div
+              className="d-flex justify-content-end"
+              style={{
+                backgroundColor: "#ffffff",
+                marginTop: 4,
+                paddingTop: 12,
+                paddingBottom: 12,
+                paddingRight: 20,
+              }}
+            >
+              <button
+                type="button"
+                style={{ marginRight: 12 }}
+                className="btn btn-primary"
+                onClick={() => handleDelivery()}
+              >
+                Hoàn tất giao
+              </button>
             </div>
           )}
         </div>

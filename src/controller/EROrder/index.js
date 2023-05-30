@@ -33,16 +33,16 @@ export const updateOrderAPI = async (
   deletedNote
 ) => {
   try {
-    console.log(
-      userLogIn,
-      saleOrderList,
-      isReviewed,
-      isDelivery,
-      isOutput,
-      isIncome,
-      isDeleted,
-      deletedNote
-    );
+    // console.log(
+    //   userLogIn,
+    //   saleOrderList,
+    //   isReviewed,
+    //   isDelivery,
+    //   isOutput,
+    //   isIncome,
+    //   isDeleted,
+    //   deletedNote
+    // );
     const response = await API.post(
       "saleorder/update-saleorder",
       {
