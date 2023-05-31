@@ -98,9 +98,18 @@ const Sidebar = () => {
             >
               {declareData.map(({ path, title, data }, index) => {
                 return (
-                  <NavDropdown.Item key={index}>
-                    <Link to={path}>{title}</Link>
-                  </NavDropdown.Item>
+                  <Link key={index} to={path}>
+                    <div
+                      style={{
+                        paddingTop: 6,
+                        paddingBottom: 6,
+                        paddingLeft: 10,
+                        width: "230px",
+                      }}
+                    >
+                      {title}
+                    </div>
+                  </Link>
                 );
               })}
             </NavDropdown>
@@ -113,9 +122,18 @@ const Sidebar = () => {
             >
               {shipmentOrderData.map(({ path, title }, index) => {
                 return (
-                  <NavDropdown.Item href={path} key={index}>
-                    {title}
-                  </NavDropdown.Item>
+                  <Link key={index} to={path}>
+                    <div
+                      style={{
+                        paddingTop: 6,
+                        paddingBottom: 6,
+                        paddingLeft: 10,
+                        width: "230px",
+                      }}
+                    >
+                      {title}
+                    </div>
+                  </Link>
                 );
               })}
             </NavDropdown>
@@ -128,9 +146,18 @@ const Sidebar = () => {
             >
               {customerData.map(({ path, title }, index) => {
                 return (
-                  <NavDropdown.Item href={path} key={index}>
-                    {title}
-                  </NavDropdown.Item>
+                  <Link key={index} to={path}>
+                    <div
+                      style={{
+                        paddingTop: 6,
+                        paddingBottom: 6,
+                        paddingLeft: 10,
+                        width: "230px",
+                      }}
+                    >
+                      {title}
+                    </div>
+                  </Link>
                 );
               })}
             </NavDropdown>
@@ -143,9 +170,18 @@ const Sidebar = () => {
             >
               {voucherConcernData.map(({ path, title }, index) => {
                 return (
-                  <NavDropdown.Item href={path} key={index}>
-                    {title}
-                  </NavDropdown.Item>
+                  <Link key={index} to={path}>
+                    <div
+                      style={{
+                        paddingTop: 6,
+                        paddingBottom: 6,
+                        paddingLeft: 10,
+                        width: "230px",
+                      }}
+                    >
+                      {title}
+                    </div>
+                  </Link>
                 );
               })}
             </NavDropdown>

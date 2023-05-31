@@ -36,11 +36,12 @@ function ERCustomer({ route, navigate }) {
   let [loading, setLoading] = useState(false);
 
   const [customerData, setCustomerData] = useState([]);
-
+  //console.log(customerData);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
   const [openModalEdit, setOpenModalEdit] = React.useState(false);
   const [customerObject, setCustomerObject] = useState({});
+
   const [customerObjectDetail, setCustomerObjectDetail] = useState({});
   //console.log(customerObject);
   const handleOpenModalEdit = () => setOpenModalEdit(true);
@@ -193,7 +194,76 @@ function ERCustomer({ route, navigate }) {
                 </tr>
               </thead>
               <tbody>
-                {currentPosts.map((item, index) => (
+                {currentPosts.map((item, index) => {
+                  let itemInfo = item.md_customer_info;
+                  //console.log(item)
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          checked={selectedItems.includes(item.customerId)}
+                          onChange={(event) =>
+                            handleCheckboxChange(event, item.customerId)
+                          }
+                        />
+                      </td>
+                      <td
+                        className="brandEdit d-flex align-items-center"
+                        onClick={() => handleEditClick(item)}
+                      >
+                        <div
+                          className="d-flex justify-content-center align-items-center"
+                          style={{
+                            width: 40,
+                            height: 40,
+                            backgroundColor: "#cccccc",
+                            borderRadius: 50,
+                          }}
+                        >
+                          <div style={{ fontWeight: "bold" }}>
+                            {itemInfo !== null
+                              ? itemInfo.firstname.charAt(0)
+                              : ""}
+                          </div>
+                          <div style={{ fontWeight: "bold" }}>
+                            {itemInfo !== null
+                              ? itemInfo.lastname.charAt(0)
+                              : ""}
+                          </div>
+                        </div>
+                        <div style={{ marginLeft: 8 }}>
+                          {itemInfo !== null
+                            ? itemInfo.firstname + " " + itemInfo.lastname
+                            : "Chưa cập nhật"}
+                        </div>
+                      </td>
+                      <td>{item.username}</td>
+
+                      <td>
+                        {itemInfo !== null
+                          ? itemInfo.gender === 1
+                            ? "Nam"
+                            : "Nữ"
+                          : "Chưa cập nhật"}
+                      </td>
+                      <td>
+                        {itemInfo !== null
+                          ? itemInfo.phoneNumber
+                          : "Chưa cập nhật"}
+                      </td>
+                      <td>
+                        {itemInfo !== null ? itemInfo.email : "Chưa cập nhật"}
+                      </td>
+                      <td>
+                        {itemInfo !== null
+                          ? new Date(itemInfo.birthday).toLocaleDateString()
+                          : "Chưa cập nhật"}
+                      </td>
+                    </tr>
+                  );
+                })}
+                {/* {currentPosts.map((item, index) => (
                   <tr key={index}>
                     <td>
                       <input
@@ -203,7 +273,6 @@ function ERCustomer({ route, navigate }) {
                           handleCheckboxChange(event, item.customerId)
                         }
                       />
-                      {item.name}
                     </td>
                     <td
                       className="brandEdit d-flex align-items-center"
@@ -224,17 +293,6 @@ function ERCustomer({ route, navigate }) {
                         <div style={{ fontWeight: "bold" }}>
                           {item.md_customer_info.lastname.charAt(0)}
                         </div>
-                        {/* <img
-                          src={
-                            item.md_customer_info.avatar
-                              ? item.md_customer_info.avatar
-                              : "https://icon-library.com/images/image-icon-png/image-icon-png-6.jpg"
-                          }
-                          alt="Selected file"
-                          width={40}
-                          height={40}
-                          style={{ borderRadius: 100 }}
-                        /> */}
                       </div>
                       <div style={{ marginLeft: 8 }}>
                         {item.md_customer_info.firstname +
@@ -253,7 +311,7 @@ function ERCustomer({ route, navigate }) {
                       ).toLocaleDateString()}
                     </td>
                   </tr>
-                ))}
+                ))} */}
               </tbody>
             </table>
           </div>
@@ -282,39 +340,61 @@ function ERCustomer({ route, navigate }) {
               <div className="d-flex" style={{ marginTop: 10 }}>
                 <div className="col-3">Tên khách hàng: </div>
                 <div>
-                  {customerObjectDetail.firstname +
-                    " " +
-                    customerObjectDetail.lastname}
+                  {customerObjectDetail !== null
+                    ? customerObjectDetail.firstname +
+                      " " +
+                      customerObjectDetail.lastname
+                    : "Chưa cập nhật"}
                 </div>
               </div>
               <div className="d-flex" style={{ marginTop: 10 }}>
                 <div className="col-3">Số điện thoại: </div>
-                <div>{customerObjectDetail.phoneNumber}</div>
+                <div>
+                  {customerObjectDetail !== null
+                    ? customerObjectDetail.phoneNumber
+                    : "Chưa cập nhật"}
+                </div>
               </div>
               <div className="d-flex" style={{ marginTop: 10 }}>
                 <div className="col-3">Email: </div>
-                <div>{customerObjectDetail.email}</div>
+                <div>
+                  {customerObjectDetail !== null
+                    ? customerObjectDetail.email
+                    : "Chưa cập nhật"}
+                </div>
               </div>
               <div className="d-flex" style={{ marginTop: 10 }}>
                 <div className="col-3">Giới tính: </div>
-                <div>{customerObjectDetail.gender === 1 ? "Nam" : "Nữ"}</div>
+                <div>
+                  {customerObjectDetail !== null
+                    ? customerObjectDetail.gender === 1
+                      ? "Nam"
+                      : "Nữ"
+                    : "Chưa cập nhật"}
+                </div>
               </div>
               <div className="d-flex" style={{ marginTop: 10 }}>
                 <div className="col-3">Ngày sinh: </div>
                 <div>
-                  {new Date(customerObjectDetail.birthday).toLocaleDateString()}
+                  {customerObjectDetail !== null
+                    ? new Date(
+                        customerObjectDetail.birthday
+                      ).toLocaleDateString()
+                    : "Chưa cập nhật"}
                 </div>
               </div>
               <div className="d-flex" style={{ marginTop: 10 }}>
                 <div className="col-3">Địa chỉ: </div>
                 <div>
-                  {customerObjectDetail.address +
-                    ", " +
-                    customerObjectDetail.wardName +
-                    ", " +
-                    customerObjectDetail.districtName +
-                    ", " +
-                    customerObjectDetail.provinceName}
+                  {customerObjectDetail !== null
+                    ? customerObjectDetail.address +
+                      ", " +
+                      customerObjectDetail.wardName +
+                      ", " +
+                      customerObjectDetail.districtName +
+                      ", " +
+                      customerObjectDetail.provinceName
+                    : "Chưa cập nhật"}
                 </div>
               </div>
             </div>
