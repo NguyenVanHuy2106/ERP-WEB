@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-
+import { Link } from "react-router-dom";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import {
   declareData,
@@ -98,8 +98,8 @@ const Sidebar = () => {
             >
               {declareData.map(({ path, title, data }, index) => {
                 return (
-                  <NavDropdown.Item href={path} key={index}>
-                    {title}
+                  <NavDropdown.Item key={index}>
+                    <Link to={path}>{title}</Link>
                   </NavDropdown.Item>
                 );
               })}
