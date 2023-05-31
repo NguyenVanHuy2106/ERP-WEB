@@ -1,46 +1,24 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
-import { Alert, TextField } from "@mui/material";
-import Stack from "@mui/material/Stack";
+import { RingLoader } from "react-spinners";
+import { TextField } from "@mui/material";
 import { makeStyles } from "@material-ui/core/styles";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import Checkbox from "@mui/material/Checkbox";
-import InputLabel from "@mui/material/InputLabel";
+import { AiOutlineSearch } from "react-icons/ai";
+
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
-import { CardActionArea } from "@mui/material";
-import Switch from "react-switch";
+
 import "./css/index.css";
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import { storage } from "../../server/FirebaseConfig";
-import { appGetAllMainGroup } from "../../controller/MDMainGroupController";
-import { getAllSubGroupByMainGroup } from "../../controller/MDSubGroupController";
-import { AppGetAllBrand } from "../../controller/MDBrandController";
-import { getAllModelProduct, getModelDetail } from "../../controller/ERProduct";
 import { getAllPriceOfModel } from "../../controller/ERProductPrice";
-import {
-  getAllBrand,
-  addNewBrand,
-  updateBrand,
-  deleteBrand,
-} from "../../controller/MDBrandController";
+
 import PaginationShop from "../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -48,58 +26,21 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
   },
 }));
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 800,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
+
 function ERProductPrice({ route, navigate }) {
   const classes = useStyles();
   const [tFValue, setTFValue] = useState("");
-  const [tFBrandValue, setTFBrandValue] = useState("");
+
   const [priceList, setPriceList] = useState([]);
-  const [mainGroup, setMainGroup] = useState([]);
-  const [mainGroupIdSelect, setMainGroupIdSelect] = useState("");
-  const [subGroup, setSubGroup] = useState([]);
-  const [subGroupIdSelect, setSubGroupIdSelect] = useState("");
-  const [brand, setBrand] = useState([]);
-  const [brandIdSelect, setBrandIdSelect] = useState("");
-  const [modelList, setModelList] = useState([]);
-  const [tFDesValue, setTFDesValue] = useState("");
-  const [tFBrandEditValue, setTFBrandEditValue] = useState("");
-  const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [brandIdEditValue, setBrandIdEditValue] = useState("");
-  const [isActived, setIsActived] = useState(false);
+
   const [keyWordType, setKeyWordType] = useState(0);
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
-  const [brandData, setBrandData] = useState([]);
   //const [valueCatData, setValueCatData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(18);
-  const [openModal, setOpenModal] = React.useState(false);
-  const [openModalEdit, setOpenModalEdit] = React.useState(false);
-  const handleOpenModalEdit = () => setOpenModalEdit(true);
-  const handleCloseModalEdit = () => {
-    setOpenModalEdit(false);
-  };
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setIsError(false);
-    setError("");
-    setUrl("");
-  };
-  const [checked, setChecked] = React.useState(true);
-  const [editChecked, setEditChecked] = React.useState(true);
-  const [error, setError] = React.useState("");
-  const [isError, setIsError] = useState(false);
+
   let userId = localStorage.getItem("userId");
   const [selectedItems, setSelectedItems] = useState([]);
   const handleCheckboxChange = (event, item) => {
@@ -111,44 +52,6 @@ function ERProductPrice({ route, navigate }) {
       );
     }
   };
-  const handleChangeMainGroupIdSelect = (event) => {
-    setMainGroupIdSelect(event.target.value);
-    HandleSubGroup(event.target.value);
-  };
-  const handleChangeSubGroupIdSelect = (event) => {
-    setSubGroupIdSelect(event.target.value);
-  };
-  const handleChangeBrandIdSelect = (event) => {
-    setBrandIdSelect(event.target.value);
-  };
-  const handleEditcheck = (event) => {
-    setIsActived(event.target.checked);
-  };
-  const handleChange = (event) => {
-    setChecked(event.target.checked);
-  };
-  const handleAgrre = async () => {
-    if (tFBrandValue.length === 0) {
-      setError("Vui long nhap ten danh muc");
-      setIsError(true);
-    } else {
-      handleCloseModal();
-      setLoading(false);
-      const result = await addNewBrand(
-        userId,
-        tFBrandValue,
-        tFDesValue,
-        1,
-        url
-      );
-      if (result.status === 200) {
-        setLoading(true);
-
-        setError("");
-        setTFBrandValue("");
-      }
-    }
-  };
 
   const firstDateInMonth = new Date(
     today.getFullYear(),
@@ -156,43 +59,18 @@ function ERProductPrice({ route, navigate }) {
     1
   ).toLocaleDateString();
 
-  //   var firstDateInMonth =
-  //     1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
-
   const [valueFromDate, setValueFromDate] = React.useState(
     dayjs(firstDateInMonth)
   );
-  //console.log(valueFromDate.format("DD-MM-YYYY"));
+
   const [valueToDate, setValueToDate] = React.useState(toDateDayjs);
-  //console.log(valueToDate.format("DD-MM-YYYY"));
-  const formatDate = (date) => {
-    return date.format("DD/MM/YYYY"); // định dạng ngày-tháng-năm
-  };
 
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
     }, 1000);
   };
-  const HandleGetAllMainGroup = async () => {
-    const result = await appGetAllMainGroup();
-    if (result.status === 200) {
-      setMainGroup(result.data.data.maingroups);
-    }
-  };
 
-  const HandleSubGroup = async (mainGroupId) => {
-    const result = await getAllSubGroupByMainGroup(mainGroupId);
-    if (result.status === 200) {
-      setSubGroup(result.data.data.subgroups);
-    }
-  };
-  const HandleGetAllBrand = async () => {
-    const result = await AppGetAllBrand();
-    if (result.status === 200) {
-      setBrand(result.data.data.brands);
-    }
-  };
   const HandleClick = async (keyWordType) => {
     //console.log(keyWordType);
     setLoading(false);
@@ -227,81 +105,18 @@ function ERProductPrice({ route, navigate }) {
         setPriceList(result1.data.data.priceOfModels);
       }
     }
-
-    //console.log(result);
-    // if (result.status === 200) {
-    //   setLoading(true);
-    //   setPriceList(result.data.data.priceOfModels);
-    // }
-    //console.log(num, fromDate, toDate);
-  };
-  const CheckActive = (isActive) => {
-    if (isActive === 1) {
-      return <AiOutlineCheck />;
-    }
-  };
-  const handleDeleteBrand = async () => {
-    //console.log(item.MODELID);
-    setLoading(false);
-    const result = await deleteBrand(userId, selectedItems);
-    if (result.status === 200) {
-      setLoading(true);
-      HandleClick();
-    }
-  };
-
-  const getAllModel = async (mainGroupId, subGroupId, brandId) => {
-    const result = await getAllModelProduct(mainGroupId, subGroupId, brandId);
-    if (result.status === 200) {
-      setModelList(result.data.data.modelList);
-    }
   };
 
   useEffect(() => {
+    setTime();
     HandleClick(0);
-    //HandleGetAllMainGroup();
-    //HandleGetAllBrand();
   }, []);
-  const [url, setUrl] = useState("");
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
 
   const currentPosts = priceList.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handleImageChange = (e) => {
-    if (e.target.files[0]) {
-      const uploadTask = storage
-        .ref(`images/${e.target.files[0].name}`)
-        .put(e.target.files[0]);
-      uploadTask.on("state_changed", null, null, () => {
-        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
-          setUrl(downloadUrl);
-        });
-      });
-    }
-  };
-
-  const handleEditClick = (item) => {};
-
-  const handleAgrreEdit = async () => {
-    const toDate = valueToDate.format("YYYY-MM-DD");
-
-    handleCloseModalEdit();
-    setLoading(false);
-    const result = await updateBrand(
-      userId,
-      brandIdEditValue,
-      tFBrandEditValue,
-      tFDesEditValue,
-      isActived
-    );
-    if (result.status === 200) {
-      setLoading(true);
-      HandleClick();
-    }
-  };
 
   return (
     <div

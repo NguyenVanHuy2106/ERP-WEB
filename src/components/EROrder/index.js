@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
-import { useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import ERConfirm from "./ERConfirm";
 import ERDelivery from "./ERDelivery";
@@ -9,7 +8,7 @@ import ERCancel from "./ERCancel";
 import ERWaitGetProduct from "./ERWaitGetProduct";
 import ERWaitGetMoney from "./ERWaitGetMoney";
 import ERDone from "./ERDone";
-import { RingLoader, CircleLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 import Backdrop from "@mui/material/Backdrop";
 import { makeStyles } from "@material-ui/core/styles";
 // import "./css/index.css";

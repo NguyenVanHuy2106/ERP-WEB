@@ -1,41 +1,22 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
-import { useParams } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 import { TextField } from "@mui/material";
-import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import Checkbox from "@mui/material/Checkbox";
-import Switch from "react-switch";
-import numeral from "numeral";
-import Snackbar from "@mui/material/Snackbar";
+
 import "../css/index.css";
 import "dayjs/locale/vi";
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import { storage } from "../../../server/FirebaseConfig";
-import moment from "moment";
-import {
-  getAllBrand,
-  addNewBrand,
-  updateBrand,
-  deleteBrand,
-} from "../../../controller/MDBrandController";
+
 import {
   getModelDetail,
   addNewPriceOfModel,
-  getProductIdByVarrant,
-  getPriceByModelAPI,
 } from "../../../controller/ERProduct";
 import {
   getModelPriceDetail,
@@ -61,12 +42,9 @@ const style = {
 };
 function ERPPriceDetailOfModel({ route, navigate, modelId }) {
   const classes = useStyles();
-  //const { modelId } = useParams();
-  const location = useLocation();
-  //console.log(location.state.price);
-  //const price = location.state.price;
+
   const [errUpdatePrice, setErrUpdatePrice] = useState("");
-  const [tFPriceEditValue, setTFPriceEditValue] = useState("");
+
   const [modelInfo, setModelInfo] = useState({});
   const [modelDescriptionAttribute, setModelDescriptionAttribute] = useState(
     []
@@ -74,116 +52,37 @@ function ERPPriceDetailOfModel({ route, navigate, modelId }) {
   const [modelPriceDetail, setModelPriceDetail] = useState([]);
   const [priceOfModelId, setPriceOfModelId] = useState(0);
   const [modelIdEdit, setModelIdEdit] = useState(null);
-  const [selectedIndex, setSelectedIndex] = useState(null);
-  const [selected, setSelected] = useState({});
-  const [quantity, setQuantity] = useState(1);
-  const [varant, setVarrant] = useState([]);
+
   //console.log(varant);
   const [priceOfModel, setPriceOfModel] = useState(0);
   //console.log(priceOfModel);
-  const [priceOfVarrant, setPriceOfVarrant] = useState(0);
   const [maxLevelVarantProduct, setMaxLevelVarantProduct] = useState(0);
   const [loadingAddNewModel, setLoadingAddNewModel] = useState(false);
-  const [state, setState] = useState(false);
-  const [statePriceOfProductId, setStatePriceOfProductId] = useState(false);
   const [isCanEditFromDate, setIsCanEditFromDate] = useState(false);
   const [isCanEditToDate, setIsCanEditToDate] = useState(false);
   const [isCanEditPrice, setIsCanEditPrice] = useState(false);
-  const [isShowTexInputPriceOfVarrant, setIsShowTexInputPriceOfVarrant] =
-    useState(false);
-  const { vertical, horizontal, open } = state;
   const [priceOfModelEdit, setPriceOfModelEdit] = useState(0);
 
-  const handleClick = (newState) => () => {
-    setState({ open: true, ...newState });
-  };
-
-  const handleClose = () => {
-    setState({ ...state, open: false });
-  };
-  const handleObjectClick = (indexValue) => {
-    setSelectedIndex(indexValue);
-  };
-  const handleSelect = (indexOption, group, valueId) => {
-    setSelected((prevSelected) => ({ ...prevSelected, [group]: valueId }));
-    const updateSelection = {
-      level: indexOption + 1,
-      modelVarantAttributeId: group,
-      modelVarantAttributeValueId: valueId,
-    };
-    setIsShowTexInputPriceOfVarrant(false);
-    setProductId("");
-    setVarrant((prevSelections) => {
-      const index = prevSelections.findIndex(
-        (selection) => selection.modelVarantAttributeId === group
-      );
-      if (index >= 0) {
-        // The attribute is already selected, update the value
-        return prevSelections.map((selection, i) =>
-          i === index ? { ...selection, ...updateSelection } : selection
-        );
-      } else {
-        // The attribute is not yet selected, add a new selection
-        return [...prevSelections, updateSelection];
-      }
-    });
-  };
   const [modelVarantProduct, setModelVarantProduct] = useState([]);
   const [imageAvatar, setImageAvatar] = useState("");
-  //console.log(modelVarantProduct);
-  const [tFDesValue, setTFDesValue] = useState("");
-  const [tFBrandEditValue, setTFBrandEditValue] = useState("");
-  const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [brandIdEditValue, setBrandIdEditValue] = useState("");
-  const [isActived, setIsActived] = useState(false);
+
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
-  const [brandData, setBrandData] = useState([]);
   //const [valueCatData, setValueCatData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(10);
   const [openModal, setOpenModal] = React.useState(false);
-  const [openModalEdit, setOpenModalEdit] = React.useState(false);
-  const [productId, setProductId] = useState("");
   const [errEditPrice, setErrEditPrice] = useState("");
-  const handleOpenModalEdit = () => setOpenModalEdit(true);
-  const handleCloseModalEdit = () => {
-    setOpenModalEdit(false);
-  };
-  const handleOpenModal = () => setOpenModal(true);
+
   const handleCloseModal = () => {
     setOpenModal(false);
     setIsError(false);
     setError("");
-    setUrl("");
   };
-  const [checked, setChecked] = React.useState(true);
-  const [editChecked, setEditChecked] = React.useState(true);
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
   const [errPrice, setErrPrice] = useState("");
-  const [errPriceVarrant, setErrPriceVarrant] = useState("");
   let userId = localStorage.getItem("userId");
-  const [selectedItems, setSelectedItems] = useState([]);
-  const handleCheckboxChange = (event, item) => {
-    if (event.target.checked) {
-      setSelectedItems([...selectedItems, item]);
-    } else {
-      setSelectedItems(
-        selectedItems.filter((selectedItem) => selectedItem !== item)
-      );
-    }
-  };
-  const handleEditcheck = (event) => {
-    setIsActived(event.target.checked);
-  };
-  const handleChange = (event) => {
-    setChecked(event.target.checked);
-  };
 
-  var firstDateInMonth =
-    1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
   const lastDateInMonth = new Date(
     today.getFullYear(),
     today.getMonth() + 1,
@@ -201,32 +100,7 @@ function ERPPriceDetailOfModel({ route, navigate, modelId }) {
       setLoading(true);
     }, 1000);
   };
-  const HandleClick = async () => {
-    setLoading(false);
 
-    const fromDate = valueFromDate.format("YYYY-MM-DD");
-    const toDate = valueToDate.format("YYYY-MM-DD");
-    //console.log(tFValue, fromDate, toDate);
-    const result = await getAllBrand();
-    if (result.status === 200) {
-      setBrandData(result.data.data.brands);
-      setLoading(true);
-    }
-  };
-  const CheckActive = (isActive) => {
-    if (isActive === 1) {
-      return <AiOutlineCheck />;
-    }
-  };
-  const handleDeleteBrand = async () => {
-    //console.log(item.MODELID);
-    setLoading(false);
-    const result = await deleteBrand(userId, selectedItems);
-    if (result.status === 200) {
-      setLoading(true);
-      HandleClick();
-    }
-  };
   const getModelInfoDetail = async (modelId) => {
     setLoading(false);
     const result = await getModelDetail(modelId);
@@ -287,11 +161,7 @@ function ERPPriceDetailOfModel({ route, navigate, modelId }) {
   };
   const handleAgrre = async () => {
     setLoading(false);
-    // const fromDate = valueFromDate.format("YYYY-MM-DD");
-    // const fromDate = moment(valueFromDateEdit);
-    // const formatFromDate = fromDate.format("YYYY-MM-DD");
-    // const toDate = moment(valueToDateEdit);
-    // const formatToDate = toDate.format("YYYY-MM-DD");
+
     const fromDateEdit = dayjs(valueFromDateEdit).format("YYYY-MM-DD");
     const toDateEdit = dayjs(valueToDateEdit).format("YYYY-MM-DD");
     //console.log(fromDate, toDate);
@@ -311,29 +181,13 @@ function ERPPriceDetailOfModel({ route, navigate, modelId }) {
         setOpenModal(false);
       }
     }
-
-    // console.log(
-    //   priceOfModelId,
-    //   modelIdEdit,
-    //   priceOfModelEdit,
-    //   formatFromDate,
-    //   formatToDate
-    // );
   };
 
   useEffect(() => {
     setTime();
     getModelInfoDetail(modelId);
     handleGetModelPriceDetail(modelId);
-    //getPriceBymodel(modelId);
   }, []);
-
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = brandData.slice(indexOfFirstPost, indexOfLastPost);
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const [url, setUrl] = useState("");
 
   return (
     <div
@@ -553,13 +407,6 @@ function ERPPriceDetailOfModel({ route, navigate, modelId }) {
                 </div>
               </div>
             </div>
-          </div>
-          <div className="d-flex justify-content-center">
-            <PaginationShop
-              postsPerPage={postsPerPage}
-              totalPosts={brandData.length}
-              paginate={paginate}
-            />
           </div>
         </div>
       </div>

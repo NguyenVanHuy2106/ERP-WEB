@@ -1,35 +1,12 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
-import { TextField } from "@mui/material";
+import { RingLoader } from "react-spinners";
 import "./css/index.css";
-import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import {
-  AiOutlineSearch,
-  AiFillCheckCircle,
-  AiOutlineCheck,
-} from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import Checkbox from "@mui/material/Checkbox";
-import Switch from "react-switch";
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import { storage } from "../../../server/FirebaseConfig";
-import {
-  addNewMainGroup,
-  getAllMainGroup,
-  updateMainGroup,
-  deleteMainGroup,
-} from "../../../controller/MDMainGroupController";
+import { AiFillCheckCircle } from "react-icons/ai";
 
 import { getOrderListAPI, updateOrderAPI } from "../../../controller/EROrder";
 import PaginationShop from "../../shops/paginationShopList";
@@ -39,24 +16,11 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
   },
 }));
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 800,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
+
 function ERConfirm({ route, navigate }) {
   const classes = useStyles();
   let [loading, setLoading] = useState(false);
-  var toDateDayjs = dayjs();
-  var today = new Date();
   const [orderList, setOrderList] = useState([]);
-  const [mainGroupData, setMainGroupData] = useState([]);
-  //const [valueCatData, setValueCatData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
 
@@ -72,45 +36,13 @@ function ERConfirm({ route, navigate }) {
     }
   };
 
-  var firstDateInMonth =
-    1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
-
-  const [valueFromDate, setValueFromDate] = React.useState(
-    dayjs(firstDateInMonth)
-  );
-  const [valueToDate, setValueToDate] = React.useState(toDateDayjs);
-
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
     }, 1000);
   };
-  // const HandleClick = async () => {
-  //   setLoading(false);
-  //   const fromDate = valueFromDate.format("YYYY-MM-DD");
-  //   const toDate = valueToDate.format("YYYY-MM-DD");
-  //   //console.log(tFValue, fromDate, toDate);
-  //   const result = await getAllMainGroup();
-  //   if (result.status === 200) {
-  //     //console.log(result.data.ResultObject);
-  //     setMainGroupData(result.data.data.maingroups);
-  //     setLoading(true);
-  //   }
-  // };
-  const CheckActive = (isActive) => {
-    if (isActive === 1) {
-      return <AiOutlineCheck />;
-    }
-  };
+
   const handleConfirm = async () => {
-    // userLogIn,
-    // saleOrderList,
-    // isReviewed,
-    // isDelivery,
-    // isOutput,
-    // isIncome,
-    // isDeleted,
-    // deletedNote
     const result = await updateOrderAPI(
       userId,
       selectedItems,
@@ -124,7 +56,7 @@ function ERConfirm({ route, navigate }) {
     if (result.status === 200) {
       getOrderList();
     }
-    console.log(selectedItems);
+    //console.log(selectedItems);
   };
   const getOrderList = async () => {
     setLoading(false);
@@ -156,12 +88,6 @@ function ERConfirm({ route, navigate }) {
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = orderList.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const [url, setUrl] = useState("");
-  const [urlEdit, setUrlEdit] = useState("");
-
-  const handleEditClick = (item) => {};
-
   return (
     <div>
       <div className="mt-2">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { BsCartCheck } from "react-icons/bs";
 import { BiMoney } from "react-icons/bi";
@@ -29,11 +29,6 @@ import {
   ResponsiveContainer,
   LineChart,
   Line,
-  AreaChart,
-  Area,
-  PieChart,
-  Cell,
-  Pie,
 } from "recharts";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -41,16 +36,7 @@ const useStyles = makeStyles((theme) => ({
     color: "#fff",
   },
 }));
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 800,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
+
 function ERHome({ route, navigate }) {
   const classes = useStyles();
   let userId = localStorage.getItem("userId");
@@ -61,7 +47,6 @@ function ERHome({ route, navigate }) {
   //console.log(reportRevenue);
   const currentDate = new Date();
   const [selectedDate, setSelectedDate] = useState(currentDate);
-  const [reportColumn, setReportColumn] = useState([]);
   const handleDateChange = (date) => {
     reportRevenues(date);
     setSelectedDate(date);
@@ -85,8 +70,6 @@ function ERHome({ route, navigate }) {
     }
   };
 
-  const COLORS = ["#0088FE", "#00C49F"];
-  //console.log(reportRevenue);
   const reportRevenues = async (selectedDate) => {
     const month = dayjs(selectedDate).format("MM");
     const year = dayjs(selectedDate).format("YYYY");

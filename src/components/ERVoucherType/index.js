@@ -1,31 +1,19 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 import { TextField } from "@mui/material";
-import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
+import { AiOutlineSearch } from "react-icons/ai";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import Checkbox from "@mui/material/Checkbox";
-import Switch from "react-switch";
 import "./css/index.css";
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import { storage } from "../../server/FirebaseConfig";
-import {
-  getAllBrand,
-  addNewBrand,
-  updateBrand,
-  deleteBrand,
-} from "../../controller/MDBrandController";
+
 import {
   getAllVoucherType,
   getAllVoucherTypeDetail,

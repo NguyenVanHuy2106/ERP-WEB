@@ -1,99 +1,36 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
-import { TextField } from "@mui/material";
-import Stack from "@mui/material/Stack";
+import { RingLoader } from "react-spinners";
 import { makeStyles } from "@material-ui/core/styles";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
-import Button from "@mui/material/Button";
-import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
-import Checkbox from "@mui/material/Checkbox";
-import Switch from "react-switch";
 import "./css/index.css";
-import numeral from "numeral";
-import Snackbar from "@mui/material/Snackbar";
-
-import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import { storage } from "../../server/FirebaseConfig";
-import {
-  getAllBrand,
-  addNewBrand,
-  updateBrand,
-  deleteBrand,
-} from "../../controller/MDBrandController";
-import {
-  getModelDetail,
-  addNewPriceOfModel,
-  getProductIdByVarrant,
-  getPriceByModelAPI,
-} from "../../controller/ERProduct";
-import PaginationShop from "../shops/paginationShopList";
-import CircularProgress from "@mui/material/CircularProgress";
+import { getModelDetail } from "../../controller/ERProduct";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: "#fff",
   },
 }));
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 800,
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-};
+
 function ERProductDetail({ route, navigate, location }) {
   const classes = useStyles();
   const { modelId } = useParams();
 
-  const [tFBrandValue, setTFBrandValue] = useState("");
   const [modelInfo, setModelInfo] = useState({});
   const [modelDescriptionAttribute, setModelDescriptionAttribute] = useState(
     []
   );
-  const [selectedIndex, setSelectedIndex] = useState(null);
+
   const [selected, setSelected] = useState({});
-  const [quantity, setQuantity] = useState(1);
+
   const [varant, setVarrant] = useState([]);
-  //console.log(varant);
-  const [priceOfModel, setPriceOfModel] = useState(0);
-  //console.log(priceOfModel);
-  const [priceOfVarrant, setPriceOfVarrant] = useState(0);
+
   const [maxLevelVarantProduct, setMaxLevelVarantProduct] = useState(0);
   //console.log(maxLevelVarantProduct);
-  const handleChangePriceOfModel = (event) => {
-    //const formattedValue = numeral(event.target.value).format("0.0");
-    setPriceOfModel(event.target.value);
-    setErrPrice("");
-  };
-  const handleChangePriceOfVarrant = (event) => {
-    //const formattedValue = numeral(event.target.value).format("0.0");
-    setPriceOfVarrant(event.target.value);
-    setErrPriceVarrant("");
-  };
-  const [state, setState] = useState(false);
-  const [statePriceOfProductId, setStatePriceOfProductId] = useState(false);
+
   const [isShowTexInputPriceOfVarrant, setIsShowTexInputPriceOfVarrant] =
     useState(false);
-  const { vertical, horizontal, open } = state;
 
-  const handleClose = () => {
-    setState({ ...state, open: false });
-  };
-  const handleObjectClick = (indexValue) => {
-    setSelectedIndex(indexValue);
-  };
   const handleSelect = (indexOption, group, valueId) => {
     setSelected((prevSelected) => ({ ...prevSelected, [group]: valueId }));
     const updateSelection = {
@@ -120,86 +57,12 @@ function ERProductDetail({ route, navigate, location }) {
   };
   const [modelVarantProduct, setModelVarantProduct] = useState([]);
   const [imageAvatar, setImageAvatar] = useState("");
-  //console.log(modelVarantProduct);
-  const [tFDesValue, setTFDesValue] = useState("");
-  const [tFBrandEditValue, setTFBrandEditValue] = useState("");
-  const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [brandIdEditValue, setBrandIdEditValue] = useState("");
-  const [isActived, setIsActived] = useState(false);
+
   let [loading, setLoading] = useState(false);
-  var toDateDayjs = dayjs();
-  var today = new Date();
-  const [brandData, setBrandData] = useState([]);
-  //const [valueCatData, setValueCatData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [postsPerPage] = useState(10);
-  const [openModal, setOpenModal] = React.useState(false);
-  const [openModalEdit, setOpenModalEdit] = React.useState(false);
+
   const [productId, setProductId] = useState("");
-  const handleOpenModalEdit = () => setOpenModalEdit(true);
-  const handleCloseModalEdit = () => {
-    setOpenModalEdit(false);
-  };
-  const handleOpenModal = () => setOpenModal(true);
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setIsError(false);
-    setError("");
-    setUrl("");
-  };
-  const [checked, setChecked] = React.useState(true);
-  const [editChecked, setEditChecked] = React.useState(true);
-  const [error, setError] = React.useState("");
-  const [isError, setIsError] = useState(false);
-  const [errPrice, setErrPrice] = useState("");
-  const [errPriceVarrant, setErrPriceVarrant] = useState("");
+
   let userId = localStorage.getItem("userId");
-  const [selectedItems, setSelectedItems] = useState([]);
-  const handleCheckboxChange = (event, item) => {
-    if (event.target.checked) {
-      setSelectedItems([...selectedItems, item]);
-    } else {
-      setSelectedItems(
-        selectedItems.filter((selectedItem) => selectedItem !== item)
-      );
-    }
-  };
-  const handleEditcheck = (event) => {
-    setIsActived(event.target.checked);
-  };
-  const handleChange = (event) => {
-    setChecked(event.target.checked);
-  };
-  const handleAgrre = async () => {
-    if (tFBrandValue.length === 0) {
-      setError("Vui long nhap ten danh muc");
-      setIsError(true);
-    } else {
-      handleCloseModal();
-      setLoading(false);
-      const result = await addNewBrand(
-        userId,
-        tFBrandValue,
-        tFDesValue,
-        1,
-        url
-      );
-      if (result.status === 200) {
-        setLoading(true);
-
-        setError("");
-        setTFBrandValue("");
-      }
-    }
-  };
-
-  var firstDateInMonth =
-    1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
-
-  const [valueFromDate, setValueFromDate] = React.useState(
-    dayjs(firstDateInMonth)
-  );
-  const [valueToDate, setValueToDate] = React.useState(toDateDayjs);
 
   const setTime = () => {
     setTimeout(() => {
@@ -227,54 +90,10 @@ function ERProductDetail({ route, navigate, location }) {
     }
   };
 
-  const getProductId = async (modelId, varant) => {
-    setStatePriceOfProductId(true);
-    const result = await getProductIdByVarrant(modelId, varant);
-    if (result.status === 200) {
-      setProductId(result.data.data.productId);
-      setStatePriceOfProductId(false);
-    } else {
-      setStatePriceOfProductId(false);
-    }
-  };
-
   useEffect(() => {
     setTime();
     getModelInfoDetail(modelId);
   }, []);
-
-  const indexOfLastPost = currentPage * postsPerPage;
-  const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = brandData.slice(indexOfFirstPost, indexOfLastPost);
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const [url, setUrl] = useState("");
-
-  const handleImageChange = (e) => {
-    if (e.target.files[0]) {
-      const uploadTask = storage
-        .ref(`images/${e.target.files[0].name}`)
-        .put(e.target.files[0]);
-      uploadTask.on("state_changed", null, null, () => {
-        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
-          setUrl(downloadUrl);
-        });
-      });
-    }
-  };
-
-  const handleEditClick = (item) => {
-    setTFBrandEditValue(item.brandName);
-    setTFDesEditValue(item.brandDescription);
-    setBrandIdEditValue(item.brandId);
-
-    if (item.isActived === 1) setIsActived(true);
-    else {
-      setIsActived(false);
-    }
-
-    handleOpenModalEdit();
-  };
 
   return (
     <div
@@ -477,13 +296,6 @@ function ERProductDetail({ route, navigate, location }) {
               </div>
             </div>
             <div className="d-flex"></div>
-          </div>
-          <div className="d-flex justify-content-center">
-            <PaginationShop
-              postsPerPage={postsPerPage}
-              totalPosts={brandData.length}
-              paginate={paginate}
-            />
           </div>
         </div>
       </div>
