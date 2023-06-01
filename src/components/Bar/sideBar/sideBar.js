@@ -49,7 +49,7 @@ const Sidebar = () => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("userId");
     localStorage.removeItem("username");
-    return navigate("/");
+    return navigate("/signIn");
     //console.log("dfs");
   };
   const login = () => {

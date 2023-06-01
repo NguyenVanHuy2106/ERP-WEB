@@ -12,6 +12,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import { TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import {
   countOrder,
@@ -37,8 +38,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function ERHome({ route, navigate }) {
+function ERHome({ route }) {
   const classes = useStyles();
+  const navigate = useNavigate();
   let userId = localStorage.getItem("userId");
   let [loading, setLoading] = useState(false);
   const [resCount, setResCount] = useState({});
@@ -46,6 +48,7 @@ function ERHome({ route, navigate }) {
   const [reportRevenue, setReportRevenue] = useState([]);
   //console.log(reportRevenue);
   const currentDate = new Date();
+
   const [selectedDate, setSelectedDate] = useState(currentDate);
   const handleDateChange = (date) => {
     reportRevenues(date);
@@ -85,6 +88,9 @@ function ERHome({ route, navigate }) {
     getOrderQuantity();
     report();
     reportRevenues(selectedDate);
+    if (userId === null) {
+      return navigate("/signIn");
+    }
   }, []);
 
   const data = [
