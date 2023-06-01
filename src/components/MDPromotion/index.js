@@ -162,7 +162,7 @@ function MDPromotion({ route, navigate }) {
     handleCloseModal();
     setLoading(false);
     const fromDate = valueFromDateAddNew.format("YYYY-MM-DD");
-    const toDate = valueToDateAddNew.format("YYYY-MM-DD");
+    const toDate = valueToDate.format("YYYY-MM-DD");
     //console.log(valueFromDateAddNew, valueToDateAddNew);
     const data = {};
     data.bannerImagePath = url;
@@ -647,9 +647,9 @@ function MDPromotion({ route, navigate }) {
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                     <DesktopDatePicker
                       label="Đến ngày"
-                      value={valueToDateAddNew}
+                      value={valueToDate}
                       onChange={(newValue) => {
-                        setValueToDateAddNew(newValue);
+                        setValueToDate(newValue);
                       }}
                       renderInput={(params) => <TextField {...params} />}
                     />
