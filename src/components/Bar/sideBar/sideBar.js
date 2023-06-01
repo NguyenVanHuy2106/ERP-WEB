@@ -100,6 +100,7 @@ const Sidebar = () => {
                 return (
                   <Link key={index} to={path}>
                     <div
+                      className="barWeb"
                       style={{
                         paddingTop: 6,
                         paddingBottom: 6,
@@ -124,6 +125,7 @@ const Sidebar = () => {
                 return (
                   <Link key={index} to={path}>
                     <div
+                      className="barWeb"
                       style={{
                         paddingTop: 6,
                         paddingBottom: 6,
@@ -148,6 +150,7 @@ const Sidebar = () => {
                 return (
                   <Link key={index} to={path}>
                     <div
+                      className="barWeb"
                       style={{
                         paddingTop: 6,
                         paddingBottom: 6,
@@ -172,6 +175,7 @@ const Sidebar = () => {
                 return (
                   <Link key={index} to={path}>
                     <div
+                      className="barWeb"
                       style={{
                         paddingTop: 6,
                         paddingBottom: 6,
