@@ -47,6 +47,7 @@ export const addNewSubGroup = async (
           isRequestImei: isRequestImei,
           maingroupId: mainGroupId,
           isActived: 1,
+          isInstockManaged: 1,
           imagePath: imagePath,
         },
       },
@@ -67,6 +68,7 @@ export const updateSubGroup = async (
   subGroupName,
   mainGroupId,
   description,
+  isRequestImei,
   isActived,
   imagePath
 ) => {
@@ -81,6 +83,7 @@ export const updateSubGroup = async (
             subgroupName: subGroupName,
             subgroupDescription: description,
             maingroupId: mainGroupId,
+            isRequestImei: isRequestImei,
             isActived: isActived,
             isDeleted: 0,
             imagePath: imagePath,

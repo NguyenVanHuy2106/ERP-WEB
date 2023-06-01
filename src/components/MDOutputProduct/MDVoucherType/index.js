@@ -39,6 +39,7 @@ import {
   getAllVoucherTypeAPI,
   addNewVoucherTypeAPI,
   deleteAPI,
+  updateVoucherTypeAPI,
 } from "../../../controller/MDVoucherTypeController";
 
 import PaginationShop from "../../shops/paginationShopList";
@@ -68,7 +69,7 @@ function MDVoucherType({ route, navigate }) {
   const [tFDesEditValue, setTFDesEditValue] = useState("");
   const [tFEditMaxProductQuantity, setTFEditMaxProductQuantity] = useState("");
   const [tFEMaxProductQuantity, setTFMaxProductQuantity] = useState("");
-  const [storeTypeIdEditValue, setStoreTypeIdEditValue] = useState("");
+  const [voucherTypeIdEditValue, setVoucherTypeIdEditValue] = useState("");
   const [isActived, setIsActived] = useState(false);
   const [isHasLimitStockEdit, setIsHasLimitStockEdit] = useState(false);
   const [isHasLimitStock, setIsHasLimitStock] = useState(true);
@@ -207,9 +208,9 @@ function MDVoucherType({ route, navigate }) {
   const handleEditClick = (item) => {
     setTFVoucherTypeEditValue(item.voucherTypeName);
     setTFDesEditValue(item.description);
-    setStoreTypeIdEditValue(item.voucherTypeId);
+    setVoucherTypeIdEditValue(item.voucherTypeId);
     setValueRadioEdit(item.isSpend);
-    console.log(item.isSpend);
+    //console.log(item.isSpend);
     if (item.isActived == 1) setIsActived(true);
     else {
       setIsActived(false);
@@ -220,13 +221,18 @@ function MDVoucherType({ route, navigate }) {
   const handleAgrreEdit = async () => {
     handleCloseModalEdit();
     setLoading(false);
-    const result = await updateAPI(
+    //   userLogin,
+    // voucherTypeId,
+    // voucherTypeName,
+    // isSpend,
+    // description,
+    // isActived
+    const result = await updateVoucherTypeAPI(
       userId,
-      storeTypeIdEditValue,
+      voucherTypeIdEditValue,
       tFVoucherTypeEditValue,
+      valueRadioEdit,
       tFDesEditValue,
-      isHasLimitStockEdit,
-      tFEditMaxProductQuantity,
       isActived
     );
     if (result.status === 200) {

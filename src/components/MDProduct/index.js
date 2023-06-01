@@ -580,36 +580,6 @@ export default function MDProduct() {
       return (
         <div style={{ marginTop: 20, marginLeft: 80, marginRight: 80 }}>
           <div>
-            <div>
-              <Button
-                onClick={handleAddItem}
-                variant="contained"
-                style={{
-                  marginRight: 20,
-                  marginTop: 12,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    paddingBottom: "3px",
-                    paddingTop: "3px",
-                    width: 60,
-                    justifyItems: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <FiPlus size={20} />
-                  <div
-                    style={{
-                      fontWeight: "bold",
-                    }}
-                  >
-                    Thêm
-                  </div>
-                </div>
-              </Button>
-            </div>
             <div className="mt-3">
               <div className="d-flex flex-column">
                 {items.map((item, index) => (
@@ -808,6 +778,36 @@ export default function MDProduct() {
                   }}
                 /> */}
               </div>
+            </div>
+            <div>
+              <Button
+                onClick={handleAddItem}
+                variant="contained"
+                style={{
+                  marginRight: 20,
+                  marginTop: 12,
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    paddingBottom: "3px",
+                    paddingTop: "3px",
+                    width: 60,
+                    justifyItems: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <FiPlus size={20} />
+                  <div
+                    style={{
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Thêm
+                  </div>
+                </div>
+              </Button>
             </div>
           </div>
 

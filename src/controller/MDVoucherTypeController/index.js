@@ -51,15 +51,6 @@ export const updateAPI = async (
   isActived
 ) => {
   try {
-    // console.log(
-    //   userLogin,
-    //   storeTypeId,
-    //   storeTypeName,
-    //   storeTypeDescription,
-    //   isHasLimitStock,
-    //   maxProductQuantity,
-    //   isActived
-    // );
     const response = await API.post(
       "storeType/update",
       {
@@ -71,6 +62,41 @@ export const updateAPI = async (
             storeTypeDescription: storeTypeDescription,
             isHasLimitStock: isHasLimitStock,
             maxProductQuantity: maxProductQuantity,
+            isActived: isActived,
+            isDeleted: 0,
+          },
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+export const updateVoucherTypeAPI = async (
+  userLogin,
+  voucherTypeId,
+  voucherTypeName,
+  isSpend,
+  description,
+  isActived
+) => {
+  try {
+    const response = await API.post(
+      "voucherType/update",
+      {
+        userLogin: userLogin,
+        data: {
+          voucherTypeId: voucherTypeId,
+          updateData: {
+            voucherTypeName: voucherTypeName,
+            isSpend: isSpend,
+            description: description,
             isActived: isActived,
             isDeleted: 0,
           },

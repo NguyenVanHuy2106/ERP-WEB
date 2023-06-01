@@ -282,6 +282,7 @@ function MDSubGroup({ route, navigate }) {
       tFSubGroupEditValue,
       mainGroupSelectEdit,
       tFDesEditValue,
+      checkedIMEIEdit,
       checkedActiveEdit,
       urlEdit
     );
