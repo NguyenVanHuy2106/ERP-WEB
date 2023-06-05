@@ -1,26 +1,19 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 import { TextField } from "@mui/material";
 import "./css/deliveryType.css";
-// import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
+import { AiOutlineCheck } from "react-icons/ai";
 import Box from "@mui/material/Box";
-// import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import { useLocation } from "react-router-dom";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
 import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -52,10 +45,7 @@ const style = {
 };
 function MDDeliveryType({ route, navigate }) {
   const classes = useStyles();
-  const location = useLocation();
-  const [routeNamea, setRouteNamea] = useState("");
 
-  // const [tFValue, setTFValue] = useState("");
   const [tFDeliveryTypeValue, setTFDeliveryTypeValue] = useState("");
   const [tFDesValue, setTFDesValue] = useState("");
   const [tFDeliveryTypeEditValue, setTFDeliveryTypeEditValue] = useState("");
@@ -89,7 +79,6 @@ function MDDeliveryType({ route, navigate }) {
     setPartnerServiceCodeEdit(event.target.value);
   };
   const [checked, setChecked] = React.useState(true);
-  // const [editChecked, setEditChecked] = React.useState(true);
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
   let userId = localStorage.getItem("userId");
@@ -133,14 +122,6 @@ function MDDeliveryType({ route, navigate }) {
     }
   };
 
-  var firstDateInMonth =
-    1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
-
-  const [valueFromDate, setValueFromDate] = React.useState(
-    dayjs(firstDateInMonth)
-  );
-  const [valueToDate, setValueToDate] = React.useState(toDateDayjs);
-
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
@@ -148,9 +129,7 @@ function MDDeliveryType({ route, navigate }) {
   };
   const HandleClick = async () => {
     setLoading(false);
-    const fromDate = valueFromDate.format("YYYY-MM-DD");
-    const toDate = valueToDate.format("YYYY-MM-DD");
-    //console.log(tFValue, fromDate, toDate);
+
     const result = await getAllDeliveryType();
     if (result.status === 200) {
       //console.log(result.data.ResultObject.CategoryList);
@@ -198,8 +177,6 @@ function MDDeliveryType({ route, navigate }) {
     handleOpenModalEdit();
   };
   const handleAgrreEdit = async () => {
-    const toDate = valueToDate.format("YYYY-MM-DD");
-
     handleCloseModalEdit();
     setLoading(false);
     const result = await updateDeliveryType(
@@ -324,6 +301,18 @@ function MDDeliveryType({ route, navigate }) {
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                   >
+                    Ngày cập nhật
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Người cập nhật
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
                     Ngày tạo
                   </th>
                   <th
@@ -357,6 +346,12 @@ function MDDeliveryType({ route, navigate }) {
                     </td>
 
                     <td>{CheckActive(item.isActived)}</td>
+                    <td>
+                      {item.updatedDate !== null
+                        ? new Date(item.updatedDate).toLocaleDateString()
+                        : ""}
+                    </td>
+                    <td>{item.updatedUser}</td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
                     <td>{item.createdUser}</td>
                   </tr>

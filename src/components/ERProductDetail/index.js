@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { RingLoader } from "react-spinners";
 import { makeStyles } from "@material-ui/core/styles";
 import Backdrop from "@mui/material/Backdrop";
 import "./css/index.css";
+import Quagga from "quagga";
 import { getModelDetail } from "../../controller/ERProduct";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -15,7 +16,8 @@ const useStyles = makeStyles((theme) => ({
 function ERProductDetail({ route, navigate, location }) {
   const classes = useStyles();
   const { modelId } = useParams();
-
+  const videoRef = useRef(null);
+  const [showScanner, setShowScanner] = useState(false);
   const [modelInfo, setModelInfo] = useState({});
   const [modelDescriptionAttribute, setModelDescriptionAttribute] = useState(
     []

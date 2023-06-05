@@ -1,23 +1,16 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 import { TextField } from "@mui/material";
 import "./css/subGroup.css";
-import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
+import { AiOutlineCheck } from "react-icons/ai";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
-import Switch from "react-switch";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
@@ -32,13 +25,9 @@ import {
   updateSubGroup,
   deleteSubGroup,
 } from "../../../controller/MDSubGroupController";
-import {
-  getAllMainGroup,
-  getMainGroupById,
-} from "../../../controller/MDMainGroupController";
+import { getAllMainGroup } from "../../../controller/MDMainGroupController";
 
 import PaginationShop from "../../shops/paginationShopList";
-import { height } from "@mui/system";
 
 const useStyles = makeStyles((theme) => ({
   backdrop: {
@@ -59,18 +48,15 @@ const style = {
 };
 function MDSubGroup({ route, navigate }) {
   const classes = useStyles();
-  const [tFValue, setTFValue] = useState("");
   const [tFSubGroupValue, setTFSubGroupValue] = useState("");
   const [tFDesValue, setTFDesValue] = useState("");
   //const [tFMainGroupEditValue, setTFSubGroupEditValue] = useState("");
   const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [mainGroupEditValue, setMainGroupEditValue] = useState("");
-  const [isActived, setIsActived] = useState(false);
+
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
   const [subGroupData, setSubGroupData] = useState([]);
-  //const [valueCatData, setValueCatData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
   const [openModal, setOpenModal] = React.useState(false);
@@ -80,7 +66,6 @@ function MDSubGroup({ route, navigate }) {
   const [mainGroupData, setMainGroupData] = useState([]);
   const [tFSubGroupEditValue, setTFSubGroupEditValue] = React.useState("");
   const [subGroupIdValueEdit, setSubGroupIdValueEdit] = React.useState("");
-  const [tFDesValueEdit, setTFDesValueEdit] = React.useState("");
 
   const handleChangeSelect = (event) => {
     setMainGroupSelect(event.target.value);
@@ -108,18 +93,11 @@ function MDSubGroup({ route, navigate }) {
   };
   const [checked, setChecked] = React.useState(true);
   const [checkedIMEI, setCheckedIMEI] = React.useState(true);
-  const [checkedStock, setCheckedStock] = React.useState(true);
-  const [isCanReturnOutput, setIsCanReturnOutput] = React.useState(true);
-  const [isAutoCreateIMEI, setIsAutoCreateIMEI] = React.useState(true);
 
   const [error, setError] = React.useState("");
 
   const [checkedActiveEdit, setCheckedActivedEdit] = React.useState(true);
   const [checkedIMEIEdit, setCheckedIMEIEdit] = React.useState(true);
-  const [checkedStockEdit, setCheckedStockEdit] = React.useState(true);
-  const [isCanReturnOutputEdit, setIsCanReturnOutputEdit] =
-    React.useState(true);
-  const [isAutoCreateIMEIEdit, setIsAutoCreateIMEIEdit] = React.useState(true);
   const [isError, setIsError] = useState(false);
 
   let userId = localStorage.getItem("userId");
@@ -134,9 +112,6 @@ function MDSubGroup({ route, navigate }) {
     }
   };
 
-  const handleEditcheck = (event) => {
-    setIsActived(event.target.checked);
-  };
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
@@ -149,24 +124,6 @@ function MDSubGroup({ route, navigate }) {
   };
   const handleChangeIMEIEdit = (event) => {
     setCheckedIMEIEdit(event.target.checked);
-  };
-  const handleChangeStock = (event) => {
-    setCheckedStock(event.target.checked);
-  };
-  const handleChangeStockEdit = (event) => {
-    setCheckedStockEdit(event.target.checked);
-  };
-  const handleChangeReturnOutput = (event) => {
-    setIsCanReturnOutput(event.target.checked);
-  };
-  const handleChangeReturnOutputEdit = (event) => {
-    setIsCanReturnOutputEdit(event.target.checked);
-  };
-  const handleChangeAutoCreateIMEI = (event) => {
-    setIsAutoCreateIMEI(event.target.checked);
-  };
-  const handleChangeAutoCreateIMEIEdit = (event) => {
-    setIsAutoCreateIMEIEdit(event.target.checked);
   };
   const handleAgrre = async () => {
     if (tFSubGroupValue.length === 0) {
@@ -195,14 +152,6 @@ function MDSubGroup({ route, navigate }) {
     }
   };
 
-  var firstDateInMonth =
-    1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
-
-  const [valueFromDate, setValueFromDate] = React.useState(
-    dayjs(firstDateInMonth)
-  );
-  const [valueToDate, setValueToDate] = React.useState(toDateDayjs);
-
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
@@ -210,9 +159,6 @@ function MDSubGroup({ route, navigate }) {
   };
   const HandleClick = async () => {
     setLoading(false);
-    const fromDate = valueFromDate.format("YYYY-MM-DD");
-    const toDate = valueToDate.format("YYYY-MM-DD");
-    //console.log(tFValue, fromDate, toDate);
     const result = await getAllSubGroup();
     if (result.status === 200) {
       //console.log(result.data);
@@ -272,8 +218,6 @@ function MDSubGroup({ route, navigate }) {
     handleOpenModalEdit();
   };
   const handleAgrreEdit = async () => {
-    const toDate = valueToDate.format("YYYY-MM-DD");
-
     handleCloseModalEdit();
     setLoading(false);
     const result = await updateSubGroup(
@@ -330,63 +274,6 @@ function MDSubGroup({ route, navigate }) {
   return (
     <div>
       <div className="mt-2">
-        {/* <div
-          className="d-flex border mt-3 containerBtn align-items-center"
-          style={{ marginBottom: "10px" }}
-        >
-          <div className="titlePage ">KHAI BÁO NHÓM HÀNG SẢN PHẨM</div>
-        </div> */}
-        {/* <div className="d-flex justify-content-start  border search align-items-center">
-          <div className="searchMargin">
-            <TextField
-              id="outlined-basic"
-              label="Tu khoa"
-              variant="outlined"
-              size="small"
-              onChange={(newValue) => setTFValue(newValue.target.value)}
-            />
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Từ ngày"
-                  value={valueFromDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueFromDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Stack spacing={3}>
-                <DesktopDatePicker
-                  label="Đến ngày"
-                  value={valueToDate}
-                  minDate={dayjs("2017-01-01")}
-                  onChange={(newValue) => {
-                    setValueToDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <TextField {...params} size="small" />
-                  )}
-                />
-              </Stack>
-            </LocalizationProvider>
-          </div>
-          <div className="searchMargin">
-            <Button variant="contained" onClick={HandleClick}>
-              <AiOutlineSearch size={20} />
-              Tim kiem
-            </Button>
-          </div>
-        </div> */}
         <div className="d-flex containerBtn align-items-center justify-content-end">
           <div className="d-flex containerBtn align-items-center justify-content-end">
             <div className="plus" style={{ marginRight: "10px" }}>
@@ -466,7 +353,7 @@ function MDSubGroup({ route, navigate }) {
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
-                    className="col-3"
+                    className="col-2"
                   >
                     Tên nhóm hàng
                   </th>
@@ -487,13 +374,25 @@ function MDSubGroup({ route, navigate }) {
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                   >
-                    Ngay tao
+                    Ngày cập nhật
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                   >
-                    Nguoi tao
+                    Người cập nhật
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Ngày tạo
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Người tạo
                   </th>
                 </tr>
               </thead>
@@ -519,8 +418,14 @@ function MDSubGroup({ route, navigate }) {
                       {item.subgroupName}
                     </td>
                     <td>{item.maingroupId}</td>
-                    {/* <td>{item.MAINGROUPID + "-" + item.MAINGROUPNAME}</td> */}
+
                     <td>{CheckActive(item.isActived)}</td>
+                    <td>
+                      {item.updatedDate !== null
+                        ? new Date(item.updatedDate).toLocaleDateString()
+                        : ""}
+                    </td>
+                    <td>{item.updatedUser}</td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
                     <td>{item.createdUser}</td>
                   </tr>

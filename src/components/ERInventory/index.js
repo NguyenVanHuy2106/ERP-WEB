@@ -11,10 +11,12 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 
+import { FaLaptopHouse } from "react-icons/fa";
 import { getInventoryListAPI } from "../../controller/ERInventory";
-
+import { Link } from "react-router-dom";
 import { getAllModelAPI } from "../../controller/ERProduct";
 import PaginationShop from "../shops/paginationShopList";
+import ExportExcel from "../ExportExcel";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -39,6 +41,18 @@ function ERInventory({ route, navigate }) {
       setLoading(true);
     }, 1000);
   };
+  var dataExport = [];
+  inventoryList.forEach((item) => {
+    //console.log(item);
+    dataExport.push({
+      "Mã model": item.modelId,
+      "Tên model": item.modelName,
+      Kho: item.storeId,
+      "Trạng thái tồn": item.inventoryStatusId,
+      "Số lượng khoá": item.lockAmount,
+      "Tồn còn lại": item.amount,
+    });
+  });
 
   const handleChangeSelect = (event) => {
     setStoreIdSelect(event.target.value);
@@ -176,6 +190,9 @@ function ERInventory({ route, navigate }) {
                 Tra cứu
               </Button>
             </div>
+            <div>
+              <ExportExcel data={dataExport} />
+            </div>
           </div>
         </div>
 
@@ -219,9 +236,16 @@ function ERInventory({ route, navigate }) {
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
-                    className="col-2"
+                    className="col-1"
                   >
                     Trạng thái tồn
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                    className="col-1"
+                  >
+                    Khai báo tồn
                   </th>
                 </tr>
               </thead>
@@ -243,13 +267,22 @@ function ERInventory({ route, navigate }) {
                             height={40}
                           />
                         </div>
-                        <div style={{ paddingLeft: 12 }}>{item.modelName}</div>
+                        <div style={{ paddingLeft: 12 }}>
+                          <Link to={`/inventoryManage/${item.modelId}`}>
+                            {item.modelName}
+                          </Link>
+                        </div>
                       </div>
                     </td>
 
                     <td>{item.amount}</td>
                     <td>{item.lockAmount}</td>
                     <td>{item.inventoryStatusId}</td>
+                    <td>
+                      <Link to={"/inventory"} state={{ data: item.modelId }}>
+                        <FaLaptopHouse className="brandEdit" size={35} />
+                      </Link>
+                    </td>
                   </tr>
                 ))}
               </tbody>

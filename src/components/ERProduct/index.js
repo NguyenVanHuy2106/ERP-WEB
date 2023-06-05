@@ -20,8 +20,6 @@ import Select from "@mui/material/Select";
 
 import "./css/index.css";
 
-import { FaLaptopHouse } from "react-icons/fa";
-
 import { appGetAllMainGroup } from "../../controller/MDMainGroupController";
 import { getAllSubGroupByMainGroup } from "../../controller/MDSubGroupController";
 import { AppGetAllBrand } from "../../controller/MDBrandController";
@@ -298,12 +296,6 @@ function ERProduct({ route, navigate }) {
                   >
                     Kích hoạt
                   </th>
-                  <th
-                    style={{ color: "#ffffff", fontWeight: "bold" }}
-                    scope="col-4"
-                  >
-                    Khai báo tồn
-                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -358,11 +350,6 @@ function ERProduct({ route, navigate }) {
                       </Link>
                     </td>
                     <td>{item.isActived ? <AiOutlineCheck /> : ""}</td>
-                    <td>
-                      <Link to={"/inventory"} state={{ data: item.modelId }}>
-                        <FaLaptopHouse className="brandEdit" size={35} />
-                      </Link>
-                    </td>
                   </tr>
                 ))}
               </tbody>

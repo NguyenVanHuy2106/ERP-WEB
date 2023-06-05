@@ -26,6 +26,8 @@ import EROutputVoucher from "../components/EROutputVoucher";
 import EROutputVoucherDetail from "../components/EROutputVoucherDetail";
 import ERVoucherType from "../components/ERVoucherType";
 import ERInventory from "../components/ERInventory";
+import ERGetBestSeller from "../components/ERGetBestSeller";
+import MDInventoryHis from "../components/MDInventoryHis";
 function App() {
   return (
     <BrowserRouter>
@@ -63,8 +65,10 @@ function App() {
           path="/outputVoucher/:outputVoucherId"
           element={<EROutputVoucherDetail />}
         />
+        <Route path="/inventoryManage/:modelId" element={<MDInventoryHis />} />
         <Route path="/voucherType" element={<ERVoucherType />} />
         <Route path="/promotion" element={<MDPromotion />} />
+        <Route path="/bestSeller" element={<ERGetBestSeller />} />
       </Routes>
     </BrowserRouter>
   );

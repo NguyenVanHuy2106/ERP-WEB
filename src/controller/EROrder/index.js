@@ -33,16 +33,6 @@ export const updateOrderAPI = async (
   deletedNote
 ) => {
   try {
-    // console.log(
-    //   userLogIn,
-    //   saleOrderList,
-    //   isReviewed,
-    //   isDelivery,
-    //   isOutput,
-    //   isIncome,
-    //   isDeleted,
-    //   deletedNote
-    // );
     const response = await API.post(
       "saleorder/update-saleorder",
       {
@@ -58,6 +48,30 @@ export const updateOrderAPI = async (
             deletedNote: deletedNote,
             deletedApp: 1,
           },
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const updateCancelOrderAPI = async (userLogIn, saleOrder) => {
+  try {
+    const response = await API.post(
+      "saleorder/web/cancel-saleorder",
+      {
+        userLogIn: userLogIn,
+        appId: 2,
+        logInStoreId: 1,
+        data: {
+          saleOrder: saleOrder,
         },
       },
       {

@@ -13,8 +13,9 @@ import { AiOutlineSearch } from "react-icons/ai";
 import ExportExcel from "../ExportExcel";
 
 import "./css/index.css";
-
+import { useParams } from "react-router-dom";
 import { getOutputVoucherAPI } from "../../controller/EROutputVoucher";
+import { getInventoryHis } from "../../controller/MDInventory";
 import PaginationShop from "../shops/paginationShopList";
 import { Link } from "react-router-dom";
 const useStyles = makeStyles((theme) => ({
@@ -24,15 +25,17 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function EROutputVoucher({ route, navigate }) {
+function MDInventoryHis({ route, navigate }) {
   const classes = useStyles();
-  const [tFValue, setTFValue] = useState("");
-  const [outputVoucherList, setOutputVoucherList] = useState([]);
+  let modelId = useParams();
+  //   console.log(modelId);
+  const [tFValue, setTFValue] = useState(modelId.modelId || "");
+  const [inventoryHisList, setInventoryHisList] = useState([]);
 
   let [loading, setLoading] = useState(false);
   var toDateDayjs = dayjs();
   var today = new Date();
-
+  let userId = localStorage.getItem("userId");
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
 
@@ -55,46 +58,41 @@ function EROutputVoucher({ route, navigate }) {
     { column1: "Data 7", column2: "Data 8", column3: "Data 9" },
   ];
   var dataExport = [];
-  outputVoucherList.forEach((item) => {
+  inventoryHisList.forEach((item) => {
     //console.log(item);
     dataExport.push({
-      "Mã phiếu xuất": item.outputVoucherId,
-      "Kho xuất": item.createOutputVoucherStoreId,
-      "Mã đơn hàng": item.saleOrderId,
-      "Khách hàng": item.customerName,
-      "Số điện thoại": item.customerPhone,
-      "Địa chỉ": item.customerFullAddress,
-      "Phương thức vận chuyển": item.paymentOrderTypeId,
-      "Mã số thuế": item.taxId,
-      "Hoá đơn": item.invoiceId,
-      "Tổng tiền trước VAT": item.totalAmountBeforeVAT,
-      "Tổng tiền sau VAT": item.totalAmountAfterVAT,
-      "Tổng tiền VAT": item.totalAmountAfterVAT,
-      "Người xuất hàng": item.outputUser,
-      "Ngày xuất hàng": new Date(item.outputDate).toLocaleDateString(),
+      "Mã phiếu": item.inputVoucherId,
+      "Mã model": item.modelId,
+      "Tên model": item.modelName,
+      "Mã sản phẩm": item.modelName,
+      "Giá nhập": item.inputPrice,
+      "Số lượng nhập": item.quantity,
+      "Kho nhập": item.inputStoreId,
+      "Người nhập": item.inputUser,
+      "Ngày nhập": new Date(item.inputDate).toLocaleDateString(),
     });
   });
-  const getOutputVoucherList = async () => {
+  const getInventoryHisList = async () => {
     setLoading(false);
     const fromDate = valueFromDate.format("YYYY-MM-DD");
     const toDate = valueToDate.format("YYYY-MM-DD");
     //console.log(tFValue, fromDate, toDate);
-    const result = await getOutputVoucherAPI(tFValue, fromDate, toDate);
+    const result = await getInventoryHis(userId, tFValue, fromDate, toDate);
     if (result.status === 200) {
       setLoading(true);
-      setOutputVoucherList(result.data.data.outputVouchers);
-      //console.log(result.data.data.outputVouchers);
+      setInventoryHisList(result.data.data);
+      //console.log(result.data.data);
     }
   };
 
   useEffect(() => {
     setTime();
-    //getOutputVoucherList();
+    getInventoryHisList();
   }, []);
 
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
-  const currentPosts = outputVoucherList.slice(
+  const currentPosts = inventoryHisList.slice(
     indexOfFirstPost,
     indexOfLastPost
   );
@@ -110,7 +108,7 @@ function EROutputVoucher({ route, navigate }) {
       <div
         style={{ marginLeft: "20px", marginRight: "20px", paddingTop: "20px" }}
       >
-        <div className="webContainer1 border">Tra cứu phiếu xuất</div>
+        <div className="webContainer1 border">Lịch sử nhập</div>
         <div
           className="d-flex mt-3 align-items-center justify-content-start"
           style={{ background: "#ffffff", height: "80px", paddingLeft: "30px" }}
@@ -119,9 +117,10 @@ function EROutputVoucher({ route, navigate }) {
             <div className="searchMargin">
               <TextField
                 id="outlined-basic"
-                label="Mã phiếu xuất"
+                label="Mã model"
                 variant="outlined"
                 type="number"
+                value={tFValue}
                 onChange={(newValue) => setTFValue(newValue.target.value)}
               />
             </div>
@@ -150,10 +149,7 @@ function EROutputVoucher({ route, navigate }) {
               </LocalizationProvider>
             </div>
             <div className="searchMargin">
-              <Button
-                variant="contained"
-                onClick={() => getOutputVoucherList()}
-              >
+              <Button variant="contained" onClick={() => getInventoryHisList()}>
                 <AiOutlineSearch size={20} />
                 Tra cứu
               </Button>
@@ -175,36 +171,60 @@ function EROutputVoucher({ route, navigate }) {
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
-                    className="col-2"
+                    className="col-1"
                   >
-                    Mã phiếu xuất
+                    Mã phiếu
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                     className="col-1"
                   >
-                    Kho
+                    Mã model
                   </th>
 
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
-                    className="col-4"
+                    className="col-3"
                   >
-                    Khách hàng
+                    Tên model
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                   >
-                    Ngày xuất
+                    Mã sản phẩm
                   </th>
                   <th
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                   >
-                    Tổng tiền
+                    Giá nhập
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Số lượng nhập
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Kho nhập
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Người nhập
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Ngày nhập
                   </th>
                 </tr>
               </thead>
@@ -216,40 +236,24 @@ function EROutputVoucher({ route, navigate }) {
                       // className="brandEdit"
                       // onClick={() => handleEditClick(item)}
                     >
-                      <Link to={`/outputVoucher/${item.outputVoucherId}`}>
-                        {item.outputVoucherId}
-                      </Link>
+                      {item.inputVoucherId}
                     </th>
                     <td>
-                      <div>{item.outputStoreId}</div>
+                      <div>{item.modelId}</div>
                     </td>
 
+                    <td>{item.modelName}</td>
+                    <td>{item.productId}</td>
                     <td>
-                      <div>
-                        {item.customerName + " - " + item.customerPhone}
-                      </div>
-                      <div>{item.customerFullAddress}</div>
+                      {item.inputPrice ? item.inputPrice.toLocaleString() : ""}
                     </td>
-                    <td>{new Date(item.outputDate).toLocaleDateString()}</td>
+                    <td>{item.quantity}</td>
+                    <td>{item.inputStoreId}</td>
+                    <td>{item.inputUser}</td>
                     <td>
-                      <div className="d-flex">
-                        <div>Trước thuế: </div>
-                        <div style={{ paddingLeft: 10, color: "#ff0000" }}>
-                          {item.totalAmountBeforeVAT.toLocaleString()}
-                        </div>
-                      </div>
-                      <div className="d-flex">
-                        <div>Tiền thuế: </div>
-                        <div style={{ paddingLeft: 10, color: "#ff0000" }}>
-                          {item.totalVAT.toLocaleString()}
-                        </div>
-                      </div>
-                      <div className="d-flex">
-                        <div>Sau thuế: </div>
-                        <div style={{ paddingLeft: 10, color: "#ff0000" }}>
-                          {item.totalAmountAfterVAT.toLocaleString()}
-                        </div>
-                      </div>
+                      {item.inputDate
+                        ? new Date(item.inputDate).toLocaleDateString()
+                        : ""}
                     </td>
                   </tr>
                 ))}
@@ -259,7 +263,7 @@ function EROutputVoucher({ route, navigate }) {
           <div className="d-flex justify-content-center">
             <PaginationShop
               postsPerPage={postsPerPage}
-              totalPosts={outputVoucherList.length}
+              totalPosts={inventoryHisList.length}
               paginate={paginate}
             />
           </div>
@@ -278,4 +282,4 @@ function EROutputVoucher({ route, navigate }) {
     </div>
   );
 }
-export default EROutputVoucher;
+export default MDInventoryHis;

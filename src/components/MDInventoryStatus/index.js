@@ -1,35 +1,23 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 import { TextField } from "@mui/material";
-import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import { AiOutlineSearch, AiOutlinePlus, AiOutlineCheck } from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
+import { AiOutlineCheck } from "react-icons/ai";
 import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
-import Switch from "react-switch";
 import "./css/index.css";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-import { storage } from "../../server/FirebaseConfig";
-import {
-  getAllBrand,
-  addNewBrand,
-  updateBrand,
-  deleteBrand,
-} from "../../controller/MDBrandController";
+
 import {
   getAllInventoryStatus,
   addNewInventoryStatus,
   deleteInventoryStatus,
+  updateInventoryStatus,
 } from "../../controller/MDInventoryStatusController";
 import PaginationShop from "../shops/paginationShopList";
 const useStyles = makeStyles((theme) => ({
@@ -50,7 +38,6 @@ const style = {
 };
 function MDInventoryStatus({ route, navigate }) {
   const classes = useStyles();
-  const [tFValue, setTFValue] = useState("");
   const [tFInventoryStatusValue, setTFInventoryStatusValue] = useState("");
 
   const [tFDesValue, setTFDesValue] = useState("");
@@ -64,7 +51,6 @@ function MDInventoryStatus({ route, navigate }) {
   var toDateDayjs = dayjs();
   var today = new Date();
   const [inventoryData, setInventoryData] = useState([]);
-  //const [valueCatData, setValueCatData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(10);
   const [openModal, setOpenModal] = React.useState(false);
@@ -78,10 +64,8 @@ function MDInventoryStatus({ route, navigate }) {
     setOpenModal(false);
     setIsError(false);
     setError("");
-    setUrl("");
   };
   const [checked, setChecked] = React.useState(true);
-  const [editChecked, setEditChecked] = React.useState(true);
   const [error, setError] = React.useState("");
   const [isError, setIsError] = useState(false);
   let userId = localStorage.getItem("userId");
@@ -122,14 +106,6 @@ function MDInventoryStatus({ route, navigate }) {
     }
   };
 
-  var firstDateInMonth =
-    1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
-
-  const [valueFromDate, setValueFromDate] = React.useState(
-    dayjs(firstDateInMonth)
-  );
-  const [valueToDate, setValueToDate] = React.useState(toDateDayjs);
-
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
@@ -137,8 +113,7 @@ function MDInventoryStatus({ route, navigate }) {
   };
   const HandleClick = async () => {
     setLoading(false);
-    const fromDate = valueFromDate.format("YYYY-MM-DD");
-    const toDate = valueToDate.format("YYYY-MM-DD");
+
     //console.log(tFValue, fromDate, toDate);
     const result = await getAllInventoryStatus();
     if (result.status === 200) {
@@ -171,21 +146,6 @@ function MDInventoryStatus({ route, navigate }) {
   const currentPosts = inventoryData.slice(indexOfFirstPost, indexOfLastPost);
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-  const [url, setUrl] = useState("");
-
-  const handleImageChange = (e) => {
-    if (e.target.files[0]) {
-      const uploadTask = storage
-        .ref(`images/${e.target.files[0].name}`)
-        .put(e.target.files[0]);
-      uploadTask.on("state_changed", null, null, () => {
-        uploadTask.snapshot.ref.getDownloadURL().then((downloadUrl) => {
-          setUrl(downloadUrl);
-        });
-      });
-    }
-  };
-
   const handleEditClick = (item) => {
     setTFInventoryStatusEditValue(item.inventoryStatusName);
     setTFDesEditValue(item.inventoryStatusDescription);
@@ -199,11 +159,9 @@ function MDInventoryStatus({ route, navigate }) {
     handleOpenModalEdit();
   };
   const handleAgrreEdit = async () => {
-    const toDate = valueToDate.format("YYYY-MM-DD");
-
     handleCloseModalEdit();
     setLoading(false);
-    const result = await updateBrand(
+    const result = await updateInventoryStatus(
       userId,
       inventoryStatusIdEditValue,
       tFInventoryStatusEditValue,
@@ -321,6 +279,18 @@ function MDInventoryStatus({ route, navigate }) {
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                   >
+                    Ngày cập nhật
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Người cập nhật
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
                     Ngày tạo
                   </th>
                   <th
@@ -356,6 +326,12 @@ function MDInventoryStatus({ route, navigate }) {
                     </td>
 
                     <td>{CheckActive(item.isActived)}</td>
+                    <td>
+                      {item.updatedDate !== null
+                        ? new Date(item.updatedDate).toLocaleDateString()
+                        : ""}
+                    </td>
+                    <td>{item.updatedUser}</td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
                     <td>{item.createdUser}</td>
                   </tr>

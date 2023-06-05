@@ -11,12 +11,17 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
+import ExportExcel from "../ExportExcel";
+import { ImportExcel } from "../ImportExcel";
+
 import {
   AiOutlineSearch,
   AiOutlinePlus,
   AiOutlineCheck,
   AiOutlineDelete,
 } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+
 import { FiEdit, FiTrash } from "react-icons/fi";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -70,11 +75,11 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
-function MDInventory({ route, navigate, modelId }) {
+function MDInventory({ route, modelId }) {
   const classes = useStyles();
   // const { modelId } = useParams();
   const location = useLocation();
-
+  const navigate = useNavigate();
   //const data = useLocation();
   let defaultModelId = location.state || { data: 0 };
   //let modelIdDefault = defaultModelId.modelId;
@@ -84,10 +89,11 @@ function MDInventory({ route, navigate, modelId }) {
   const [isModelInventory, setIsModelInventory] = useState(null);
   const [isProductInventory, setIsProductInventory] = useState(null);
   const [productList, setProductList] = useState([]);
+  const [tFInputPrice, setTFInputPrice] = useState(0);
   const [isRequestImei, setIsRequestImei] = useState(null);
-
-  //console.log(location.state.price);
-  //const price = location.state.price;
+  var importedGoodListExcel = [];
+  const [inputPriceList, setInputPriceList] = useState([]);
+  //console.log(inputPriceList);
   const [errUpdatePrice, setErrUpdatePrice] = useState("");
   const [tFPriceEditValue, setTFPriceEditValue] = useState("");
   const [modelInfo, setModelInfo] = useState({});
@@ -124,6 +130,99 @@ function MDInventory({ route, navigate, modelId }) {
   const [importedList, setImportedList] = useState([]);
   const [quantityList, setQuantityList] = useState([]);
   //console.log(importedGoodList);
+  const [importedData, setImportedData] = useState([]);
+  //console.log(importedData);
+  const convertDataToReactFormat = (data) => {
+    const headers = data[0];
+    const rows = data.slice(1);
+
+    return rows.map((row) =>
+      row.reduce((obj, value, index) => {
+        obj[headers[index]] = value;
+        return obj;
+      }, {})
+    );
+  };
+  const handleImport = async (e) => {
+    const file = e.target.files[0];
+
+    try {
+      const data = await ImportExcel(file);
+      const result = convertDataToReactFormat(data);
+      result.forEach((item) => {
+        if (typeof item.imeiList === "string") {
+          const imeiArray = item.imeiList.split(",");
+          importedGoodListExcel.push({
+            subgroupId: item.subgroupId,
+            modelId: item.modelId,
+            productId: item.productId,
+            inputPrice: item.inputPrice,
+            amount: imeiArray.length,
+            imeiList: imeiArray,
+          });
+        } else {
+          console.error("imeiList không phải là một chuỗi");
+        }
+      });
+
+      //setImportedData(result);
+      //console.log(JSON.stringify(data));
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const data = [
+    { subgroupId: "Data 1", column2: "Data 2", column3: "Data 3" },
+    { column1: "Data 4", column2: "Data 5", column3: "Data 6" },
+    { column1: "Data 7", column2: "Data 8", column3: "Data 9" },
+  ];
+  var dataExport = [];
+  productList.forEach((item) => {
+    //console.log(item);
+    dataExport.push({
+      productId: item.productId,
+      modelId: item.modelId,
+      productName: item.productName,
+      subgroupId: modelInfo.subgroupId,
+      inputPrice: 0,
+      imeiList: "",
+    });
+  });
+  // const handleInputPriceChange = (productId, modelId, inputPrice) => {
+  //   setImeiList((prevImeiList) => {
+  //     const updatedImeiList = prevImeiList.map((product) => {
+  //       if (product.productId === productId && product.modelId === modelId) {
+  //         return { ...product, inputPrice: inputPrice };
+  //       }
+  //       return product;
+  //     });
+  //     return updatedImeiList;
+  //   });
+  // };
+  const handleInputPriceChange = (productId, modelId, value) => {
+    setImeiList((prevImeiList) => {
+      const productIndex = prevImeiList.findIndex(
+        (product) =>
+          product.productId === productId && product.modelId === modelId
+      );
+
+      if (productIndex > -1) {
+        prevImeiList[productIndex].inputPrice = value;
+      } else {
+        const newProduct = {
+          productId,
+          modelId,
+          subgroupId: modelInfo.subgroupId,
+          inputPrice: value,
+          imeiList: [],
+        };
+        prevImeiList.push(newProduct);
+      }
+
+      return [...prevImeiList];
+    });
+  };
+
   const handleQuantityChange = (productId, modelId, amount) => {
     // Tìm vị trí của phần tử trong quantityList dựa trên productId và modelId
     const productIndex = quantityList.findIndex(
@@ -138,13 +237,35 @@ function MDInventory({ route, navigate, modelId }) {
         modelId,
         amount,
         subgroupId: modelInfo.subgroupId,
-        inventoryStatusId: 1,
       };
       setQuantityList((prevQuantityList) => [...prevQuantityList, newProduct]);
     } else {
       // Nếu tìm thấy, cập nhật lại amount của phần tử đó
       const newQuantityList = [...quantityList];
       newQuantityList[productIndex].amount = amount;
+      setQuantityList(newQuantityList);
+    }
+  };
+  const handlePriceChange = (productId, modelId, inputPrice) => {
+    // Tìm vị trí của phần tử trong quantityList dựa trên productId và modelId
+    const productIndex = quantityList.findIndex(
+      (product) =>
+        product.productId === productId && product.modelId === modelId
+    );
+
+    // Nếu không tìm thấy, thêm mới phần tử với amount là amount, subgroupId là 1 và inventoryStatusId là 1
+    if (productIndex === -1) {
+      const newProduct = {
+        productId,
+        modelId,
+        inputPrice,
+        subgroupId: modelInfo.subgroupId,
+      };
+      setQuantityList((prevQuantityList) => [...prevQuantityList, newProduct]);
+    } else {
+      // Nếu tìm thấy, cập nhật lại amount của phần tử đó
+      const newQuantityList = [...quantityList];
+      newQuantityList[productIndex].inputPrice = inputPrice;
       setQuantityList(newQuantityList);
     }
   };
@@ -158,64 +279,7 @@ function MDInventory({ route, navigate, modelId }) {
   const handleObjectClick = (indexValue) => {
     setSelectedIndex(indexValue);
   };
-  const handleSelect = (indexOption, group, valueId) => {
-    setProductId("");
-    setSelected((prevSelected) => ({ ...prevSelected, [group]: valueId }));
-    const updateSelection = {
-      level: indexOption + 1,
-      modelVarantAttributeId: group,
-      modelVarantAttributeValueId: valueId,
-    };
-    setIsShowTexInputPriceOfVarrant(false);
-    setProductId("");
-    setVarrant((prevSelections) => {
-      const index = prevSelections.findIndex(
-        (selection) => selection.modelVarantAttributeId === group
-      );
 
-      if (index >= 0) {
-        // The attribute is already selected, update the value
-        const newSelections = prevSelections.map((selection, i) =>
-          i === index ? { ...selection, ...updateSelection } : selection
-        );
-        console.log("New selections:", newSelections);
-        if (newSelections.length === maxLevelVarantProduct) {
-          getProductId(tFModelId, newSelections);
-          setPriceOfProductId(0);
-        }
-
-        return newSelections;
-      } else {
-        // The attribute is not yet selected, add a new selection
-        const newSelections = [...prevSelections, updateSelection];
-        //console.log("New selections:", newSelections);
-        if (newSelections.length === maxLevelVarantProduct) {
-          getProductId(tFModelId, newSelections);
-          setPriceOfProductId(0);
-        }
-        console.log("New selections abc:", newSelections);
-        return newSelections;
-      }
-    });
-  };
-  const getProductId = async (modelId, varant) => {
-    console.log(modelId, varant);
-    setStatePriceOfProductId(true);
-    const result = await getProductIdByVarrant(modelId, varant);
-    if (result.status === 200) {
-      //console.log(result.data.data);
-      setProductId(result.data.data.productId);
-      setPriceOfProductId(result.data.data.priceOfProduct);
-      setStatePriceOfProductId(false);
-    } else {
-      setStatePriceOfProductId(false);
-    }
-  };
-  const handleGetProductId = () => {
-    if (varant.length === maxLevelVarantProduct) {
-      setIsShowTexInputPriceOfVarrant(true);
-    }
-  };
   const [modelVarantProduct, setModelVarantProduct] = useState([]);
   const [imageAvatar, setImageAvatar] = useState("");
   let [loading, setLoading] = useState(false);
@@ -230,6 +294,11 @@ function MDInventory({ route, navigate, modelId }) {
   const handleOpenModalEdit = () => setOpenModalEdit(true);
   const handleCloseModalEdit = () => {
     setOpenModalEdit(false);
+  };
+  const handleAgrreEdit = () => {
+    handleCloseModalEdit();
+    addNewStockProductHasIMEI(userId, importedGoodListExcel);
+    //console.log(importedGoodListExcel);
   };
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => {
@@ -284,18 +353,10 @@ function MDInventory({ route, navigate, modelId }) {
     );
     //console.log(importedItem);
     if (productIndex === -1) {
-      // const newImeiList = {
-      //   varantProductId: importedItem.varantProductId,
-      //   productId,
-      //   amount: amount,
-      //   imeiList: [""],
-      // };
-      // setImeiList([...imeiList, newImeiList]);
       newImeiList.push({
         subgroupId: modelInfo.subgroupId,
         modelId: importedItem.modelId,
         productId,
-        inventoryStatusId: 1,
         amount: amount,
         imeiList: [""],
       });
@@ -306,28 +367,6 @@ function MDInventory({ route, navigate, modelId }) {
     setImeiList(newImeiList);
   };
 
-  // const handleAddIMEI = (productId) => {
-  //   setImeiList({
-  //     ...imeiList,
-  //     [productId]: [...(imeiList[productId] || []), ""],
-  //   });
-  // };
-
-  // Hàm xử lý sự kiện khi thay đổi giá trị của ô nhập IMEI
-  // const handleIMEIChange = (productId, index, value) => {
-  //   if (!imeiList) {
-  //     return;
-  //   }
-  //   const updatedIMEIList = imeiList.map((item) => {
-  //     if (item.productId === productId) {
-  //       const newIMEIList = [...item.imeiList];
-  //       newIMEIList[index] = value;
-  //       return { productId, imeiList: newIMEIList };
-  //     }
-  //     return item;
-  //   });
-  //   setImeiList(updatedIMEIList);
-  // };
   const handleIMEIChange = (productId, index, value) => {
     const newImeiList = [...imeiList];
     const productIndex = newImeiList.findIndex(
@@ -337,24 +376,6 @@ function MDInventory({ route, navigate, modelId }) {
     newImeiList[productIndex].amount =
       newImeiList[productIndex].imeiList.length;
     setImeiList(newImeiList);
-  };
-
-  const renderProductList = (item) => {
-    return (
-      <div key={item.productId}>
-        <button onClick={() => handleAddIMEI(item.productId)}>Thêm</button>
-        {imeiList[item.productId]?.map((imei, index) => (
-          <div key={index}>
-            <input
-              value={imei}
-              onChange={(e) =>
-                handleIMEIChange(item.productId, index, e.target.value)
-              }
-            />
-          </div>
-        ))}
-      </div>
-    );
   };
 
   const setTime = () => {
@@ -397,14 +418,6 @@ function MDInventory({ route, navigate, modelId }) {
     inventoryStatusId,
     amount
   ) => {
-    console.log(
-      userLogin,
-      storeId,
-      subgroupId,
-      modelId,
-      inventoryStatusId,
-      amount
-    );
     const result = await addNewInventoryModel(
       userLogin,
       storeId,
@@ -413,24 +426,31 @@ function MDInventory({ route, navigate, modelId }) {
       inventoryStatusId,
       amount
     );
-    console.log(result);
+    //console.log(result);
     if (result.status === 200) {
       setLoadingAddNewModel(false);
+      return navigate("/inventoryManage");
     }
   };
 
   const addNewStockProductHasIMEI = async (userId, imeiList) => {
+    //console.log(imeiList);
     setLoading(false);
     const result = await addNewInventoryProductHasIMEI(userId, 1, imeiList);
     if (result.status === 200) {
       setLoading(true);
+      return navigate("/inventoryManage");
     }
   };
 
   const addNewStockProductNoIMEI = async (userId, quantityList) => {
+    //console.log(quantityList);
     setLoading(false);
     const result = await addNewInventoryProductNoIMEI(userId, 1, quantityList);
     if (result.status === 200) {
+      setLoading(true);
+      return navigate("/inventoryManage");
+    } else {
       setLoading(true);
     }
   };
@@ -493,7 +513,8 @@ function MDInventory({ route, navigate, modelId }) {
       if (isModelInventory) {
         return (
           <div className="d-flex">
-            <div className="col-4">
+            Sản phẩm xảy ra sự cố không mong muốn!
+            {/* <div className="col-4">
               <div className="d-flex flex-column align-items-center">
                 <img
                   className="img-fluid"
@@ -557,7 +578,7 @@ function MDInventory({ route, navigate, modelId }) {
                   (Nhấn Enter để lưu)
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         );
       } else if (isProductInventory) {
@@ -567,6 +588,20 @@ function MDInventory({ route, navigate, modelId }) {
               className="d-flex justify-content-end"
               style={{ marginBottom: 20, marginTop: 20, marginRight: 10 }}
             >
+              {isRequestImei ? (
+                <button
+                  style={{ marginRight: 12 }}
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => {
+                    handleOpenModalEdit();
+                  }}
+                >
+                  Import Excel
+                </button>
+              ) : (
+                ""
+              )}
               <button
                 type="button"
                 className="btn btn-primary"
@@ -603,9 +638,37 @@ function MDInventory({ route, navigate, modelId }) {
                         flex: 3,
                       }}
                     >
-                      <button onClick={() => handleAddIMEI(item.productId)}>
-                        Thêm
-                      </button>
+                      <div
+                        className="d-flex align-items-center"
+                        style={{ paddingBottom: 12 }}
+                      >
+                        <div style={{ paddingRight: 8 }}>Giá nhập</div>
+                        <input
+                          type="number"
+                          style={{ width: "30%", marginRight: 8 }}
+                          className="form-control"
+                          id="exampleFormControlInput1"
+                          placeholder="Giá nhập"
+                          value={
+                            imeiList.find(
+                              (product) =>
+                                product.productId === item.productId &&
+                                product.modelId === item.modelId
+                            )?.inputPrice || ""
+                          }
+                          onChange={(e) =>
+                            handleInputPriceChange(
+                              item.productId,
+                              item.modelId,
+                              parseInt(e.target.value)
+                            )
+                          }
+                        />
+                        <button onClick={() => handleAddIMEI(item.productId)}>
+                          Thêm IMEI
+                        </button>
+                      </div>
+
                       <div
                         className="d-flex flex-wrap"
                         style={{
@@ -658,6 +721,27 @@ function MDInventory({ route, navigate, modelId }) {
                         }
                         onChange={(e) =>
                           handleQuantityChange(
+                            item.productId,
+                            item.modelId,
+                            parseInt(e.target.value)
+                          )
+                        }
+                      />
+                      <input
+                        type="number"
+                        style={{ width: "50%", marginTop: 8 }}
+                        className="form-control"
+                        id="exampleFormControlInput1"
+                        placeholder="Nhập giá nhập"
+                        value={
+                          quantityList.find(
+                            (product) =>
+                              product.productId === item.productId &&
+                              product.modelId === item.modelId
+                          )?.inputPrice || ""
+                        }
+                        onChange={(e) =>
+                          handlePriceChange(
                             item.productId,
                             item.modelId,
                             parseInt(e.target.value)
@@ -740,6 +824,44 @@ function MDInventory({ route, navigate, modelId }) {
           </div>
         </div>
       </div>
+      <Modal
+        open={openModalEdit}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <div className="border-bottom fw-bold">Import IMEI</div>
+
+          <div className="d-flex align-items-center" style={{ marginTop: 20 }}>
+            <div>
+              <ExportExcel data={dataExport} />
+            </div>
+            <div
+              style={{
+                marginLeft: 12,
+              }}
+            >
+              <input type="file" onChange={handleImport} />
+            </div>
+          </div>
+
+          <div
+            className="d-flex justify-content-center"
+            style={{ marginTop: 20 }}
+          >
+            <div style={{ marginRight: 20 }}>
+              <Button variant="outlined" onClick={handleCloseModalEdit}>
+                Quay lại
+              </Button>
+            </div>
+            <div style={{ marginLeft: 20 }}>
+              <Button variant="contained" onClick={handleAgrreEdit}>
+                Đồng ý
+              </Button>
+            </div>
+          </div>
+        </Box>
+      </Modal>
       <div>
         {loading ? (
           loading

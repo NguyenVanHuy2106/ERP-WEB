@@ -99,7 +99,7 @@ function ERVoucherType({ route, navigate }) {
 
   useEffect(() => {
     setTime();
-    getVoucherTypeList();
+    //getVoucherTypeList();
   }, []);
 
   const indexOfLastPost = currentPage * postsPerPage;

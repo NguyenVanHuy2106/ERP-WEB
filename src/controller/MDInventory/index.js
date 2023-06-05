@@ -1,3 +1,4 @@
+import { toDate } from "date-fns";
 import API from "../../server/APIConfig";
 import { storeId } from "../../server/storeConfig";
 export const checkModelInventory = async (userLogin, modelId) => {
@@ -63,12 +64,14 @@ export const addNewInventoryProductHasIMEI = async (
   importedGoodList
 ) => {
   try {
+    //console.log(importedGoodList);
     const response = await API.post(
       "inventory/import-imei-good",
       {
         userLogin: userLogin,
         data: {
           storeId: storeId,
+          inventoryStatusId: 1,
           importedGoodList: importedGoodList,
         },
       },
@@ -89,12 +92,14 @@ export const addNewInventoryProductNoIMEI = async (
   importedGoodList
 ) => {
   try {
+    //console.log(importedGoodList);
     const response = await API.post(
       "inventory/import-not-imei-good",
       {
         userLogin: userLogin,
         data: {
           storeId: storeId,
+          inventoryStatusId: 1,
           importedGoodList: importedGoodList,
         },
       },
@@ -153,6 +158,30 @@ export const deleteInventoryStatus = async (
         userLogin: userLogin,
         data: {
           inventoryStatusIdList: inventoryStatusIdList,
+        },
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response;
+  } catch (err) {
+    return err;
+  }
+};
+export const getInventoryHis = async (userLogin, modelId, fromDate, toDate) => {
+  try {
+    const response = await API.post(
+      "inventory/get-input-history",
+      {
+        userLogin: userLogin,
+        data: {
+          modelId: modelId,
+          productId: null,
+          createdFrom: fromDate,
+          createdTo: toDate,
         },
       },
       {

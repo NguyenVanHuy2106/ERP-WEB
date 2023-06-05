@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
@@ -8,14 +8,14 @@ import { makeStyles } from "@material-ui/core/styles";
 
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-
+import QrScanner from "react-qr-scanner";
 import Box from "@mui/material/Box";
 
 import Modal from "@mui/material/Modal";
 
 import "./css/index.css";
 
-import { updateOrderAPI } from "../../controller/EROrder";
+import { updateOrderAPI, updateCancelOrderAPI } from "../../controller/EROrder";
 import {
   getOrderDetailAPI,
   exportProductAPI,
@@ -58,7 +58,11 @@ function EROrderDetail({ route }) {
   const [orderDetail, setOrderDetail] = useState({});
   const [orderDetailList, setOrderDetailList] = useState([]);
   let userId = localStorage.getItem("userId");
-
+  const videoRef = useRef(null);
+  const [scanningItem, setScanningItem] = useState(null);
+  const [scannedIMEIs, setScannedIMEIs] = useState({});
+  // console.log(scannedIMEIs);
+  const [showScanner, setShowScanner] = useState(false);
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
@@ -69,18 +73,11 @@ function EROrderDetail({ route }) {
     setOpenModal(false);
   };
   const handleAgrre = async () => {
-    let saleOrderIdList = [];
-    saleOrderIdList.push(saleOrderId.saleOrderId);
-    const result = await updateOrderAPI(
-      userId,
-      saleOrderIdList,
-      null,
-      null,
-      null,
-      null,
-      1,
-      deleteNote
-    );
+    orderDetail.deletedNote = deleteNote;
+    orderDetail.isDeleted = 1;
+    //console.log(orderDetail);
+
+    const result = await updateCancelOrderAPI(userId, orderDetail);
     if (result.status === 200) {
       navigate("/orders", { replace: true });
     }
@@ -154,14 +151,41 @@ function EROrderDetail({ route }) {
       navigate("/orders", { replace: true });
     }
   };
+  const handleOpenScanner = (itemId) => {
+    setScanningItem(itemId);
+  };
 
+  const handleCloseScanner = () => {
+    setScanningItem(null);
+  };
+
+  const handleScan = (result, saleOrderDetailId) => {
+    if (result) {
+      // //console.log(result.text);
+      // setScannedIMEIs((prevScannedIMEIs) => ({
+      //   ...prevScannedIMEIs,
+      //   [saleOrderDetailId]: result.text,
+      // }));
+      const productIndex = orderDetailList.findIndex(
+        (product) => product.saleOrderDetailId === saleOrderDetailId
+      );
+      if (productIndex !== -1) {
+        const newQuantityList = [...orderDetailList];
+        newQuantityList[productIndex].IMEI = result.text;
+        setOrderDetailList(newQuantityList);
+      }
+      handleCloseScanner();
+    }
+  };
+  const handleScannerError = (error) => {
+    console.error("Scanner error:", error);
+  };
   useEffect(() => {
     setTime();
-
     getSaleOrderDetail(saleOrder);
   }, []);
+
   const handleQuantityChange = (saleOrderDetailId, IMEI) => {
-    // Tìm vị trí của phần tử trong quantityList dựa trên productId và modelId
     const productIndex = orderDetailList.findIndex(
       (product) => product.saleOrderDetailId === saleOrderDetailId
     );
@@ -409,10 +433,33 @@ function EROrderDetail({ route }) {
                       className="form-control"
                       id="exampleFormControlInput1"
                       placeholder="IMEI"
+                      value={item.IMEI || ""}
                       onChange={(value) =>
                         handleQuantityChange(item.saleOrderDetailId, value)
                       }
                     />
+                    <div>
+                      {scanningItem === item.saleOrderDetailId ? (
+                        <div>
+                          <QrScanner
+                            onScan={(result) =>
+                              handleScan(result, item.saleOrderDetailId)
+                            }
+                            onError={handleScannerError}
+                            style={{ width: "100%" }}
+                          />
+                          <button onClick={handleCloseScanner}>Đóng</button>
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() =>
+                            handleOpenScanner(item.saleOrderDetailId)
+                          }
+                        >
+                          Quét mã vạch
+                        </button>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>

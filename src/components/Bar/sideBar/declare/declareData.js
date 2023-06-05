@@ -70,8 +70,8 @@ export const customerData = [
 ];
 export const voucherConcernData = [
   {
-    title: "Tra cứu hoá đơn",
-    path: "#",
+    title: "Sản phẩm bán chạy",
+    path: "/bestSeller",
   },
   {
     title: "Tra cứu phiếu thu/chi",

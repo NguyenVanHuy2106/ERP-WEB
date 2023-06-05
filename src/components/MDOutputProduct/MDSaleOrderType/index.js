@@ -1,41 +1,19 @@
-import React, { useState, useEffect, useStyle, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 
 import dayjs from "dayjs";
-import { RingLoader, CircleLoader } from "react-spinners";
+import { RingLoader } from "react-spinners";
 import { TextField } from "@mui/material";
 import "../css/index.css";
-// import Stack from "@mui/material/Stack";
 import { makeStyles } from "@material-ui/core/styles";
-// import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-// import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-// import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import Backdrop from "@mui/material/Backdrop";
 import Button from "@mui/material/Button";
-import {
-  AiOutlineSearch,
-  AiOutlinePlus,
-  AiOutlineCheck,
-  AiFillExclamationCircle,
-} from "react-icons/ai";
-import { FiEdit, FiTrash } from "react-icons/fi";
+import { AiOutlineCheck } from "react-icons/ai";
 import Box from "@mui/material/Box";
-// import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Checkbox from "@mui/material/Checkbox";
 import { FaPlus, FaRegTrashAlt } from "react-icons/fa";
-// import Switch from "react-switch";
-// import {
-//   getAllDeliveryType,
-//   addNewDeliveryType,
-//   updateDeliveryType,
-//   deleteDeliveryType,
-// } from "../../../controller/deliveryTypeController";
 
-import {
-  addNewAPI,
-  updateAPI,
-  deleteAPI,
-} from "../../../controller/MDOutputTypeController";
+import { deleteAPI } from "../../../controller/MDOutputTypeController";
 
 import {
   getAllSaleOrderType,
@@ -45,15 +23,12 @@ import {
 } from "../../../controller/MDSaleOrderTypeController";
 import { getAllAPI } from "../../../controller/MDOutputTypeController";
 import { getAllPaymentOrderTypeAPI } from "../../../controller/MDPaymentOrderTypeController";
-import { getAllVoucherTypeAPI } from "../../../controller/MDVoucherTypeController";
 import { getAllDeliveryType } from "../../../controller/MDDeliveryTypeController";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
-import NativeSelect from "@mui/material/NativeSelect";
 import PaginationShop from "../../shops/paginationShopList";
-import { el } from "date-fns/locale";
 const useStyles = makeStyles((theme) => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -76,33 +51,16 @@ function MDSaleOrderType({ route, navigate }) {
   const [tFSaleOrderTypeValue, setTFSaleOrderTypeValue] = useState("");
   const [tFSaleOrderTypeValueEdit, setTFSaleOrderTypeValueEdit] = useState("");
   const [tFDesValue, setTFDesValue] = useState("");
-  const [tFStoreTypeEditValue, setTFStoreTypeEditValue] = useState("");
   const [tFDesEditValue, setTFDesEditValue] = useState("");
-  const [tFEditMaxProductQuantity, setTFEditMaxProductQuantity] = useState("");
-  const [tFEMaxProductQuantity, setTFMaxProductQuantity] = useState("");
   const [outputTypeIdEditValue, setOutputTypeIdEditValue] = useState("");
   const [saleOrderTypeIdEditValue, setSaleOrderTypeIdEditValue] = useState("");
   const [outputType, setOutputType] = useState([]);
-  const [outputTypeEdit, setOutputTypeEdit] = useState([]);
   const [paymentOrderType, setPaymentOrderType] = useState([]);
   const [paymentOrderTypeEdit, setPaymentOrderTypeEdit] = useState([]);
   const [paymentOrderTypeSelect, setPaymentOrderTypeSelect] = useState([]);
   const [paymentOrderTypeSelectEdit, setPaymentOrderTypeSelectEdit] = useState(
     []
   );
-  const [deliveryType, setDeliveryType] = useState([]);
-  const [deliveryTypeSelect, setDeliveryTypeSelect] = useState([]);
-  const [deliveryTypeEdit, setDeliveryTypeEdit] = useState([]);
-  const [deliveryTypeSelectEdit, setDeliveryTypeSelectEdit] = useState([]);
-  const [getPriceType, setGetPriceType] = useState("");
-  const [getPriceTypeEdit, setGetPriceTypeEdit] = useState("");
-  const [isActived, setIsActived] = useState(false);
-  const [isCanReturnEdit, setisCanReturnEdit] = useState(false);
-  const [isCanReturn, setisCanReturn] = useState(true);
-  const [isSale, setIsSale] = useState(true);
-  const [isSaleEdit, setIsSaleEdit] = useState(true);
-  const [isPromotion, setIsPromotion] = useState(true);
-  const [isPromotionEdit, setIsPromotionEdit] = useState(true);
   const [isAutoReviewed, setIsAutoReviewed] = useState(true);
   const [isAutoReviewedEdit, setIsAutoReviewedEdit] = useState(true);
   const [isSupplementPromotion, setIsSupplementPromotion] = useState(true);
@@ -115,12 +73,7 @@ function MDSaleOrderType({ route, navigate }) {
   const [isOutput, setIsOutput] = useState(true);
   const [isOutputEdit, setIsOutputEdit] = useState(true);
   let [loading, setLoading] = useState(false);
-  const [errorMaxEdit, setErrorMaxEdit] = useState("");
-  const [errorMax, setErrorMax] = useState("");
-  var toDateDayjs = dayjs();
-  var today = new Date();
-  const [mainGroupSelect, setMainGroupSelect] = React.useState("");
-  const [mainGroupSelectEdit, setMainGroupSelectEdit] = React.useState("");
+
   const [outputTypeSelect, setOutputTypeSelect] = React.useState("");
   const [outputTypeSelectEdit, setOutputTypeSelectEdit] = React.useState("");
   const [saleOrderTypeData, setSaleOrderTypeTypeData] = useState([]);
@@ -162,27 +115,14 @@ function MDSaleOrderType({ route, navigate }) {
   const handleChangeIsCollectMoneyEdit = (event) => {
     setIsCollectMoneyEdit(event.target.checked);
   };
-  const handleChangeDeliveryTypeSelect = (event) => {
-    setDeliveryTypeSelect(event.target.value);
-  };
-  const handleChangeDeliveryTypeSelectEdit = (event) => {
-    setDeliveryTypeSelectEdit(event.target.value);
-  };
+
   const handleChangeIsOutput = (event) => {
     setIsOutput(event.target.checked);
   };
   const handleChangeIsOutputEdit = (event) => {
     setIsOutputEdit(event.target.checked);
   };
-  const handleChangeSelect = (event) => {
-    setMainGroupSelect(event.target.value);
-  };
-  const handleChangeGetPriceType = (event) => {
-    setGetPriceType(event.target.value);
-  };
-  const handleChangeGetPriceTypeEdit = (event) => {
-    setGetPriceTypeEdit(event.target.value);
-  };
+
   const handleChangeOutputTypeSelect = (event) => {
     setOutputTypeSelect(event.target.value);
   };
@@ -198,7 +138,6 @@ function MDSaleOrderType({ route, navigate }) {
   const handleOpenModalEdit = () => setOpenModalEdit(true);
   const handleCloseModalEdit = () => {
     setOpenModalEdit(false);
-    setErrorMaxEdit("");
   };
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => {
@@ -207,7 +146,7 @@ function MDSaleOrderType({ route, navigate }) {
     setError("");
     setOutputTypeSelect("");
     setPaymentOrderTypeSelect("");
-    setDeliveryTypeSelect("");
+
     setIsAutoReviewed(true);
     setIsSupplementPromotion(true);
     setIsAutoOutputProduct(true);
@@ -220,31 +159,10 @@ function MDSaleOrderType({ route, navigate }) {
   const [isError, setIsError] = useState(false);
   let userId = localStorage.getItem("userId");
 
-  const handleEditcheck = (event) => {
-    setIsActived(event.target.checked);
-  };
   const handleChange = (event) => {
     setChecked(event.target.checked);
   };
-  const handleChangeIsCanReturnEdit = (event) => {
-    setisCanReturnEdit(event.target.checked);
-  };
-  const handleChangeLimitStock = (event) => {
-    setisCanReturn(event.target.checked);
-  };
 
-  const handleChangeIsSale = (event) => {
-    setIsSale(event.target.checked);
-  };
-  const handleChangeIsSaleEdit = (event) => {
-    setIsSaleEdit(event.target.checked);
-  };
-  const handleChangeIsPromotion = (event) => {
-    setIsPromotion(event.target.checked);
-  };
-  const handleChangeIsPromotionEdit = (event) => {
-    setIsPromotionEdit(event.target.checked);
-  };
   const handleAgrre = async () => {
     if (tFSaleOrderTypeValue.length === 0) {
       setError("Vui long nhap ten danh muc");
@@ -264,17 +182,7 @@ function MDSaleOrderType({ route, navigate }) {
       saleOrderTypeData.deliveryTypeId = null;
       saleOrderTypeData.description = tFDesValue;
       saleOrderTypeData.isActived = 1;
-      // userLogin,
-      // saleOrderTypeName,
-      // IsAutoReviewed,
-      // isSupplementPromotion,
-      // isAutoOutputProduct,
-      // isCollectMoney,
-      // isOutput,
-      // outputTypeId,
-      // paymentOrderTypeId,
-      // deliveryTypeId,
-      // description
+
       const result = await addNewSaleOrderType(userId, saleOrderTypeData);
       if (result.status === 200) {
         setLoading(true);
@@ -282,7 +190,6 @@ function MDSaleOrderType({ route, navigate }) {
         setError("");
         setOutputTypeSelect("");
         setPaymentOrderTypeSelect("");
-        setDeliveryTypeSelect("");
         setIsAutoReviewed(true);
         setIsSupplementPromotion(true);
         setIsAutoOutputProduct(true);
@@ -292,14 +199,6 @@ function MDSaleOrderType({ route, navigate }) {
     }
   };
 
-  var firstDateInMonth =
-    1 + "-" + (today.getMonth() + 1) + "-" + today.getFullYear();
-
-  const [valueFromDate, setValueFromDate] = React.useState(
-    dayjs(firstDateInMonth)
-  );
-  const [valueToDate, setValueToDate] = React.useState(toDateDayjs);
-
   const setTime = () => {
     setTimeout(() => {
       setLoading(true);
@@ -307,8 +206,7 @@ function MDSaleOrderType({ route, navigate }) {
   };
   const HandleClick = async () => {
     setLoading(false);
-    const fromDate = valueFromDate.format("YYYY-MM-DD");
-    const toDate = valueToDate.format("YYYY-MM-DD");
+
     //console.log(tFValue, fromDate, toDate);
     const result = await getAllSaleOrderType();
     if (result.status === 200) {
@@ -330,14 +228,7 @@ function MDSaleOrderType({ route, navigate }) {
       HandleClick();
     }
   };
-  const HandleGetVoucherType = async () => {
-    const result = await getAllVoucherTypeAPI();
-    if (result.status === 200) {
-      //console.log(result.data.ResultObject.CategoryList);
-      setOutputType(result.data.data.outputType);
-      setLoading(true);
-    }
-  };
+
   const HandleGetOutputType = async () => {
     const result = await getAllAPI();
     if (result.status === 200) {
@@ -354,20 +245,11 @@ function MDSaleOrderType({ route, navigate }) {
       setLoading(true);
     }
   };
-  const HandleGetDeliveryType = async () => {
-    const result = await getAllDeliveryType();
-    if (result.status === 200) {
-      //console.log(result.data.ResultObject.CategoryList);
-      setDeliveryType(result.data.data.deliveryTypes);
-      setLoading(true);
-    }
-  };
 
   useEffect(() => {
     setTime();
     HandleClick();
     HandleGetOutputType();
-    HandleGetDeliveryType();
     HandleGetPaymentOrderType();
   }, []);
 
@@ -380,22 +262,13 @@ function MDSaleOrderType({ route, navigate }) {
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   const handleEditClick = (item) => {
-    setGetPriceTypeEdit(item.getPriceType);
     setSaleOrderTypeIdEditValue(item.saleOrderTypeId);
     setOutputTypeSelectEdit(item.outputTypeId);
     setTFSaleOrderTypeValueEdit(item.saleOrderTypeName);
     setPaymentOrderTypeSelectEdit(item.paymentOrderTypeId);
-    setDeliveryTypeSelectEdit(item.deleteSaleOrderTypeId);
     setTFDesEditValue(item.description);
-    setisCanReturnEdit(item.isCanReturn);
-    setIsSaleEdit(item.isSale);
-    setIsPromotionEdit(item.isPromotion);
     setOutputTypeIdEditValue(item.outputTypeId);
-    setTFEditMaxProductQuantity(item.maxProductQuantity);
-    if (item.isActived === 1) setIsActived(true);
-    else {
-      setIsActived(false);
-    }
+
     if (item.IsAutoReviewed === 1) setIsAutoReviewedEdit(true);
     else {
       setIsAutoReviewedEdit(false);
@@ -421,20 +294,7 @@ function MDSaleOrderType({ route, navigate }) {
   const handleAgrreEdit = async () => {
     handleCloseModalEdit();
     setLoading(false);
-    // {
-    //   saleOrderTypeName: saleOrderTypeName,
-    //   IsAutoReviewed: IsAutoReviewed,
-    //   isSupplementPromotion: isSupplementPromotion,
-    //   isAutoOutputProduct: isAutoOutputProduct,
-    //   isCollectMoney: isCollectMoney,
-    //   isOutput: isOutput,
-    //   outputTypeId: outputTypeId,
-    //   paymentOrderTypeId: paymentOrderTypeId,
-    //   deliveryTypeId: deliveryTypeId,
-    //   description: description,
-    //   isActived: isActived,
-    //   isDeleted: 0,
-    // }
+
     const updateData = {};
     updateData.saleOrderTypeName = tFSaleOrderTypeValueEdit;
     updateData.IsAutoReviewed = isAutoReviewedEdit;
@@ -555,6 +415,18 @@ function MDSaleOrderType({ route, navigate }) {
                     style={{ color: "#ffffff", fontWeight: "bold" }}
                     scope="col"
                   >
+                    Ngày cập nhật
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
+                    Người cập nhật
+                  </th>
+                  <th
+                    style={{ color: "#ffffff", fontWeight: "bold" }}
+                    scope="col"
+                  >
                     Ngày tạo
                   </th>
                   <th
@@ -588,6 +460,8 @@ function MDSaleOrderType({ route, navigate }) {
                     </td>
 
                     <td>{CheckActive(item.isActived)}</td>
+                    <td>{new Date(item.updatedDate).toLocaleDateString()}</td>
+                    <td>{item.updatedUser}</td>
                     <td>{new Date(item.createdDate).toLocaleDateString()}</td>
                     <td>{item.createdUser}</td>
                   </tr>
