@@ -456,7 +456,7 @@ function EROrderDetail({ route }) {
                             handleOpenScanner(item.saleOrderDetailId)
                           }
                         >
-                          Quét mã vạch
+                          Quét QR
                         </button>
                       )}
                     </div>
