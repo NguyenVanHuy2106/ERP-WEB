@@ -78,10 +78,6 @@ export const voucherConcernData = [
     path: "/voucherType",
   },
   {
-    title: "Tra cứu phiếu nhập",
-    path: "#",
-  },
-  {
     title: "Tra cứu phiếu xuất",
     path: "/outputVoucher",
   },
