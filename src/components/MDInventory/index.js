@@ -444,15 +444,15 @@ function MDInventory({ route, modelId }) {
   };
 
   const addNewStockProductNoIMEI = async (userId, quantityList) => {
-    //console.log(quantityList);
-    setLoading(false);
-    const result = await addNewInventoryProductNoIMEI(userId, 1, quantityList);
-    if (result.status === 200) {
-      setLoading(true);
-      return navigate("/inventoryManage");
-    } else {
-      setLoading(true);
-    }
+    console.log(quantityList);
+    // setLoading(false);
+    // const result = await addNewInventoryProductNoIMEI(userId, 1, quantityList);
+    // if (result.status === 200) {
+    //   setLoading(true);
+    //   return navigate("/inventoryManage");
+    // } else {
+    //   setLoading(true);
+    // }
   };
 
   const getProductList = async (modelId) => {

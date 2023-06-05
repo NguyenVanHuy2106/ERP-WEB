@@ -35,21 +35,21 @@ function App() {
       <Sidebars />
       <Routes>
         <Route path="/" element={<ERHome />} />
-        <Route path="/home" element={<ERHome />} />
-        <Route path="/signIn" element={<SignIn />} />
-        <Route path="/district" element={<District />} />
-        <Route path="/province" element={<Province />} />
-        <Route path="/shopList" element={<ShopList />} />
-        <Route path="/deliveryType" element={<MDDeliveryType />} />
-        <Route path="/brand" element={<MDBrand />} />
-        <Route path="/quantityUnit" element={<MDQuantityUnit />} />
-        <Route path="/store" element={<MDStore />} />
-        <Route path="/outputProduct" element={<MDOutputProduct />} />
-        <Route path="/mainGroup_subGroup" element={<MDMainGroupSubGroup />} />
-        <Route path="/products" element={<MDProduct />} />
-        <Route path="/productPrice" element={<ERProductPrice />} />
+        <Route path="home" element={<ERHome />} />
+        <Route path="signIn" element={<SignIn />} />
+        <Route path="district" element={<District />} />
+        <Route path="province" element={<Province />} />
+        <Route path="shopList" element={<ShopList />} />
+        <Route path="deliveryType" element={<MDDeliveryType />} />
+        <Route path="brand" element={<MDBrand />} />
+        <Route path="quantityUnit" element={<MDQuantityUnit />} />
+        <Route path="store" element={<MDStore />} />
+        <Route path="outputProduct" element={<MDOutputProduct />} />
+        <Route path="mainGroup_subGroup" element={<MDMainGroupSubGroup />} />
+        <Route path="products" element={<MDProduct />} />
+        <Route path="productPrice" element={<ERProductPrice />} />
         <Route
-          path="/productPriceDetail/:modelId"
+          path="productPriceDetail/:modelId"
           element={<ERProductPriceDetail />}
         />
         <Route path="/productManage" element={<ERProduct />} />
